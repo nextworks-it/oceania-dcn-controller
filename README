@@ -2,3 +2,21 @@
 Repository for H2020-NEPHELE project 
 =====================================
 
+
+-------------------------------------
+Application Affinity Service
+-------------------------------------
+To compile:
+cd AppAffinityService
+mvn clean install
+
+To launch:
+cd AppAffinityService/target
+java -jar AppAffinityService-0.9.0-SNAPSHOT.jar
+
+User guide:
+Launch by following instructions above. ReST API documentation
+can then be found at http://localhost:8080/swagger-ui.html
+
+Info: m.capitani@nextworks.it
+
