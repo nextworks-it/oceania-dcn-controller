@@ -37,13 +37,14 @@ class NetworkBuilder {
 			}
 		}
 
-		HashMap<Integer[], HashMap<Integer, String[]>> podRings = new HashMap<>();
-		HashMap<Integer[], HashMap<Integer, String>> podTors = new HashMap<>();
+        HashMap<Integer[], HashMap<Integer, String[]>> podRings = new HashMap<>();
+        HashMap<Integer[], HashMap<Integer, String>> podTors = new HashMap<>();
 
 		pods = new Pod[P * I];
 
 		for (Integer pl = 0; pl < I; pl++) {
 			for (Integer id = 0; id < P; id++) {
+
 				Integer[] pID= new Integer[] {pl,id};
 				podRings.put(pID, new HashMap<>());
 				for (Integer i = 0; i < W; i++) {
@@ -73,9 +74,8 @@ class NetworkBuilder {
 
     private Map<Integer, Integer[]> buildTorAddress(){
         Map<Integer, Integer[]> output = new HashMap<>();
-        for (Integer i = 0; i < P * W; i++) {
+        for (Integer i = 0; i < (P * W); i++) {
             output.put(i, new Integer[]{10, 0, i + 1, 0});
-
         }
         return output;
     }

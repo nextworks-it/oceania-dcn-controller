@@ -42,8 +42,8 @@ public class Const {
 
 	static void init(int[][] inMat) {
         matrix = new Integer[I * T][P * W * Z];
-		for (int i = 0; i< I * T; i++){
-			for (int j = 0; j< P * W * Z; j++){
+		for (int i = 0; i< (I * T); i++){
+			for (int j = 0; j< (P * W * Z); j++){
 				matrix[i][j] = inMat[i][j];
 			}
 		}

@@ -112,6 +112,7 @@ public class Processor {
             try {
                 int[][] matrix = this.get();
                 tasks.add(new NetAllocIdGetter(matrix));
+                log.debug("Posting traffic matrix.");
             }
             catch (InterruptedException | CancellationException intExc){
                 log.error("Computation interrupted:\n", intExc);
@@ -136,6 +137,7 @@ public class Processor {
                     waitingForOfflineEngine = true;
                     //So that there is only one GET to the offline engine on the queue
                     tasks.add(new AllocationMatrixGetter(netAllocId));
+                    log.debug("Getting network allocation with ID : " + netAllocId);
                 }
                 else isUpdateQueued = true;
             }
@@ -159,6 +161,7 @@ public class Processor {
             try {
                 Inventory inventory = this.get();
                 tasks.add(new InventoryPutter(inventory, ODLURL));
+                log.debug("Sending inventory to ODL.");
             }
             catch (InterruptedException | CancellationException intExc){
                 log.error("Computation interrupted:\n", intExc);
@@ -169,7 +172,7 @@ public class Processor {
         }
     }
 
-    private class AllocationMatrixGetter extends FutureTask<int[][]>{
+    private class AllocationMatrixGetter extends FutureTask<NetSolOutput>{
 
         String netAllocId;
 
@@ -184,9 +187,10 @@ public class Processor {
         protected void done(){
             super.done();
             try {
-                int[][] matrix = this.get();
-                if (matrix != null){ //Calculation completed
+                NetSolOutput netSol = this.get();
+                if (netSol != null){ //Calculation completed
                     callbackScheduled();
+                    int[][] matrix = netSol.matrix;
                     tasks.add(new InventoryGetter(matrix));
                     waitingForOfflineEngine = false;
                     if (isUpdateQueued){
@@ -201,6 +205,7 @@ public class Processor {
                         Thread.sleep(1000 - timeFromStart);
                     }
                     tasks.add(new AllocationMatrixGetter(netAllocId));
+                    log.debug("Translating inventory.");
                 }
             }
             catch (InterruptedException | CancellationException intExc){
@@ -223,6 +228,16 @@ public class Processor {
             super.done();
             callbackEstablished();
             callbackTerminated();
+            if (this.isDone()) {
+                try {
+                    log.debug("Inventory sent, status " + this.get().toString());
+                }
+                catch (InterruptedException e) {// can't happen
+                    }
+                catch (ExecutionException exc) {
+                    log.debug("Sending inventory got exception: ", exc);
+                }
+            }
         }
     }
 }

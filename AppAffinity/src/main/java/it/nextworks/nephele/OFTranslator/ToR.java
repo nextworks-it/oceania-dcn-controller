@@ -15,7 +15,7 @@ class ToR extends Node {
 	private Map<Integer, Integer[]> rackPorts; //port -> IP
 	private Map<Integer, String> podPorts; //plane ID -> plane-facing port name
 	
-	private Map<Integer, Integer[]> torIDs;
+	private Map<Integer, Integer[]> torAddresses;
 	/* Key field is determined as torIdentifier above,
 	 * but from the dest server's ToR specifics.
 	 * Value field is IP address of a server.
@@ -58,15 +58,17 @@ class ToR extends Node {
             }
         }
         for (Integer dest = 0; dest < (Const.P * Const.W); dest++) {
-            Integer[] IP = torIDs.get(dest);
-            for (Integer i = 0; i < Const.I; i++) {
-                dynFlowChart.add(new FlowEntry(
-                        IP,
-                        inPort.toString(),
-                        (dest % Const.W),
-                        new Bitmap(tmpMat[dest][i]),
-                        podPorts.get(i)));
-            }
+			if (!dest.equals(torIdentifier)) {
+				Integer[] IP = torAddresses.get(dest);
+				for (Integer i = 0; i < Const.I; i++) {
+					dynFlowChart.add(new FlowEntry(
+							IP,
+							inPort.toString(),
+							(dest % Const.W),
+							new Bitmap(tmpMat[dest][i]),
+							podPorts.get(i)));
+				}
+			}
         }
 	}
 
@@ -77,7 +79,7 @@ class ToR extends Node {
 		torIdentifier = Const.W * p + w;
 		rackPorts = rack;
 		podPorts = inPodPorts;
-		torIDs = tors;
+		torAddresses = tors;
 		nodeId = "ToR:" + w.toString() + ":" + p.toString();
 		
 		flowTable = new HashSet<>();

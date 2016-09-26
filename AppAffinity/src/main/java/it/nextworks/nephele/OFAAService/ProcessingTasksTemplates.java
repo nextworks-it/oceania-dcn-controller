@@ -2,10 +2,8 @@ package it.nextworks.nephele.OFAAService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -13,6 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import it.nextworks.nephele.OFAAService.Inventory.Inventory;
 import it.nextworks.nephele.OFAAService.ODLInventory.OpendaylightInventory;
 
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 class ProcessingTasksTemplates {
@@ -96,7 +95,7 @@ class ProcessingTasksTemplates {
         }
     }
 
-    class NetAllocationMatrixGetter implements Callable<int[][]> {
+    class NetAllocationMatrixGetter implements Callable<NetSolOutput> {
 
         String nallocId;
         String OEURL;
@@ -106,9 +105,14 @@ class ProcessingTasksTemplates {
             this.OEURL = OEURL;
         }
 
-        public int[][] call() {
+        public NetSolOutput call() {
 
             RestTemplate restTemplate = new RestTemplate();
+            MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+            converter.setSupportedMediaTypes(Arrays.asList(
+                    MediaType.APPLICATION_OCTET_STREAM,
+                    MediaType.APPLICATION_JSON));
+            restTemplate.getMessageConverters().add(converter);
 
             UriComponentsBuilder geturlbuilder =
                     UriComponentsBuilder.fromHttpUrl(
@@ -119,7 +123,7 @@ class ProcessingTasksTemplates {
                     restTemplate.getForEntity(uri.toUri(), NetSolOutput.class);
 
             if (responseEntity.getBody().status == CompStatus.COMPUTED) {
-                return responseEntity.getBody().matrix;
+                return responseEntity.getBody();
             } else {
                 return null;
             }
@@ -153,12 +157,18 @@ class ProcessingTasksTemplates {
             HttpEntity<?> deleteEntity =
                     new HttpEntity<>(header);
 
-            restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.DELETE, deleteEntity, String.class);
+            ResponseEntity<String> response1 =
+                    restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.DELETE, deleteEntity, String.class);
+            if (response1.getBody() == null) log.debug(response1.getStatusCode().toString());
+            else log.debug(response1.getBody());
 
             HttpEntity<OpendaylightInventory> outgoingEntity =
                     new HttpEntity<>(odlInv, header);
 
-            restTemplate.put(urlbuilder.toUriString(), outgoingEntity);
+            ResponseEntity<String> response2 =
+                    restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.PUT, outgoingEntity, String.class);
+            if (response2.getBody() == null) log.debug(response2.getStatusCode().toString());
+            else log.debug(response2.getBody());
         }
     }
 }
