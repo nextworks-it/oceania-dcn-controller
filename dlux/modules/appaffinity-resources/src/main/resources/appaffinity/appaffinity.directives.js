@@ -1,3 +1,3 @@
-define(['app/appaffinity/appaffinity.module', 'vis-new'], function(prov, vis) {
+define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
 });

@@ -1,8 +1,24 @@
-<!--script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.8/angular-filter.min.js"></script-->
 <form role="form" name="showXConnForm" style="width: 100%">
-    <h3>STUP</h3>
-    <div>
-        <p>{{testvalue}}
-    </div>
+
+    <h3>Traffic requests</h3>
+
+    <table class="footable table">
+        <thead>
+        <tr>
+            <th>Node</th>
+            <th>Incoming</th>
+            <th>Outgoing</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-hide="data.length > 1"><td colspan="3" class="centerAlign">No data found.</td></tr>
+        <tr ng-repeat="item in nodes">
+            <td>{{item.id}}</td>
+            <td>{{item.incoming}}</td>
+            <td>{{item.outgoing}}</td>
+        </tr>
+        </tbody>
+        </table>
+
 </form>
 
