@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 				"it.nextworks.nephele.OFTranslator",
 				"it.nextworks.nephele.TrafficMatrixEngine"})
 public class AppAffinityApplication {
+
 	
 	public static void main(String[] args) {
 		SpringApplication.run(AppAffinityApplication.class, args);
