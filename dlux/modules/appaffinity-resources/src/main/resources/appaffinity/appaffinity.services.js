@@ -61,7 +61,8 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                         }
                     }
                 }
-                for (var node in nodes){
+                for (var key in nodes){
+                    var node = nodes['key'];
                     var inLen = 0, outLen = 0;
                     if (node.incoming) {
                         inLen = Object.keys(node.incoming).length;

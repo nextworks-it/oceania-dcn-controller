@@ -9,7 +9,7 @@
                 <th>Traffic requests</th>
                 <th>Bandwidth</th>
             </tr>
-            <tr ng-hide="data.length > 1">
+            <tr ng-hide="nodes.length > 1">
                 <td colspan="3" class="centerAlign">No data found.</td>
             </tr>
         </thead>
@@ -19,16 +19,13 @@
                 <td colspan="2" class="centerAlign">Incoming traffic</td>
             </tr>
             <tr ng-repeat="detail in item.incoming">
-                <td rowspan="0">Placeholder (should not appear)</td>
                 <td>{{detail[0]}}</td>
                 <td>{{detail[1]}}</td>
             </tr>
             <tr>
-                <td rowspan="0"></td>
                 <td colspan="2" class="centerAlign">Outgoing traffic</td>
             </tr>
             <tr ng-repeat="detail in item.outgoing">
-                <td rowspan="0">Placeholder (should not appear)</td>
                 <td>{{detail[0]}}</td>
                 <td>{{detail[1]}}</td>
             </tr>
