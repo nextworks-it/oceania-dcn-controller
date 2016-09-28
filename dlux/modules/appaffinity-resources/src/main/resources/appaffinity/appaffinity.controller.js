@@ -22,7 +22,9 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
             };
 
             $scope.submitService = function() {
-                appaffinitySvc.submitService($scope.service).then( function(response) {
+                var out_data = {connections: []};
+                out_data.connections.push($scope.service);
+                appaffinitySvc.submitService(out_data).then( function(response) {
                     alert("Request sent.");
                 }, function(response) {
                     alert("Error " + response.status);
@@ -35,7 +37,7 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                 recoveryTypes : [{name: 'Unprotected', code: 'UNPROTECTED'}]
             };
             $scope.service = {};
-            $scope.service.Connection_Type = 'POINTTOPOINT';
+            $scope.service.Connection_type = 'POINTTOPOINT';
             $scope.service.Recovery = 'UNPROTECTED';
 
             //load data
