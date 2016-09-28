@@ -9,8 +9,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
     appaff.factory('AARest', function(Restangular) {
         return Restangular.withConfig(function(RestangularConfig) {
-          var url = "";
-          url = window.location.protocol+"//"+window.location.hostname+":"+"8089/";
+          var url = window.location.protocol+"//"+window.location.hostname+":"+"8089/";
           RestangularConfig.setBaseUrl(url);
         });
       });
@@ -34,7 +33,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
         };
 
         svc.getTraffic = function(cb) {
-            svc.tMat.get().then(function(mat) {
+            return svc.tMat().get().then(function(mat) {
                 nodes = {};
                 var i,j;
                 var n = mat.length;
