@@ -4,7 +4,7 @@
 
     <div>
         <label for="connectionType">Connection-type</label>
-        <select class="form-control input-sm" id="connectiontype" ui-select2 ng-model="service.Connection_type" ng-required="true">
+        <select class="form-control input-sm control-label" id="connectiontype" ui-select2 ng-model="service.Connection_type" ng-required="true">
             <option value=""></option>
             <option ng-repeat="t in const.connTypes" value="{{t.code}}">{{t.name}}</option>
         </select>
@@ -58,8 +58,8 @@
     </div>
 
     <div>
-        <label for="recovery">Connection-type</label>
-        <select class="form-control input-sm" id="recovery" ui-select2 ng-model="service.Recovery" ng-required="true">
+        <label for="recovery">Recovery</label>
+        <select class="form-control input-sm control-label" id="recovery" ui-select2 ng-model="service.Recovery" ng-required="true">
             <option value=""></option>
             <option ng-repeat="r in const.recoveryTypes" value="{{r.code}}">{{r.name}}</option>
         </select>
@@ -69,7 +69,7 @@
 
     <div class="col-md-6">
         <div ui-view="composer"></div>
-        <button class="btn btn-primary" ng-click="submitService()">Reload</button>
+        <button class="btn btn-primary" ng-click="submitService()">Submit</button>
     </div>
 
 </form>

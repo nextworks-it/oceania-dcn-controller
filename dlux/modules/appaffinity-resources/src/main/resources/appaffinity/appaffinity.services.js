@@ -62,7 +62,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                     }
                 }
                 for (var key in nodes){
-                    var node = nodes['key'];
+                    var node = nodes[key];
                     var inLen = 0, outLen = 0;
                     if (node.incoming) {
                         inLen = Object.keys(node.incoming).length;
@@ -79,6 +79,9 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 cb(undefined); //sends null data to the controller since the call failed
             });
         };
+
+        svc.getFlows= function(cb) {
+            return svc.tMat().get().then(function(mat) {
 
         svc.submitService = function(service) {
             return svc.affinity().one('connection').post(service)

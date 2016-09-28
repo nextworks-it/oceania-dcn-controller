@@ -1,6 +1,6 @@
 <form role="form" name="trafficForm" style="width: 100%">
 
-    <h3>Traffic status</h3>
+    <h2>Traffic status</h2>
 
     <table class="footable table">
         <thead>
@@ -16,14 +16,14 @@
         <tbody ng-repeat="item in nodes">
             <tr>
                 <td rowspan="{{item.rows + 2}}">{{item.id}}</td>
-                <td colspan="2" class="centerAlign">Incoming traffic</td>
+                <td ng-hide="item.incoming.length<1" colspan="2" class="centerAlign">Incoming traffic</td>
             </tr>
             <tr ng-repeat="detail in item.incoming">
                 <td>{{detail[0]}}</td>
                 <td>{{detail[1]}}</td>
             </tr>
             <tr>
-                <td colspan="2" class="centerAlign">Outgoing traffic</td>
+                <td ng-hide="item.outgoing.length<1" colspan="2" class="centerAlign">Outgoing traffic</td>
             </tr>
             <tr ng-repeat="detail in item.outgoing">
                 <td>{{detail[0]}}</td>

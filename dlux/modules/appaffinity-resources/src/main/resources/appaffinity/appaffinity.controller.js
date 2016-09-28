@@ -27,7 +27,8 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                 recoveryTypes : [{name: 'Unprotected', code: 'UNPROTECTED'}]
             };
             $scope.service = {};
-            $scope.service.connectionType = 'POINTTOPOINT';
+            $scope.service.Connection_Type = 'POINTTOPOINT';
+            $scope.service.Recovery = 'UNPROTECTED';
 
             //load data
             $scope.refresh();
