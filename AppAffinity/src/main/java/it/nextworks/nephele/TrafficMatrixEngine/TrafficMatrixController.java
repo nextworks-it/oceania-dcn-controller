@@ -4,18 +4,12 @@ package it.nextworks.nephele.TrafficMatrixEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;
 
 @RestController
@@ -27,6 +21,7 @@ public class TrafficMatrixController {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
+	@CrossOrigin
 	@RequestMapping(value="/applicationprofile", method=RequestMethod.POST)
 	@ApiOperation(value = "postAppProfile", nickname = "Post an app profile to be added")
     @ApiResponses(value = { 
@@ -44,7 +39,8 @@ public class TrafficMatrixController {
 			throw new NullPointerException("No such application profile");
 		}
 	}
-		
+
+	@CrossOrigin
 	@RequestMapping(value="/matrix", method=RequestMethod.GET)
 	@ApiOperation(value = "getMatrix", nickname = "Get the Traffic Matrix")
     @ApiResponses(value = { 

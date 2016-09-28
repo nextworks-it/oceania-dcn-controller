@@ -2,13 +2,7 @@ package it.nextworks.nephele.OFAAService;
 
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -47,6 +41,7 @@ public class AppAffinityController {
     @Value("${server.port}")
     private String serverPort;
 
+	@CrossOrigin
 	@RequestMapping(value="/connection", method=RequestMethod.POST)
 	@ApiOperation(value = "postConnection", nickname = "Post new Service")
     @ApiResponses(value = { 
@@ -92,7 +87,8 @@ public class AppAffinityController {
             throw new NullPointerException("Could not POST the appProfile");
         }
 	}
-	
+
+	@CrossOrigin
 	@RequestMapping(value="/connections", method=RequestMethod.GET)
 	@ApiOperation(value = "getConnections", nickname = "get service Id")
     @ApiResponses(value = { 
@@ -104,7 +100,8 @@ public class AppAffinityController {
 		output = connList.keySet();
 		return output;
 	}
-	
+
+	@CrossOrigin
 	@RequestMapping(value="/connection/{connID}", method=RequestMethod.GET)
 	@ApiOperation(value = "getConnectionById", nickname = "Get service status")
     @ApiResponses(value = { 
@@ -119,7 +116,8 @@ public class AppAffinityController {
 		
 		else return output;
 	}
-	
+
+	@CrossOrigin
 	@RequestMapping(value="/connection/{connID}", method=RequestMethod.DELETE)
 	@ApiOperation(value = "deleteConnection", nickname = "Delete service")
     @ApiResponses(value = { 
