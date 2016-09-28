@@ -1,54 +1,75 @@
 <form role="form" name="createForm" style="width: 100%">
 
-    <h3>Submit new request</h3>
+    <h2>Submit new request</h2>
 
     <div>
         <label for="connectionType">Connection-type</label>
-        <select class="form-control input-sm" id="connectiontype" ui-select2 ng-model="connectiontype" ng-required="true" data-placeholder="Select a type">
+        <select class="form-control input-sm" id="connectiontype" ui-select2 ng-model="service.Connection_type" ng-required="true">
             <option value=""></option>
-            <option ng-repeat="t in const.conntypes" value="{{t.code}}">{{t.name}}</option>
+            <option ng-repeat="t in const.connTypes" value="{{t.code}}">{{t.name}}</option>
         </select>
     </div>
 
-    <h5>Source zone</h5>
+    <hr>
+
+    <h3>Source zone</h3>
 
     <div class="form-group">
         <label for="srcpod">Pod number</label>
-        <input type="text" class="form-control input-sm control-label" ng-model="srcpod" id="srcpod" placeholder="String identifier" required>
+        <input type="text" class="form-control input-sm control-label" ng-model="service.Source_end_point.Pod_ID" id="srcpod" required>
     </div>
 
     <div class="form-group">
         <label for="srctor">Rack number</label>
-        <input type="text" class="form-control input-sm control-label" ng-model="srctor" id="srctor" placeholder="String identifier" required>
+        <input type="text" class="form-control input-sm control-label" ng-model="service.Source_end_point.ToR_ID" id="srctor" required>
     </div>
 
     <div class="form-group">
         <label for="srczone">Zone number (in rack)</label>
-        <input type="text" class="form-control input-sm control-label" ng-model="srczone" id="srczone" placeholder="String identifier" required>
+        <input type="text" class="form-control input-sm control-label" ng-model="service.Source_end_point.Zone_ID" id="srczone" required>
     </div>
 
-    <h5>Source zone</h5>
+    <hr>
+
+    <h3>Source zone</h3>
 
     <div class="form-group">
         <label for="despod">Pod number</label>
-        <input type="text" class="form-control input-sm control-label" ng-model="despod" id="despod" placeholder="String identifier" required>
+        <input type="text" class="form-control input-sm control-label" ng-model="service.Destination_end_point.Pod_ID" id="despod" required>
     </div>
 
     <div class="form-group">
         <label for="destor">Rack number</label>
-        <input type="text" class="form-control input-sm control-label" ng-model="destor" id="destor" placeholder="String identifier" required>
+        <input type="text" class="form-control input-sm control-label" ng-model="service.Destination_end_point.ToR_ID" id="destor" required>
     </div>
 
     <div class="form-group">
         <label for="deszone">Zone number (in rack)</label>
-        <input type="text" class="form-control input-sm control-label" ng-model="deszone" id="deszone" placeholder="String identifier" required>
+        <input type="text" class="form-control input-sm control-label" ng-model="service.Destination_end_point.Zone_ID" id="deszone" required>
     </div>
 
-    <h5>Traffic profile</h5>
+    <hr>
+
+    <h3>Traffic profile</h3>
 
     <div class="form-group">
         <label for="bandwidth">Reserved bandwidth</label>
-        <input type="text" class="form-control input-sm control-label" ng-model="bandwidth" id="bandwidth" placeholder="String identifier" required>
+        <input type="text" class="form-control input-sm control-label" ng-model="service.Traffic_profile.Reserved_bandwidth" id="bandwidth" placeholder="Mbit/s" required>
+    </div>
+
+    <div>
+        <label for="recovery">Connection-type</label>
+        <select class="form-control input-sm" id="recovery" ui-select2 ng-model="service.Recovery" ng-required="true">
+            <option value=""></option>
+            <option ng-repeat="r in const.recoveryTypes" value="{{r.code}}">{{r.name}}</option>
+        </select>
+    </div>
+
+    <hr>
+
+    <div class="col-md-6">
+        <div ui-view="composer"></div>
+        <button class="btn btn-primary" ng-click="submitService()">Reload</button>
     </div>
 
 </form>

@@ -67,6 +67,10 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 cb(undefined); //sends null data to the controller since the call failed
             });
         };
+
+        svc.submitService = function(service) {
+            return svc.affinity().one('connection').post(service)
+        }
         return svc;
     });
 });

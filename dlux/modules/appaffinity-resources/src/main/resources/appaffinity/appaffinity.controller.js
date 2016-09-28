@@ -2,11 +2,9 @@
 define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.services'], function(appaff) {
 
         appaff.controller('appaffinityCtrl', function($scope, $rootScope, appaffinitySvc) {
+
             $rootScope['section_logo'] = 'assets/images/logo_network.gif';
-            $scope.getText = function(text) {
-                return text.innerText||text.textContent;
-            };
-            $scope.testvalue = 'success!'
+
             $scope.refresh = function() {
                 appaffinitySvc.getTraffic(function(data) {
                     if (data){
@@ -14,9 +12,24 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                     }
                 });
             };
-            $scope.const = {
-                conntypes : [{name: 'Point to point', code: 'POINTTOPOINT'}]
+
+            $scope.submitService = function() {
+                appaffinitySvc.submitService($scope.service).then( function(response) {
+                    alert("Request sent.");
+                }, function(response) {
+                    alert("Error " + response.status);
+                });
             }
+
+            //Defaults and constants
+            $scope.const = {
+                connTypes : [{name: 'Point to point', code: 'POINTTOPOINT'}],
+                recoveryTypes : [{name: 'Unprotected', code: 'UNPROTECTED'}]
+            };
+            $scope.service = {};
+            $scope.service.connectionType = 'POINTTOPOINT';
+
+            //load data
             $scope.refresh();
         });
         /*
