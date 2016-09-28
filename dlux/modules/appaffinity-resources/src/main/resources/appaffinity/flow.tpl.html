@@ -1,5 +1,37 @@
 <form role="form" name="flowForm" style="width: 100%">
     <h2>Flow rules</h2>
 
+    <div class="col-md-6">
+        <div ui-view="composer"></div>
+        <button class="btn btn-primary" ng-click="refreshFlows()">Reload</button>
+    </div>
 
+    <table class="footable table">
+        <thead>
+            <tr>
+                <th>Node</th>
+                <th>Flow</th>
+                <th>In port</th>
+                <th>Out port</th>
+                <th>Time slot</th>
+                <th>Wavelength</th>
+
+            </tr>
+            <tr ng-hide="nodeFlows.length > 0">
+                <td colspan="6" class="centerAlign">No data found.</td>
+            </tr>
+        </thead>
+        <tbody ng-repeat="item in nodeFlows">
+            <tr>
+                <td rowspan="{{item.rows}}">{{item.id}}</td>
+            </tr>
+            <tr ng-repeat="flow in item.flows">
+                <td>{{flow.id}}</td>
+                <td>{{flow.inPort}}</td>
+                <td>{{flow.outPort}}</td>
+                <td>{{flow.timeslot ? flow.timeslot : 'N/A'}}</td>
+                <td>{{flow.wavelength ? flow.wavelength : 'N/A'}}</td>
+            </tr>
+        </tbody>
+    </table>
 </form>

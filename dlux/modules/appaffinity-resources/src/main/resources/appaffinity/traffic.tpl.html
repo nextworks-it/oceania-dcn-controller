@@ -2,6 +2,11 @@
 
     <h2>Traffic status</h2>
 
+    <div class="col-md-6">
+        <div ui-view="composer"></div>
+        <button class="btn btn-primary" ng-click="refreshTraffic()">Reload</button>
+    </div>
+
     <table class="footable table">
         <thead>
             <tr>
@@ -30,7 +35,7 @@
                 <td>{{detail[1]}}</td>
             </tr>
         </tbody>
-        </table>
+    </table>
 
 </form>
 

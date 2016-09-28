@@ -5,10 +5,18 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
 
             $rootScope['section_logo'] = 'assets/images/logo_network.gif';
 
-            $scope.refresh = function() {
+            $scope.refreshTraffic = function() {
                 appaffinitySvc.getTraffic(function(data) {
                     if (data){
                         $scope.nodes = data;
+                    }
+                });
+            };
+
+            $scope.refreshFlows = function() {
+                appaffinitySvc.getFlows(function(data) {
+                    if (data){
+                        $scope.nodeFlows = data;
                     }
                 });
             };
@@ -31,7 +39,8 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
             $scope.service.Recovery = 'UNPROTECTED';
 
             //load data
-            $scope.refresh();
+            $scope.refreshTraffic();
+            $scope.refreshFlows();
         });
         /*
         appaff.filter('unique', function(){

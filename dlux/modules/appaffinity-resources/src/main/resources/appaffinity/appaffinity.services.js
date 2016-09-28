@@ -80,8 +80,56 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             });
         };
 
+        svc.parseFlow = function(flow) {
+            var output = {};
+            output.id = flow.id;
+
+            var outAction = flow.instructions.instruction[0]['apply-actions'].action[0]['output-action'];
+            output.outPort = outAction['output-node-connector'];
+            if (outAction.timeslot) {
+                output.timeslot = outAction.timeslot;
+            }
+            if (outAction.wavelength) {
+                output.wavelength = outAction.wavelength;
+            }
+
+            output.inPort = flow.match['in-port'];
+
+            return output;
+        }
+
+        svc.parseNode = function(node) {
+            node.rows = 0;
+            var flowList;
+            for (var i = 0; i< node['flow-node-inventory:table'].length; i++) {
+                 if (node['flow-node-inventory:table'][i].id == 0) {
+                     flowList = node['flow-node-inventory:table'][i].flow;
+                 }
+            }
+            var outflows = [];
+            for (var flow in flowList) {
+                outflows.push(svc.parseFlow(flow));
+                node.rows = node.rows + 1;
+            }
+            return outflows;
+        };
+
+
         svc.getFlows= function(cb) {
-            return svc.tMat().get().then(function(mat) {
+            return svc.inventory().get().then(function(inventory) {
+                lst = inventory['nodes']['node'];
+                var nodes = [];
+                for (var data in lst) {
+                    var node = {};
+                    node.id = data.id;
+                    node.flows = svc.parseNode(node);
+                    nodes.push(node);
+                }
+                cb(nodes);
+            }, function(response) {
+                console.log("error with status code " + response.status);
+            }
+        };
 
         svc.submitService = function(service) {
             return svc.affinity().one('connection').post(service)
