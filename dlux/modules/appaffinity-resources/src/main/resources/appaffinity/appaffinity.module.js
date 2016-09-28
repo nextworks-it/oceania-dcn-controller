@@ -26,7 +26,7 @@ define(['angularAMD', 'Restangular', 'app/routingConfig', 'common/general/finish
 
             NavHelperProvider.addControllerUrl('app/appaffinity/appaffinity.controller');
             NavHelperProvider.addToMenu('appaffinity', {
-                "link": "#/appaffinity/index",
+                "link": "#/appaffinity/create",
                 "active": "appaffinity",
                 "title": "Application Affinity",
                 "icon": "icon-exchange",
@@ -37,19 +37,19 @@ define(['angularAMD', 'Restangular', 'app/routingConfig', 'common/general/finish
             });
 
             // Show cross-connections
-            $stateProvider.state('main.appaffinity.index', {
-                url: '/index',
+            $stateProvider.state('main.appaffinity.traffic', {
+                url: '/traffic',
                 access: access.public,
                 views: {
                     '': {
-                        templateUrl: 'src/app/appaffinity/index.tpl.html',
+                        templateUrl: 'src/app/appaffinity/traffic.tpl.html',
                         controller: 'appaffinityCtrl'
                     }
                 }
             });
             // Create cross-connection
-            $stateProvider.state('main.appaffinity.xconncreate', {
-                url: '/appaffinity-create',
+            $stateProvider.state('main.appaffinity.create', {
+                url: '/create',
                 access: access.public,
                 views: {
                     '': {
@@ -59,12 +59,12 @@ define(['angularAMD', 'Restangular', 'app/routingConfig', 'common/general/finish
                 }
             });
             // Delete cross-connection
-            $stateProvider.state('main.appaffinity.xconndelete', {
-                url: '/appaffinity-delete',
+            $stateProvider.state('main.appaffinity.flow', {
+                url: '/flows',
                 access: access.public,
                 views: {
                     '': {
-                        templateUrl: 'src/app/appaffinity/delete.tpl.html',
+                        templateUrl: 'src/app/appaffinity/flow.tpl.html',
                         controller: 'appaffinityCtrl'
                     }
                 }

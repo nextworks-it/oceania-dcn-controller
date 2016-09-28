@@ -15,7 +15,7 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                 });
             };
             $scope.const = {
-                conntypes = [{name: 'Point to point', code: 'POINTTOPOINT'}]
+                conntypes : [{name: 'Point to point', code: 'POINTTOPOINT'}]
             }
             $scope.refresh();
         });
