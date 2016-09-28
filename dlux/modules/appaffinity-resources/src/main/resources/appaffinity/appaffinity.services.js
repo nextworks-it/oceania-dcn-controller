@@ -41,11 +41,11 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                     for (j = 0; j < n; j++) {
                         if (mat[i][j] !== 0){
 
-                            var pSrc = Math.floor(i/W),
+                            var pSrc = Math.floor(i/svc.W),
                             wSrc = i % W,
                             srcId = 'p' + pSrc + '-w' + wSrc;
 
-                            var pDes = Math.floor(j/W),
+                            var pDes = Math.floor(j/svc.W),
                             wDes = j % W,
                             desId = 'p' + pDes + '-w' + wDes;
 
@@ -55,10 +55,16 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                             if (nodes[desId] === undefined) {
                                 nodes[desId] = {id:desId, incoming: [], outgoing: []};
                             }
-                            nodes[srcId].outgoing.push([desId, mat[i][j]]);
                             nodes[desId].incoming.push([srcId, mat[i][j]]);
+                            nodes[srcId].outgoing.push([desId, mat[i][j]]);
+                            ;
                         }
                     }
+                }
+                for (var node in nodes){
+                    var inLen = Object.keys(node.incoming).length,
+                    outLen = Object.keys(node.outgoing).length;
+                    node.rows = inLen + outLen;
                 }
                 cb(nodes);
             },
