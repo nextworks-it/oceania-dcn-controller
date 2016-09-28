@@ -132,7 +132,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
         };
 
         svc.submitService = function(service) {
-            return svc.affinity().one('connection').post(service)
+            return svc.affinity().all('connection').post(service)
         }
         return svc;
     });
