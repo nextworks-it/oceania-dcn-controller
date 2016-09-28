@@ -26,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 
+@CrossOrigin
 @RestController
 @RequestMapping(value="/affinity")
 public class AppAffinityController {
@@ -41,7 +42,6 @@ public class AppAffinityController {
     @Value("${server.port}")
     private String serverPort;
 
-	@CrossOrigin
 	@RequestMapping(value="/connection", method=RequestMethod.POST)
 	@ApiOperation(value = "postConnection", nickname = "Post new Service")
     @ApiResponses(value = { 
@@ -88,7 +88,6 @@ public class AppAffinityController {
         }
 	}
 
-	@CrossOrigin
 	@RequestMapping(value="/connections", method=RequestMethod.GET)
 	@ApiOperation(value = "getConnections", nickname = "get service Id")
     @ApiResponses(value = { 
@@ -101,7 +100,6 @@ public class AppAffinityController {
 		return output;
 	}
 
-	@CrossOrigin
 	@RequestMapping(value="/connection/{connID}", method=RequestMethod.GET)
 	@ApiOperation(value = "getConnectionById", nickname = "Get service status")
     @ApiResponses(value = { 
@@ -117,7 +115,6 @@ public class AppAffinityController {
 		else return output;
 	}
 
-	@CrossOrigin
 	@RequestMapping(value="/connection/{connID}", method=RequestMethod.DELETE)
 	@ApiOperation(value = "deleteConnection", nickname = "Delete service")
     @ApiResponses(value = { 

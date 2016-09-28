@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiResponses;
 
 import org.springframework.http.HttpStatus;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value="/trafficmatrix")
 public class TrafficMatrixController {
@@ -21,7 +22,6 @@ public class TrafficMatrixController {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	@CrossOrigin
 	@RequestMapping(value="/applicationprofile", method=RequestMethod.POST)
 	@ApiOperation(value = "postAppProfile", nickname = "Post an app profile to be added")
     @ApiResponses(value = { 
@@ -40,7 +40,6 @@ public class TrafficMatrixController {
 		}
 	}
 
-	@CrossOrigin
 	@RequestMapping(value="/matrix", method=RequestMethod.GET)
 	@ApiOperation(value = "getMatrix", nickname = "Get the Traffic Matrix")
     @ApiResponses(value = { 

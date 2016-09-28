@@ -11,13 +11,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-
+@CrossOrigin
 @RestController
 public class TranslatorController {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	@CrossOrigin
+
 	@RequestMapping(value="/translate", method=RequestMethod.POST)
 	@ApiOperation(value = "postNetAllocMatrix",
 		nickname = "Post network alocation matrix to be translated")
