@@ -96,7 +96,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             output.inPort = flow.match['in-port'];
 
             return output;
-        }
+        };
 
         svc.parseNode = function(node) {
             node.rows = 0;
@@ -128,7 +128,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 cb(nodes);
             }, function(response) {
                 console.log("error with status code " + response.status);
-            }
+            });
         };
 
         svc.submitService = function(service) {
