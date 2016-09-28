@@ -30,10 +30,12 @@ public class Connection {
 		else connType = type;
 	}
 
+	@JsonProperty("Recovery")
 	public Recovery getRecovery() {
 		return recovery;
 	}
 
+	@JsonProperty("Recovery")
 	public void setRecovery(Recovery inRecovery) {
 		if ( !(inRecovery.equals(Recovery.UNPROTECTED)) )
 			throw new IllegalArgumentException("Unsupported recovery method.");

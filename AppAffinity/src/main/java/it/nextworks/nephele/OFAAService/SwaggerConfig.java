@@ -30,10 +30,10 @@ public class SwaggerConfig {
            "Application Affinity Service API",
            "The API of the Nephele Application Affinity Service.",
            "1.0",
-           "",
+           null,
            new Contact("Marco Capitani", "http://www.nextworks.it", "m.capitani@nextworks.it"),
-           "API License",
-           "API License URL"
+           null,
+           null
        );
    }
 }
