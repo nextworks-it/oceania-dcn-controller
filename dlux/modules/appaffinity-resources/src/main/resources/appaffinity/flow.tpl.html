@@ -23,14 +23,14 @@
         </thead>
         <tbody ng-repeat="item in nodeFlows">
             <tr>
-                <td rowspan="{{item.rows}}">{{item.id}}</td>
+                <td rowspan="{{item.flows.length + 1}}">{{item.id}}</td>
             </tr>
             <tr ng-repeat="flow in item.flows">
                 <td>{{flow.id}}</td>
                 <td>{{flow.inPort}}</td>
                 <td>{{flow.outPort}}</td>
                 <td>{{flow.timeslot ? flow.timeslot : 'N/A'}}</td>
-                <td>{{flow.wavelength ? flow.wavelength : 'N/A'}}</td>
+                <td>{{flow.wavelength !== undefined ? flow.wavelength : 'N/A'}}</td>
             </tr>
         </tbody>
     </table>

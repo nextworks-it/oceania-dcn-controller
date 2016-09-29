@@ -1,74 +1,21 @@
-/*PLUGINS importing*/
-@import 'assets/js/codemirror/lib/codemirror.less';
-@import 'assets/js/codemirror/theme/eclipse.less';
-@import 'assets/js/codemirror/theme/eclipse-disabled.less';
-@import 'assets/js/codemirror/addon/hint/show-hint.less';
-/*PLUGINS importing END*/
-
-@iconsNewRootPath : '../src/app/yangui/assets/images/';
-
-/******** WINDOW SCROLLBARS *****/
-::-webkit-scrollbar {
-  width: 13px;
-  height: 13px;
-}
-
-::-webkit-scrollbar-corner {
-  background: #000;
-}
-
-::-webkit-scrollbar-corner:window-inactive {
-  background: #fff;
-}
-
-::-webkit-scrollbar-track-piece:disabled {
-  display: none !important;
-}
-
-::-webkit-scrollbar-button:disabled {
-  display: none !important;
-}
-
-::-webkit-scrollbar-track:disabled {
-  margin: 6px;
-}
-
-/* Horizontal Scrollbar Styles */
-
-::-webkit-scrollbar:horizontal {
-  background: #b3b2b3;
-}
-
-::-webkit-scrollbar-thumb:horizontal {
-  background: #807f80;
-  min-width: 20px;
-}
-
-/* Vertical Scrollbar Styles */
-
-::-webkit-scrollbar:vertical {
-  background: #b3b2b3;
-}
-
-
-::-webkit-scrollbar-thumb:vertical {
-  background: #807f80;
-  min-height: 20px;
-}
-/******** WINDOW SCROLLBARS END *****/
-
 .simpleContainer {
     border: 1px solid #7a7a7a;
     margin: 5px;
-    padding: 10px;
-    z-index: 11;
+    padding: 5px;
+    z-index: 10;
     width:auto;
     position: relative;
 
     &.treeContainer{
       height: 450px;
+      margin-top: 0px;
       position: relative;
+      z-index: 11;
     }
+}
+
+.overflow-visible{
+  overflow: visible;
 }
 
 /*.previewContainer {
@@ -298,115 +245,57 @@ input[type="file"].upload-collection{
 
 
 /* --------------------------------------------------------------------------------- YANG UI */
-.yangUIwrapper{
+.yangUIwrapper {
 
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
+  .alert {
 
-  .alert{
-    .roundedCorners(0px);
-
-    .close{
-      span{
+    .close {
+      span {
         color: @text-color;
       }
     }
   }
 
-  .btn, .form-control{
-    .roundedCorners(3px);
-  }
+}
 
-  input[type=text].form-control{
-    .roundedCorners(0px);
-  }
-
-  .btn-orange{
-    background: orange;
-    color: #fff;
-    font-weight: bold;
-  }
-
-  button.btn-like-tab{
-    //line-height: 1em;
-    outline: 0 none;
-    //height: 30px;
-    margin: 0;
-    border: none;
-    font-weight: bold;
-    background: transparent;
-    .transition(100ms);
-    color: #fff;
-    margin-bottom: 2px;
-    padding-top: 0;
-
-    &:hover, &.active, &.btn-selected{
-      border-bottom: 2px solid orange;
-      margin-bottom: 0px;
-    }
-
-  }
-
-  li.btn-like-tab{
-    line-height: 1em;
-    outline: 0 none;
-    margin: 0;
-    border: none;
-    font-weight: bold;
-    .transition(100ms);
-    color: buttontext;
-    background: transparent;
-
-    &.btn-selected, &:hover{
-      border-bottom: 2px solid orange;
-    }
-  }
-
-  .form-control {
-    &.inline {
-      width: 100px;
-      display: inline;
-    }
-  }
-
-  .btn-primary{
-    font-weight: bold;
-    background: #fff;
-    .roundedCorners(0px);
-    .transition(100ms);
-    color: buttontext;
-    border-bottom: 3px solid orange;
-    border-width: 0 0 3px 0;
-
-    &:hover{
-      background: orange;
-      color: #fff;
-    }
-
-    &.btn-selected{
-      background: #ffa500;
-    }
-
-    &.disabled, &[disabled] {
-      background: #ebecec;
-      cursor: not-allowed;
-      pointer-events: none;
-      opacity: 0.65;
-      filter: alpha(opacity=65);
-      -webkit-box-shadow: none;
-      box-shadow: none;
-    }
-
-    &:focus {
-      background: #ebecec;
-      color: buttontext;
-    }
+.form-control {
+  &.inline {
+    width: 100px;
+    display: inline;
   }
 }
 
+.btn-primary{
+  border: none;
+  font-weight: bold;
+  background: #ebecec;
+  .transition(100ms);
+  color: buttontext;
 
+  &:hover{
+    background: orange;
+    color: buttontext;
+  }
+
+  &.btn-selected{
+    background: #ffa500;
+  }
+
+  &.disabled, &[disabled] {
+    background: #ebecec;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  &:focus { 
+      background: #ebecec;
+      color: buttontext;
+  }
+}
 
 .leaflist{
     .leafListValue{
@@ -429,15 +318,6 @@ input[type="file"].upload-collection{
 }
 
 .mainTabsWrapper{
-
-  .simpleContainer{
-    margin: 5px 0;
-
-    &.treeContainer{
-      margin-top: 0;
-    }
-  }
-
   .nav-tabs{
     border-bottom: 0;
     margin: 0 5px;
@@ -466,38 +346,56 @@ input[type="file"].upload-collection{
 
 .treeWrapper{
   height: calc(~"100% - 20px");
-  margin: 10px 0;
-
   .treeList{
     margin: 10px 0;
     height: calc(~"100% - 40px");
-    overflow-y: auto;
+    overflow-y: scroll;
+    position: relative;
   }
 }
 
 .actionBtnApiPathWrapper{
-
-  &.simpleContainer{
-    margin: 5px 0;
-  }
-
-  &.is-sticky{
-    width: 100%;
-    .boxSizing;
-    padding: 0 20px 0 270px;
-    right: 0;
-    z-index: 100;
-    margin: 0;
-    border: 0;
+    &.is-sticky{
+        width: 100%;
+      .boxSizing;
+      padding: 0 20px 0 270px;
+        right: 0;
+        z-index: 100;
+      margin: 0;
+      border: 0;
+      div.in{
+          border: 1px solid #7a7a7a;
+            -webkit-border-radius: 0 0 5px 5px;
+            border-radius: 0 0 5px 5px;
+            background: #414042;
+            padding-left: 15px;
+        }
+    }
 
     div.in{
-      border: 1px solid #7a7a7a;
-      background: #414042;
-      padding-left: 15px;
-      padding-top: 10px;
-      }
-  }
+        padding: 10px;
+    }
 
+  .actionButtons{
+      white-space: nowrap;
+      overflow-x: scroll;
+      max-width: 100%;
+      padding-bottom: 10px;
+  }
+}
+
+.selSubApiPath{
+    
+    // .inlineBlock;
+    display: inline;
+
+    input[type="text"]{
+        width: 150px;
+        display: inline!important;
+        margin-left: 5px;
+        height: 26px;
+    }
+    
 }
 
 label.classic{
@@ -505,80 +403,27 @@ label.classic{
   min-width: 120px;
 }
 
-.actionButtons, .api{
-  white-space: nowrap;
-  overflow-x: auto;
-  max-width: 100%;
-  //padding-bottom: 10px;
-  height: 50px;
+.actionButtons{
 
-  input[type="text"]{
-    width: 150px;
-    display: inline!important;
-    margin: 0 5px;
-    height: 34px;
-    .roundedCorners(0px);
-    border: 0;
-  }
   
   label.classic{
     min-width: 90px;
   }
 
-  span.input-sm{
+  select.input-sm{
+    height: 26px;
     line-height: 34px;
-    .inlineBlock;
-    padding: 0 10px;
+    vertical-align: top;
   }
 
-  .input-sm{
-    height: 34px;
-    display: inline;
-    line-height: 34px;
-    background: @text-color;
-    color: #fff;
-    border: 0;
-    width: 100px;
-    -webkit-border-radius: 3px 0 0 3px;
-    border-radius: 3px 0 0 3px;
-  }
-
-  .btn{
-    display: inline;
-  }
-
-  .pathWrapper{
-    //display: inline;
-    .inlineBlock;
-    background: #58595B;
-    padding: 0 5px;
-    margin-right: 5px;
-    height: 34px;
-    -webkit-border-radius: 0px 3px 3px 0px;
-    border-radius: 0px 3px 3px 0px;
-
-    input[type=text]{
-      border: 2px solid #ebecec;
-    }
-
-    .pathElem{
-      line-height: 33px;
-    }
-  }
+  // button{
+  //   margin-top: 3px;
+  // }
 
   div.in{
     padding: 0 10px;
   }
 }
-
-//.api{
-//  .input-sm{
-//    padding-top: 0;
-//    padding-bottom: 0;
-//    font-weight: bold;
-//    width: auto;
-//  }
-//}
 
 .dataPopupWrapper{
   position: relative;
@@ -619,13 +464,11 @@ div.popUpWrapperFix{
   left: 50%;
   margin-left: -225px;
   margin-top: -127px;
-  z-index: 5;
+  z-index: 1;
 }
 
 div.requestActions{
   width: 150px;
-  position: relative;
-
   .historyRequestBox{
     position: relative;
     
@@ -831,19 +674,13 @@ div.mountPoints{
       }
 
       .scroll{
-        overflow-y: auto;
-        position: relative;
+        overflow-y: scroll;
         height: calc(~"100% - 50px"); 
       }
 
 
       .trdiv{
         border-top: 2px solid #dddddd;
-
-        &:first-child{
-          border-top: 0;
-        }
-
         &.no-border{
           border: 0;
         }
@@ -857,77 +694,40 @@ div.mountPoints{
         &.pre-div{
           position: relative;
           border: 0;
-          margin: 10px 0 20px;
+          margin-bottom: 20px;
           padding: 0px 10px;
-
           button.close{
             color: #000;
             right: 30px;
             top: 10px;
-            z-index: 3;
-            width: 15px;
-            height: 15px;
-            background: transparent url('@{iconsNewRootPath}icon-close-small.png') no-repeat center center;
-            .opacityDeph(1);
-
-            &:before{
-              content: "";
-            }
-
-            &:hover{
-              background-position: center center!important;
-              .opacityDeph(1);
-            }
           }
-
           button.white-cross{
             color: #fff;
           }
 
-          .textareaWrapper{
-            position: relative;
-            border: 1px solid silver;
+          .api{
+            padding: 10px;
 
-            span{
-              color: auto;
-            }
-            
-            pre span{
-                color: auto;
-            }
-            
-            
-            textarea{
-              width: 100%;
-              min-height: 50px;
-              overflow-y: scroll;
-              height: 200px;
-              max-width: 100%;
-            }
-
-            .paramsBox{
-              position: absolute;
-              right: 55px;
-              top: 12px;
-
-              z-index: 4;
-              color: @text-color;
-
-              .line{
-                color: @text-color;
-                padding: 4px 30px 4px 20px;
-                background: #cdcdce;
-                margin-bottom: 1px;
-                font-size: 12px;
-              }
-              
-              span{
-                color: @text-color;
-              }
-
+            input[type=text]{
+              width: 100px;
+              .inlineBlock;
+              margin-left: 5px;
+              vertical-align: middle;
             }
           }
+
+          .textareaWrapper{
+            position: relative;
+            
+          textarea{
+            width: 100%;
+            min-height: 50px;
+            overflow-y: scroll;
+            height: 200px;
+            max-width: 100%;
+          }
         }
+      }
       }
 
       .rh-col1{
@@ -1023,6 +823,7 @@ div.mountPoints{
   overflow: hidden;
   background: #393939;
   border: 1px solid #7a7a7a;
+  .roundedCorners(5px);
   padding: 20px;
   z-index: 15;
   button.close{
@@ -1030,7 +831,6 @@ div.mountPoints{
     top: 5px;
     right: 5px;
     color: #C4C4C4;
-    z-index: 1;
   }
   .graph-frame{
     width: 100%!important;
@@ -1446,28 +1246,40 @@ button, div{
 /* --------------------------------------------------------------------------------- YANG UI TYPE UNION */
 .unionType.tabs{
   margin: 10px 0;
-
   .nav-tabs{
     border: 0;
-
     li{
-      margin-right: 2px;
-
-      a{
-        border: 0;
+      margin: 0 2px;
+      background-color: #ebecec!important;
+      border: 0;
+      &.btn-selected{
+        background: orange!important;
       }
-
-      &.btn-selected, &:hover{
-
-        a{
-          background: transparent;
+      &.btn-selected a{
+        background: orange!important;
+      }
+      &:hover{
+        background: orange!important;
+      }
+      &:hover a{
+        background: orange!important;
+      }
+      a{
+        background-color: #ebecec!important;
+        .roundedCorners(4px);
+        border: 0;
+        padding-top: 2px;
+        span{
+          color: #000!important;
         }
       }
     }
   }
-
   div.tab-content{
-    margin: 0;
+    border: 2px solid #ebecec;
+    .boxSizing;
+    padding: 22px 10px 10px;
+    margin-top: -12px;
   }
 }
 /* --------------------------------------------------------------------------------- YANG UI TYPE UNION - END */
@@ -1505,7 +1317,58 @@ button, div{
   }
 }
 
+button.btn-like-tab{
+  line-height: 1em;
+  outline: 0 none;
+  height: 26px;
+  margin: 0;
+  border: none;
+  font-weight: bold;
+  background: #ebecec;
+  .transition(100ms);
+  color: buttontext;
 
+  &:hover{
+    background: orange;
+    color: buttontext;
+  }
+
+  &.active {
+    background: orange;
+  }
+
+  &.btn-selected{
+    background: #ffa500;
+  }
+}
+
+li.btn-like-tab{
+  line-height: 1em;
+  outline: 0 none;
+  // height: 26px;
+  margin: 0;
+  border: none;
+  font-weight: bold;
+  .transition(100ms);
+  color: buttontext;
+  border-radius: 4px;
+
+  &:hover{
+    background-color: orange;
+    color: buttontext;
+  }
+
+  &.active {
+    /*background: orange;*/
+  }
+
+  &.btn-selected{
+    /*background: #ffa500;*/
+    background-color: transparent;
+    border: 1px solid #fff;
+    border-bottom: 0;
+  }
+}
 
 .ui-resizable-handle {
   &.ui-resizable-se{

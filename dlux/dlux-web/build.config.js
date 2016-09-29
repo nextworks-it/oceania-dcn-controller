@@ -24,17 +24,15 @@ module.exports = {
     jsunit: [ 'src/**/*.spec.js' ],
     js_common: [ 'src/common/**/*.js', '!src/common/**/*.spec.js', '!src/common/assets/**/*.js'  ],
     js_app: [ 'src/app/**/*.js', '!src/app/**/*.spec.js', '!src/app/assets/**/*.js'  ],
-    app_assets: [ '! src/app/yangui/assets/js/**/*.js' ],
 
     atpl: [ 'src/app/**/*.tpl.html' ],
     ctpl: [ 'src/common/**/*.tpl.html' ],
 
     html: [ 'src/index.html'],
     less: 'src/less/main.less',
-    css: ['src/app/**/*.css'],
-    lang: ['src/app/**/assets/data/*.json'],
-    templates: ['src/**/*.tpl.html'],
-    images: ['src/app/**/assets/images/*.*']
+    graph_path: 'src/app/graph',
+    graph_entry_point: 'index.js',
+    templates: ['src/**/*.tpl.html']
   },
 
   /**
@@ -69,6 +67,9 @@ module.exports = {
       'vendor/bootstrap/js/dropdown.js',
       'vendor/angular/angular.js',
       'vendor/requirejs/requirejs.js',
+      'vendor/angularAMD/angularAMD.js',
+      'vendor/angularAMD/ngload.js',
+      'vendor/requirejs-domready/domReady.js',
       'vendor/ocLazyLoad/dist/ocLazyLoad.js',
       'vendor/angular-css-injector/angular-css-injector.js',
       'vendor/angular-route/angular-route.js',
@@ -90,7 +91,6 @@ module.exports = {
       'vendor/footable/dist/footable.paginate.min.js',
       'vendor/footable/dist/footable.sort.min.js',
       'vendor/angular-translate/angular-translate.min.js',
-      'vendor/angular-sanitize/angular-sanitize.min.js',
       'vendor/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
       'vendor/ng-slider/dist/ng-slider.min.js',
       'vendor/sigma/sigma.min.js',
@@ -98,9 +98,7 @@ module.exports = {
       'vendor/sigma/plugins/sigma.layout.forceAtlas2.min.js',
       'vendor/sigma/plugins/sigma.plugins.dragNodes.min.js',
       'vendor/sigma/plugins/sigma.renderers.customShapes.min.js',
-      'vendor/ng-clip/src/ngClip.js',
-      'vendor/zeroclipboard/dist/ZeroClipboard.js',
-      'vendor/angular-translate-loader-partial/angular-translate-loader-partial.js',
+      'vendor/pixi/bin/pixi.js'
     ],
     css: [
     'vendor/ng-grid/ng-grid.min.css',
@@ -118,7 +116,7 @@ module.exports = {
     'vendor/select2/select2x2.png'
     ],
     assets: [
-    'vendor/zeroclipboard/dist/ZeroClipboard.swf'
+    
     ],
     font: [
       'vendor/font-awesome/font/*',

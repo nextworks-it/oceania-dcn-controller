@@ -2,7 +2,7 @@ define(['app/yangvisualizer/yangvisualizer.module', 'app/yangvisualizer/yangvisu
 
   yangvisualizer.register.controller('yangvisualizerCtrl', ['$scope', '$rootScope', '$http', 'YangConfigRestangular', 'yangUtils','visualizerUtils', 'DesignVisualizerFactory', 'yvConstants',
     function ($scope, $rootScope, $http, Restangular, yangUtils, visualizerUtils, DesignVisualizerFactory, yvConstants) {
-      $rootScope['section_logo'] = 'logo_yangvis';
+      $rootScope['section_logo'] = 'assets/images/logo_yangui.gif';
 
       $scope.currentPath = './assets/views/yangvisualizerCtrl';
       $scope.topologyData = { nodes: [], edges: []};
@@ -10,7 +10,6 @@ define(['app/yangvisualizer/yangvisualizer.module', 'app/yangvisualizer/yangvisu
       $scope.filteredNodes = [];
       $scope.selectedProperty = null;
       $scope.selectedNode = null;
-      $scope.isSelectedSpecificType = false;
       $scope.childrenNodes = {
         list: [],
         show: true
@@ -140,7 +139,7 @@ define(['app/yangvisualizer/yangvisualizer.module', 'app/yangvisualizer/yangvisu
           $scope.childrenNodes.list = selNode.node.children.length ? selNode.node.children : [];
           $scope.parentNodes.list = visualizerUtils.getParentNodes(selNode.node);
           visualizerUtils.updateSelectedEdgesColors(edges, selNode);
-          selNode.size = selNode.size === 100 ? 100 : selNode.node.parent !== null ? 10 : 20;
+          selNode.size = selNode.node.parent !== null ? 10 : 20;
           $scope.sigma.refresh();
           $scope.$apply();
       };
@@ -270,17 +269,9 @@ define(['app/yangvisualizer/yangvisualizer.module', 'app/yangvisualizer/yangvisu
           $('.yangVisualizerWrapper div.viewNav li span').removeClass('active').parent().eq(0).find('span').addClass('active');
           $scope.$broadcast('YV_MODEL_CHANGE');
         }
-
-        $scope.isSelectedSpecificType = false;
       };
 
       $scope.triggerExpanded = function(nodes,cbk){
-        if($('#graph-container').hasClass('col-md-12')){
-            $('#graph-container').removeClass('col-md-12').addClass('col-md-6');
-        }else{
-            $('#graph-container').removeClass('col-md-6').addClass('col-md-12');
-        }
-
         nodes.show = !nodes.show;
 
         if ( angular.isFunction(cbk) ){
@@ -298,40 +289,7 @@ define(['app/yangvisualizer/yangvisualizer.module', 'app/yangvisualizer/yangvisu
         
         $scope.legend = visualizerUtils.setNodesColor(property, $scope.sigma.graph.nodes(), $scope.currentTopologyNode);
         $scope.sigma.refresh();
-      };
 
-      $scope.clickLegend = function(value, key){
-
-          if($scope.selectedProperty !== 'default'){
-              var wasChanged = false;
-
-              $scope.sigma.graph.nodes().forEach(function(node){
-                  if(node.node[$scope.selectedProperty] === key){
-                      node.size = 100;
-                      wasChanged = true;
-                  }else{
-                      node.size = 10;
-                  }
-              });
-
-              if(!wasChanged){
-                  $scope.resetSize();
-                  $scope.isSelectedSpecificType = false;
-              }else{
-                  $scope.isSelectedSpecificType = true;
-              }
-
-              $scope.sigma.refresh();
-          }
-      };
-
-      $scope.resetSize = function(){
-          $scope.sigma.graph.nodes().forEach(function(node){
-              node.size = node.parent === null ? 20 : node.expand ? 12 : 7;
-          });
-
-          $scope.isSelectedSpecificType = false;
-          $scope.sigma.refresh();
       };
 
       $scope.triggerResize = function(){

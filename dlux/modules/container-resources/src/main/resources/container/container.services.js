@@ -1,14 +1,14 @@
 define(['app/container/container.module', 'Restangular'], function(container) {
 
 
-  container.factory('ContainerRestangular', function(Restangular, ENV) {
+  container.register.factory('ContainerRestangular', function(Restangular, ENV) {
     return Restangular.withConfig(function(RestangularConfig) {
       RestangularConfig.setBaseUrl(ENV.getBaseURL("AD_SAL"));
     });
   });
 
 
-  container.factory('ContainerSvc', function(ContainerRestangular) {
+  container.register.factory('ContainerSvc', function(ContainerRestangular) {
     var svc = {
       base: function() {
         return ContainerRestangular.one('controller/nb/v2').one('containermanager');

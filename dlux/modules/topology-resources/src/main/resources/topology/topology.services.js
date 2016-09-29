@@ -1,12 +1,12 @@
 define(['app/topology/topology.module'], function(topology) {
 
-  topology.factory('TopologyRestangular', function(Restangular, ENV) {
+  topology.register.factory('TopologyRestangular', function(Restangular, ENV) {
     return Restangular.withConfig(function(RestangularConfig) {
       RestangularConfig.setBaseUrl(ENV.getBaseURL("MD_SAL"));
     });
   });
 
-  topology.factory('NetworkTopologySvc', function(TopologyRestangular) {
+  topology.register.factory('NetworkTopologySvc', function(TopologyRestangular) {
       var svc = {
           base: function() {
               return TopologyRestangular.one('restconf').one('operational').one('network-topology:network-topology');

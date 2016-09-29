@@ -1,44 +1,46 @@
 define(['common/topbar/topbar.module'], function(topbar) {
 
-    topbar.controller('TopbarCtrl', function() {
+    topbar.register.controller('TopbarCtrl', function() {
         $('#toggleMenu').click(function(e) {
-            e.preventDefault();
-            $('#wrapper').toggleClass('toggled');
+          e.preventDefault();
+          $('#wrapper').toggleClass('toggled');
         });
     });
 
-    topbar.controller('topBarTasksCtrl', function($scope, taskFactory) {
+    topbar.register.controller('topBarTasksCtrl',function ($scope, taskFactory) {
         $scope.tasks = taskFactory.getTaskData();
     });
 
-    topbar.controller('topBarNotifsCtrl', function($scope, notifsFactory) {
+    topbar.register.controller('topBarNotifsCtrl',function ($scope, notifsFactory) {
         $scope.notifs = notifsFactory.getNotifsData();
-        $scope.isValid = function(value) {
+        $scope.isValid = function (value) {
             if (angular.isUndefined(value) || value === null) {
                 return false;
-            } else {
+            }
+            else {
                 return true;
             }
         };
     });
 
-    topbar.controller('topBarMessagesCtrl', function($scope, messageFactory) {
+    topbar.register.controller('topBarMessagesCtrl',function ($scope, messageFactory) {
         $scope.messages = messageFactory.getMessageData();
-        $scope.isValid = function(value) {
+        $scope.isValid = function (value) {
             if (angular.isUndefined(value) || value === null) {
                 return false;
-            } else {
+            }
+            else {
                 return true;
             }
         };
     });
 
     // the authorization module is not converted yet
-    topbar.controller('topBarUserMenuCtrl', function($scope, $cookieStore, /* Auth,*/ $window) {
-        $scope.logOut = function() {
+    topbar.register.controller('topBarUserMenuCtrl', function ($scope, $cookieStore, /* Auth,*/ $window) {
+        $scope.logOut = function () {
             /*Auth.logout(
             function(res) {
-                $window.location.href = 'login.html';
+                $window.location.href = 'login.html'; 
             });*/
 
         };

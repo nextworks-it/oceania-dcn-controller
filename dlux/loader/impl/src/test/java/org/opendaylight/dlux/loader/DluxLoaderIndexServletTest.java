@@ -27,12 +27,9 @@ public class DluxLoaderIndexServletTest {
 
         DluxLoaderIndexServlet indexServlet = new DluxLoaderIndexServlet(dluxLoader);
         Properties properties = indexServlet.getProp();
-        String defineJS = properties.getProperty("defineJS");
-        Assert.assertNotNull(defineJS); 
-        Assert.assertTrue(defineJS.contains("'angular',"));
         String requireJS = properties.getProperty("requireJS");
         Assert.assertNotNull(requireJS);
-        Assert.assertTrue(requireJS.contains("common/config/env.module"));
+        Assert.assertTrue(requireJS.contains("'angularAMD',"));
         String angularJS = properties.getProperty("angularJS");
         Assert.assertNotNull(angularJS);
         Assert.assertTrue(angularJS.contains("'ui.router',"));

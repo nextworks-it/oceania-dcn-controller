@@ -1,14 +1,14 @@
 var modules = [
   'common/sigmatopology/sigmatopology.module',
-  'sigma',
-  'sigma-parsers-gexf',
-  'sigma-forceAtlas2',
+  'sigma', 
+  'sigma-parsers-gexf', 
+  'sigma-forceAtlas2', 
   'sigma-dragNodes',
   'sigma-customShapes'
 ];
 
 define(modules, function(topologyModule) {
-  topologyModule.directive('sigmaTopology', ['$timeout',function($timeout) {
+  topologyModule.register.directive('sigmaTopology', function() {
     // constants
     return {
       restrict: 'E',
@@ -74,74 +74,70 @@ define(modules, function(topologyModule) {
 
             if(ntdata){
 
-              $timeout(function(){
+              if ( sigmaIstance !== null ) {
+                sigmaIstance.kill();
+              }
+              var timeToStopAtlas;
 
-                  if ( sigmaIstance !== null ) {
-                      sigmaIstance.kill();
+              // Instantiate sigma:
+              Sigma.renderers.def = Sigma.renderers.canvas;
+
+              Sigma.prototype.resetZoom = function(camera){
+                  if(typeof camera == "undefined"){
+                      camera = this.cameras[0];
                   }
-                  var timeToStopAtlas;
+                  camera.ratio = 1;
+                  camera.x = 0;
+                  camera.y = 0;   
+                  this.refresh();
+              };
 
-                  // Instantiate sigma:
-                  Sigma.renderers.def = Sigma.renderers.canvas;
+              // console.info('sigma topology data', ntdata, $scope.topologyData);
+              sigmaIstance = new Sigma({
+                graph: {
+                  nodes: $scope.topologyData.nodes ? $scope.topologyData.nodes : [],
+                  edges: $scope.topologyData.links
+                },
+                container: 'graph-container',
+                settings: $scope.settings ? $scope.settings : defaulSettings
+              });
 
-                  Sigma.prototype.resetZoom = function(camera){
-                      if(typeof camera == "undefined"){
-                          camera = this.cameras[0];
-                      }
-                      camera.ratio = 1;
-                      camera.x = 0;
-                      camera.y = 0;
-                      this.refresh();
-                  };
+              if ( $scope.settingsAtlas ) {
+                $scope.settingsAtlas.slowDown = getSlowDownNum($scope.topologyData.nodes.length);
+              }
 
-                  // console.info('sigma topology data', ntdata, $scope.topologyData);
-                  sigmaIstance = new Sigma({
-                      graph: {
-                          nodes: $scope.topologyData.nodes ? $scope.topologyData.nodes : [],
-                          edges: $scope.topologyData.links
-                      },
-                      container: 'graph-container',
-                      settings: $scope.settings ? $scope.settings : defaulSettings
-                  });
+              var defaultConfigAtlas = {
+                    adjustSizes: true,
+                    // scalingRatio: 10,
+                    gravity: 1,
+                    slowDown: getSlowDownNum($scope.topologyData.nodes.length)
+                  },
+                  configAtlas = $scope.settingsAtlas ? $scope.settingsAtlas : defaultConfigAtlas;
 
-                  if ( $scope.settingsAtlas ) {
-                      $scope.settingsAtlas.slowDown = getSlowDownNum($scope.topologyData.nodes.length);
-                  }
+              if ( $scope.customShapes ) {
+                CustomShapes.init(sigmaIstance);
+                sigmaIstance.refresh();
+              }
 
-                  var defaultConfigAtlas = {
-                          adjustSizes: true,
-                          // scalingRatio: 10,
-                          gravity: 1,
-                          slowDown: getSlowDownNum($scope.topologyData.nodes.length)
-                      },
-                      configAtlas = $scope.settingsAtlas ? $scope.settingsAtlas : defaultConfigAtlas;
+              var dragListener = null;
 
-                  if ( $scope.customShapes ) {
-                      CustomShapes.init(sigmaIstance);
-                      sigmaIstance.refresh();
-                  }
+              if ( $scope.dragNodes ) {
+                dragListener = Sigma.plugins.dragNodes(sigmaIstance, sigmaIstance.renderers[0]);
+              }
 
-                  var dragListener = null;
+              if ( !$scope.topologyData.disabledAtlas ) {
+                sigmaIstance.startForceAtlas2(configAtlas);
+              }
 
-                  if ( $scope.dragNodes ) {
-                      dragListener = Sigma.plugins.dragNodes(sigmaIstance, sigmaIstance.renderers[0]);
-                  }
-
-                  if ( !$scope.topologyData.disabledAtlas ) {
-                      console.log('atlas');
-                      sigmaIstance.startForceAtlas2(configAtlas);
-                  }
-
-                  if ( $scope.topologyCustfunc && angular.isFunction($scope.topologyCustfunc) ) {
-                      $scope.topologyCustfunc(sigmaIstance, getSlowDownNum, dragListener);
-                  }
-
-              }, ntdata.delay ? ntdata.delay : 0);
+              if ( $scope.topologyCustfunc && angular.isFunction($scope.topologyCustfunc) ) {
+                $scope.topologyCustfunc(sigmaIstance, getSlowDownNum, dragListener);
+              }
 
             }
           });
 
           $scope.$watch('triggerResizeSigma', function () {
+
               var topoData = {
                     nodes: [],
                     links: []
@@ -154,7 +150,7 @@ define(modules, function(topologyModule) {
               }
 
               // Instantiate sigma:
-              Sigma.renderers.def = Sigma.renderers.canvas;
+              sigma.renderers.def = sigma.renderers.canvas;
 
               sigmaIstance = new Sigma({
                 graph: {
@@ -164,8 +160,6 @@ define(modules, function(topologyModule) {
                 container: 'graph-container',
                 settings: $scope.settings ? $scope.settings : defaulSettings
               });
-
-
 
               if ( $scope.customShapes ) {
                 CustomShapes.init(sigmaIstance);
@@ -184,7 +178,8 @@ define(modules, function(topologyModule) {
               }
 
           });
+
       }
     };
-  }]);
+  });
 });

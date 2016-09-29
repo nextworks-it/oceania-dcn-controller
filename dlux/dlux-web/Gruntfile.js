@@ -9,6 +9,7 @@ module.exports = function ( grunt ) {
    * Load required Grunt tasks. These are installed based on the versions listed
    * in `package.json` when you do `npm install` in this directory.
    */
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -170,7 +171,7 @@ module.exports = function ( grunt ) {
       build_appjs: {
         files: [
           {
-            src: [ '<%= app_files.js %>', '<%= app_files.css %>', '<%= app_files.lang %>' ],
+            src: [ '<%= app_files.js %>' ],
             dest: '<%= build_dir %>/',
             cwd: '.',
             expand: true
@@ -191,16 +192,6 @@ module.exports = function ( grunt ) {
         files: [
           {
             src: [ '<%= vendor_files.js %>' ],
-            dest: '<%= build_dir %>/',
-            cwd: '.',
-            expand: true
-          }
-        ]
-      },
-      build_appimages: {
-        files: [
-          {
-            src: [ '<%= app_files.images %>' ],
             dest: '<%= build_dir %>/',
             cwd: '.',
             expand: true
@@ -248,6 +239,17 @@ module.exports = function ( grunt ) {
           }
         ]
       }
+    },
+    browserify: {
+        dist: {
+            src: ['src/app/graph/index.js'],
+            dest: 'src/assets/js/graphRenderer.js',
+            options: {
+              browserifyOptions: {
+                standalone: 'DLUX'
+              }
+            }
+        }
     },
 
     /**
@@ -359,8 +361,7 @@ module.exports = function ( grunt ) {
      */
     jshint: {
       src: [
-        '<%= app_files.js %>',
-        '<%= app_files.app_assets %>',
+        '<%= app_files.js %>'
       ],
       test: [
         '<%= app_files.jsunit %>'
@@ -558,7 +559,7 @@ module.exports = function ( grunt ) {
        */
       jssrc: {
         files: [
-          '<%= app_files.js %>', '<%= app_files.lang %>'
+          '<%= app_files.js %>'
         ],
         tasks: [ 'jshint:src', 'karma:unit:run', 'copy:build_appjs' ]
       },
@@ -590,7 +591,7 @@ module.exports = function ( grunt ) {
           '<%= app_files.atpl %>',
           '<%= app_files.ctpl %>'
         ],
-        tasks: ['copy:copy_template']/*[ 'html2js' ]*/
+        tasks: [ 'html2js' ]
       },
 
       /**
@@ -644,9 +645,9 @@ module.exports = function ( grunt ) {
    * The `build` task gets your app ready to run for development and testing.
    */
   grunt.registerTask( 'common', [
-      'clean', 'html2js', 'jshint', 'concat:build_css', 'less:development',
-      'copy:build_app_assets', 'copy:build_vendor_assets',
-      'copy:build_appjs', 'copy:copy_template', 'copy:build_vendorimages', 'copy:build_appimages', 'copy:build_vendorjs', 'copy:build_vendorcss', 'karmaconfig', 'index:build'
+      'clean', 'html2js', 'jshint', 'less:development',
+      'concat:build_css', 'browserify:dist', 'copy:build_app_assets', 'copy:build_vendor_assets',
+      'copy:build_appjs', 'copy:copy_template', 'copy:build_vendorimages', 'copy:build_vendorjs', 'copy:build_vendorcss', 'karmaconfig', 'index:build'
   ]);
 
   grunt.registerTask( 'build', ['replace:development', 'common', 'karma:continuous']);

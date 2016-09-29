@@ -4,56 +4,57 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>odlparent</artifactId>
-    <version>1.6.2-Beryllium-SR2</version>
+    <version>1.5.4-Lithium-SR4</version>
     <relativePath></relativePath>
   </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opendaylight.dlux</groupId>
     <artifactId>dlux-parent</artifactId>
-    <version>0.3.2-Beryllium-SR2</version>
+    <version>0.2.4-Lithium-SR4</version>
     <packaging>pom</packaging>
     <name>dlux</name> <!-- Used by Sonar to set project name -->
 
     <properties>
       <sitedeploy>dav:http://nexus.opendaylight.org/content/sites/site</sitedeploy>
-      <commons.opendaylight.version>1.6.2-Beryllium-SR2</commons.opendaylight.version>
-      <loader.resources.version>0.2.2-Beryllium-SR2</loader.resources.version>
-      <core.resources.version>0.2.2-Beryllium-SR2</core.resources.version>
-      <node.resources.version>0.2.2-Beryllium-SR2</node.resources.version>
-      <connection_manager.resources.version>0.2.2-Beryllium-SR2</connection_manager.resources.version>
-      <container.resources.version>0.2.2-Beryllium-SR2</container.resources.version>
-      <flow.resources.version>0.2.2-Beryllium-SR2</flow.resources.version>
-      <network.resources.version>0.2.2-Beryllium-SR2</network.resources.version>
-      <topology.resources.version>0.2.2-Beryllium-SR2</topology.resources.version>
-      <appaffinity.resources.version>0.2.2-Beryllium-SR2</appaffinity.resources.version>
-      <yangui.resources.version>0.2.2-Beryllium-SR2</yangui.resources.version>
-      <yangvisualizer.resources.version>0.2.2-Beryllium-SR2</yangvisualizer.resources.version>
-      <common.authentication.resources.version>0.2.2-Beryllium-SR2</common.authentication.resources.version>
-      <common.general.resources.version>0.2.2-Beryllium-SR2</common.general.resources.version>
-      <common.navigation.resources.version>0.2.2-Beryllium-SR2</common.navigation.resources.version>
-      <common.layout.resources.version>0.2.2-Beryllium-SR2</common.layout.resources.version>
-      <common.topbar.resources.version>0.2.2-Beryllium-SR2</common.topbar.resources.version>
-      <common.login.resources.version>0.2.2-Beryllium-SR2</common.login.resources.version>
-      <common.yangutils.resources.version>0.2.2-Beryllium-SR2</common.yangutils.resources.version>
-      <common.sigmatopology.resources.version>0.2.2-Beryllium-SR2</common.sigmatopology.resources.version>
-      <restconf.version>1.3.2-Beryllium-SR2</restconf.version>
-      <l2switch.version>0.3.2-Beryllium-SR2</l2switch.version>
-      <mdsal.version>1.3.2-Beryllium-SR2</mdsal.version>
-      <branding.version>1.2.2-Beryllium-SR2</branding.version>
-      <karaf.resources.version>1.6.2-Beryllium-SR2</karaf.resources.version>
-      <feature.l2switch.version>0.3.2-Beryllium-SR2</feature.l2switch.version>
-      <feature.aaa.version>0.3.2-Beryllium-SR2</feature.aaa.version>
-      <feature.openflowplugin.version>0.2.2-Beryllium-SR2</feature.openflowplugin.version>
-
-      <feature.test.version>1.6.2-Beryllium-SR2</feature.test.version>
-      <feature.mdsal.version>1.3.2-Beryllium-SR2</feature.mdsal.version>
-      <feature.dlux.version>0.3.2-Beryllium-SR2</feature.dlux.version>
-      <feature.flow.version>1.3.2-Beryllium-SR2</feature.flow.version>
-      <feature.yangtools.version>0.8.2-Beryllium-SR2</feature.yangtools.version>
+      <commons.opendaylight.version>1.5.4-Lithium-SR4</commons.opendaylight.version>
+      <loader.resources.version>0.1.4-Lithium-SR4</loader.resources.version>
+      <core.resources.version>0.1.4-Lithium-SR4</core.resources.version>
+      <graph.resources.version>0.1.4-Lithium-SR4</graph.resources.version>
+      <node.resources.version>0.1.4-Lithium-SR4</node.resources.version>
+      <connection_manager.resources.version>0.1.4-Lithium-SR4</connection_manager.resources.version>
+      <container.resources.version>0.1.4-Lithium-SR4</container.resources.version>
+      <flow.resources.version>0.1.4-Lithium-SR4</flow.resources.version>
+      <network.resources.version>0.1.4-Lithium-SR4</network.resources.version>
+      <topology.resources.version>0.1.4-Lithium-SR4</topology.resources.version>
+      <appaffinity.resources.version>0.1.4-Lithium-SR4</appaffinity.resources.version>
+      <yangui.resources.version>0.1.4-Lithium-SR4</yangui.resources.version>
+      <yangvisualizer.resources.version>0.1.4-Lithium-SR4</yangvisualizer.resources.version>
+      <common.authentication.resources.version>0.1.4-Lithium-SR4</common.authentication.resources.version>
+      <common.general.resources.version>0.1.4-Lithium-SR4</common.general.resources.version>
+      <common.navigation.resources.version>0.1.4-Lithium-SR4</common.navigation.resources.version>
+      <common.layout.resources.version>0.1.4-Lithium-SR4</common.layout.resources.version>
+      <common.topbar.resources.version>0.1.4-Lithium-SR4</common.topbar.resources.version>
+      <common.login.resources.version>0.1.4-Lithium-SR4</common.login.resources.version>
+      <common.yangutils.resources.version>0.1.4-Lithium-SR4</common.yangutils.resources.version>
+      <common.sigmatopology.resources.version>0.1.4-Lithium-SR4</common.sigmatopology.resources.version>
+      <l2switch.version>0.2.4-Lithium-SR4</l2switch.version>
+      <mdsal.version>1.2.4-Lithium-SR4</mdsal.version>
+      <branding.version>1.1.4-Lithium-SR4</branding.version>
+      <karaf.resources.version>1.5.4-Lithium-SR4</karaf.resources.version>
+      <feature.l2switch.version>0.2.4-Lithium-SR4</feature.l2switch.version>
+      <feature.aaa.version>0.2.4-Lithium-SR4</feature.aaa.version>
+      <feature.test.version>1.5.4-Lithium-SR4</feature.test.version>
+      <feature.mdsal.version>1.2.4-Lithium-SR4</feature.mdsal.version>
+      <feature.dlux.version>0.2.4-Lithium-SR4</feature.dlux.version>
+      <feature.flow.version>1.2.4-Lithium-SR4</feature.flow.version>
+      <feature.yangtools.version>0.7.4-Lithium-SR4</feature.yangtools.version>
+      <feature.adsal.version>0.9.4-Lithium-SR4</feature.adsal.version>
+      <feature.nsf.version>0.5.4-Lithium-SR4</feature.nsf.version>
+      <feature.openflowplugin.version>0.1.4-Lithium-SR4</feature.openflowplugin.version>
       <apache.felix.osgi.compendium.version>1.4.0</apache.felix.osgi.compendium.version>
       <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-      <karaf.empty.version>1.6.2-Beryllium-SR2</karaf.empty.version>
+      <karaf.empty.version>1.5.4-Lithium-SR4</karaf.empty.version>
     </properties>
 
     <modules>
@@ -63,13 +64,14 @@
        <module>loader/impl</module>
        <module>bundles</module>
        <module>features</module>
+       <module>distribution-dlux</module>
        <module>archetype</module>
     </modules>
-
+   
   <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/dlux.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/dlux.git</developerConnection>
-    <tag>HEAD</tag>
-    <url>https://wiki.opendaylight.org/view/OpenDaylight_dlux:Main</url>
+      <connection>scm:git:ssh://git.opendaylight.org:29418/dlux.git</connection>
+      <developerConnection>scm:git:ssh://git.opendaylight.org:29418/dlux.git</developerConnection>
+      <tag>HEAD</tag>
+      <url>https://wiki.opendaylight.org/view/OpenDaylight_dlux:Main</url>
   </scm>
 </project>

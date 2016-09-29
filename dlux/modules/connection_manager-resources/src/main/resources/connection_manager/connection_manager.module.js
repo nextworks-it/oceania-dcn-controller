@@ -2,7 +2,13 @@ define(['angularAMD', 'app/routingConfig', 'app/core/core.services', 'Restangula
 
   var connection_manager = angular.module('app.connection_manager', ['app.core', 'ui.router.state', 'restangular', 'config' ]);
 
-  connection_manager.config(function ($stateProvider, $translateProvider, NavHelperProvider) {
+  connection_manager.config(function ($stateProvider, $controllerProvider, $provide, $translateProvider, NavHelperProvider) {
+
+    connection_manager.register = {
+      controller : $controllerProvider.register,
+      factory : $provide.factory,
+      service : $provide.service
+    };
 
     $translateProvider.useStaticFilesLoader({
       prefix: 'assets/data/locale-',

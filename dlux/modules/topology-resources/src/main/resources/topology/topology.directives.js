@@ -1,6 +1,6 @@
 define(['app/topology/topology.module', 'vis'], function(topology, vis) {
 
-  topology.directive('topologySimple', function() {
+  topology.register.directive('topologySimple', function() {
     // constants
     var width = 800,
       height = 800;

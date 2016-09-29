@@ -1,43 +1,22 @@
-var modules = [
-        'ZeroClipboard',
-        'angularAMD',
-        'app/routingConfig',
-        'ui-bootstrap',
-        'Restangular',
-        'angular-translate',
-        'jquery-ui',
-        'codemirror',
-        'codeMirror-showHint',
-        'codeMirror-yanguiJsonHint',
-        'codeMirror-javascriptMode',
-        'codeMirror-matchBrackets',
-        'ngClip',
-        'common/yangutils/yangutils.services',
-        'common/yangutils/listfiltering.services',
-        'angular-translate-loader-partial'
-    ],
-    ZeroClipboard = null;
+define(['angularAMD', 'app/routingConfig', 'common/yangutils/yangutils.services','common/yangutils/listfiltering.services','ui-bootstrap', 'Restangular', 'angular-translate', 'jquery-ui'], function() {
 
-define(modules, function(ZC) {
-  ZeroClipboard = ZC;
-
-  var yangui = angular.module('app.yangui', ['ui.router.state','app.core', 'app.common.yangUtils', 'app.common.listFiltering', 'ui.bootstrap', 'restangular', 'pascalprecht.translate', 'ngClipboard']);
+  var yangui = angular.module('app.yangui', ['ui.router.state','app.core', 'app.common.yangUtils', 'app.common.listFiltering', 'ui.bootstrap', 'restangular', 'pascalprecht.translate']);
 
   yangui.register = yangui;
 
-  yangui.config(function ($stateProvider, $compileProvider, $controllerProvider, $provide, $filterProvider, $translateProvider,$translatePartialLoaderProvider, NavHelperProvider, ngClipProvider) {
+  yangui.config(function ($stateProvider, $compileProvider, $controllerProvider, $provide, $filterProvider, $translateProvider, NavHelperProvider) {
 
-    $translatePartialLoaderProvider.addPart('app/yangui/assets/data/locale');
-
-    ngClipProvider.setPath("assets/ZeroClipboard.swf");
+    $translateProvider.useStaticFilesLoader({
+      prefix: 'assets/data/locale-',
+      suffix: '.json'
+    });
 
     yangui.register = {
       directive : $compileProvider.directive,
       controller : $controllerProvider.register,
       factory : $provide.factory,
       filter: $filterProvider.register,
-      service : $provide.service,
-      constant : $provide.constant
+      service : $provide.service
     };
 
     NavHelperProvider.addControllerUrl('app/yangui/yangui.controller');

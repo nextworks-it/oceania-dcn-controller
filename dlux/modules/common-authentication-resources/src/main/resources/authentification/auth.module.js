@@ -9,5 +9,15 @@
 define(['angularAMD', 'common/config/env.module'], function(ng) {
   var auth = angular.module('app.common.auth', ['config']);
 
+  auth.config(function($compileProvider, $controllerProvider, $provide) {
+    auth.register = {
+      controller : $controllerProvider.register,
+      directive : $compileProvider.directive,
+      factory : $provide.factory,
+      service : $provide.service
+
+    };
+  });
+
   return auth;
 });

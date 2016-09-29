@@ -5,44 +5,32 @@
 //karaf based dlux deployment
 /*
 var module = [
-  'angular',
+  'angularAMD',
+  'app/core/core.module',
   'angular-translate',
-  'angular-sanitize',
   'angular-translate-loader-static-files',
-  'angular-translate-loader-partial',
   'angular-ui-router',
   'ocLazyLoad',
   'angular-css-injector',
-];
-
-var deps = [
-  'app/core/core.module',
   'app/node/nodes.module',
   'app/topology/topology.module',
   'common/login/login.module',
-  'app/yangui/main',
-  'app/yangvisualizer/yangvisualizer.module',
-  'common/sigmatopology/sigmatopology.module',
+  'app/yangui/yangui.module',
   'common/navigation/navigation.module',
   'common/topbar/topbar.module',
   'common/layout/layout.module',
-  'common/config/env.module'
-];
+  'common/config/env.module']; //needed module
 
 // The name of all angularjs module
 var e = [
   'ui.router',
   'oc.lazyLoad',
   'pascalprecht.translate',
-  'ngSanitize',
   'angular.css.injector',
-  'app',
   'app.nodes',
   'app.topology',
   'app.common.login',
   'app.yangui',
-  'app.yangvisualizer',
-  'app.common.sigmatopology',
   'app.common.nav',
   'app.common.topbar',
   'app.common.layout'];
@@ -50,26 +38,14 @@ var e = [
 
 */
 
-define(module, function(angular) {
+define(module, function(ng) {
   'use strict';
-  var preboot = [],
-    register = {},
-    dlux_angular = {},
-    orig_angular = angular,
-    app = angular.module('app', []);
 
-  angular.extend(dlux_angular, orig_angular);
+  var app = angular.module('app', e);
 
-  dlux_angular.module = function(name, deps) {
-    var module = orig_angular.module(name, deps);
-    preboot.push(module);
-    return module;
-  };
-
-  window.angular = dlux_angular; // backward compatibility
 
   // The overal config he is done here.
-  app.config(function ($urlRouterProvider,  $ocLazyLoadProvider, $translateProvider, $translatePartialLoaderProvider, $controllerProvider, $compileProvider, $provide, $filterProvider, cssInjectorProvider) {
+  app.config(function ($stateProvider, $urlRouterProvider,  $ocLazyLoadProvider, $translateProvider, cssInjectorProvider) {
 
     $urlRouterProvider.otherwise("/topology"); // set the default route
 
@@ -81,42 +57,12 @@ define(module, function(angular) {
       asyncLoader: require
     });
 
-    $translateProvider.useLoader('$translatePartialLoader', {
-      urlTemplate: '/src/{part}-{lang}.json'
-    });
-
-    $translatePartialLoaderProvider.addPart('../assets/data/locale');
     $translateProvider.preferredLanguage('en_US');
-    $translateProvider.useSanitizeValueStrategy('escape');
-
-    // the only way to add a dynamic module
-    register = {
-        controller : $controllerProvider.register,
-        directive : $compileProvider.directive,
-        factory : $provide.factory,
-        filter: $filterProvider.register,
-        service : $provide.service
-    };
-
-    app.register = {};
-    angular.extend(app.register, register);
   });
 
-  /* --- define vs require war ---
-   * From my understanding, we use require when
-   * we want to load a dependency and run it. Define
-   * is only to define the dependency for a module.
-   */
-  require(deps, function() {
-    angular.element(document).ready(function() {
-      angular.bootstrap(document, e).invoke(function() {
-        preboot.forEach(function(m) {
-            angular.extend(m, register);
-        });
-        console.log('bootstrap done (: ');
-      });
-    });
-  });
+  ng.bootstrap(app);
+
+  console.log('bootstrap done (: ');
 
   return app;
 });

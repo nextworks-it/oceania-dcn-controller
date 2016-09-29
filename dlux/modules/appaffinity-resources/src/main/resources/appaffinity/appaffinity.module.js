@@ -1,10 +1,8 @@
-/*global angular, define, routingConfig*/
-define(['angularAMD', 'Restangular', 'app/routingConfig', 'common/general/finishRender.module', 'app/core/core.services',
-        'common/general/common.general.services', 'common/config/env.module'],
-    function () {
-        var appaff = angular.module('app.appaffinity', ['ui.router.state', 'app.core', 'restangular', 'app.common.finishRender','app.common.general', 'config']);
+define(['angularAMD', 'app/routingConfig', 'app/core/core.services', 'Restangular', 'common/config/env.module'], function (ng) {
+        
+        var appaff = angular.module('app.appaffinity', ['ui.router.state', 'app.core', 'restangular', 'config']);
 
-        appaff.config(function($controllerProvider, $compileProvider, $provide, $stateProvider, $translateProvider, NavHelperProvider) {
+        appaff.config(function($controllerProvider, $compileProvider, $provide, $stateProvider, NavHelperProvider) {
             appaff.register = {
                 controller : $controllerProvider.register,
                 directive : $compileProvider.directive,

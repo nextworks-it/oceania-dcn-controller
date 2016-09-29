@@ -8,8 +8,21 @@
 
 define(['angularAMD', 'app/routingConfig', 'Restangular', 'angular-translate', 'angular-translate-loader-static-files', 'app/core/core.services', 'common/config/env.module'], function(ng) {
   var nodes = angular.module('app.nodes', ['app.core', 'pascalprecht.translate', 'ui.router.state', 'restangular', 'config']);
+  nodes.register = nodes;// for unit test
 
-  nodes.config(function($stateProvider, NavHelperProvider, $translateProvider) {
+  nodes.config(function($stateProvider, $compileProvider, $controllerProvider, $provide, NavHelperProvider, $translateProvider) {
+    nodes.register = {
+      controller : $controllerProvider.register,
+      directive : $compileProvider.directive,
+      factory : $provide.factory,
+      service : $provide.service
+
+    };
+
+    $translateProvider.useStaticFilesLoader({
+      prefix: 'assets/data/locale-',
+      suffix: '.json'
+    });
 
     NavHelperProvider.addControllerUrl('app/node/nodes.controller');
     NavHelperProvider.addToMenu('nodes', {

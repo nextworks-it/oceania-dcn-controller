@@ -1,7 +1,6 @@
-/*global define, console*/
 define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.services'], function(appaff) {
 
-        appaff.controller('appaffinityCtrl', function($scope, $rootScope, appaffinitySvc) {
+        appaff.register.controller('appaffinityCtrl', ['$scope', '$rootScope', 'appaffinitySvc', function($scope, $rootScope, appaffinitySvc) {
 
             $rootScope['section_logo'] = 'assets/images/logo_network.gif';
 
@@ -29,7 +28,7 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                 }, function(response) {
                     alert("Error " + response.status);
                 });
-            }
+            };
 
             //Defaults and constants
             $scope.const = {
@@ -43,23 +42,5 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
             //load data
             $scope.refreshTraffic();
             $scope.refreshFlows();
-        });
-        /*
-        appaff.filter('unique', function(){
-            return function(collection, keyname) {
-                var output = [];
-                var keys = [];
-                angular.forEach(collection, function(item) {
-                    if(item.hasOwnProperty(keyname)) {
-                        var value = item[keyname];
-                        if (keys.valueOf().indexOf(value) < 0) {
-                            keys.push(value);
-                            output.push(item);
-                        }
-                    }
-                });
-                return output;
-            }
-        });
-        */
+        }]);
     });

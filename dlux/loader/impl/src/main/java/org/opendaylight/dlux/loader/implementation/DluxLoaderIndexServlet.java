@@ -1,3 +1,4 @@
+package org.opendaylight.dlux.loader.implementation;
 /**
  * Copyright (c) 2014 Inocybe Technologies, and others. All rights reserved.
  *
@@ -5,8 +6,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-package org.opendaylight.dlux.loader.implementation;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -33,15 +32,11 @@ public class DluxLoaderIndexServlet extends HttpServlet{
     private static final long serialVersionUID = 1L;
     private static Logger logger = LoggerFactory.getLogger(DluxLoaderIndexServlet.class);
 
-    private String DEFINEJS_PROPERTY = "defineJS";
-
     private String REQUIREJS_PROPERTY = "requireJS";
 
     private String ANGULARJS_PROPERTY = "angularJS";
 
-    private final String DEFINEJS_START = "var module = [";
-
-    private final String REQUIREJS_START = "var deps = [";
+    private final String REQUIREJS_START = "var module = [";
 
     private final String ANGULARJS_START = "var e = [";
 
@@ -141,21 +136,18 @@ public class DluxLoaderIndexServlet extends HttpServlet{
     }
 
     private String getModulesString() {
-        StringBuilder defineJsBuilder = new StringBuilder();
         StringBuilder requireJsBuilder = new StringBuilder();
         StringBuilder angularBuilder = new StringBuilder();
-        defineJsBuilder.append(DEFINEJS_START).append(prop.getProperty(DEFINEJS_PROPERTY));
         requireJsBuilder.append(REQUIREJS_START).append(prop.getProperty(REQUIREJS_PROPERTY));
         angularBuilder.append(ANGULARJS_START).append(prop.getProperty(ANGULARJS_PROPERTY));
         for (Module module: loader.getModules()){
             requireJsBuilder.append(COMMA_QUOTE).append(module.getRequireJs()).append(QUOTE);
             angularBuilder.append(COMMA_QUOTE).append(module.getAngularJs()).append(QUOTE);
         }
-        defineJsBuilder.append(end).append(NEWLINE);
         requireJsBuilder.append(end).append(NEWLINE);
         angularBuilder.append(end);
 
-        return defineJsBuilder.toString() + requireJsBuilder.toString() + angularBuilder.toString();
+        return requireJsBuilder.toString() + angularBuilder.toString();
     }
 
     private String getCSSString() {

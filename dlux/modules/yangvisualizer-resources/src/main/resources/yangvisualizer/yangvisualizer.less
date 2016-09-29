@@ -13,15 +13,11 @@
     padding: 0!important;
   }
 
-  .cursor-pointer{
-    cursor: pointer;
-  }
 
   div.rightPanel{
     background: #000;
     position: absolute;
-    height: calc(~'100% - 143px');
-    padding-bottom: 20px;
+    min-height: calc(~'100% - 143px');
     padding-top: 20px;
     top: 143px;
     border-left: 1px solid #7e8083;
@@ -32,11 +28,6 @@
     &.panel-hide{
       right: auto;
       left: calc(~'100% - 150px');
-    }
-    div.inner-content{
-      overflow-y: scroll;
-      overflow-x: hidden;
-      height: 100%;
     }
     div.topButtons{
       position: absolute;
@@ -72,7 +63,6 @@
       tbody{
         td{
           padding: 0 15px;
-          vertical-align: top;
           span.link{
             color: #009ee3;
             cursor: pointer;
@@ -109,9 +99,6 @@
       z-index: 1;
       top: 10px;
       left: 15px;
-      &.margin-legend{
-        margin-top: 40px;
-      }
       ul.navWrapper{
         margin: 0;
         padding: 0;
@@ -131,6 +118,7 @@
         }
       }
       div.legend{
+        margin-top: 25px;
         ul{
           padding: 0;
           margin: 0;

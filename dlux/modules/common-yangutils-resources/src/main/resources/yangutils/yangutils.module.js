@@ -1,6 +1,6 @@
-define(['angularAMD', 'common/yangutils/listfiltering.services'], function() {
+define(['angularAMD'], function() {
 
-  var yangUtils = angular.module('app.common.yangUtils', ['app.common.listFiltering']);
+  var yangUtils = angular.module('app.common.yangUtils', []);
 
   return yangUtils;
 });

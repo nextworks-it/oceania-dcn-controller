@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opendaylight.dlux</groupId>
     <artifactId>dlux-parent</artifactId>
-    <version>0.3.2-Beryllium-SR2</version>
+    <version>0.2.4-Lithium-SR4</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -89,6 +89,11 @@
       </dependency>
       <dependency>
         <groupId>org.opendaylight.dlux</groupId>
+        <artifactId>dlux.graph.resources</artifactId>
+        <version>${graph.resources.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.dlux</groupId>
         <artifactId>dlux.common.topbar.resources</artifactId>
         <version>${common.topbar.resources.version}</version>
       </dependency>
@@ -162,6 +167,7 @@
                   dlux.yangvisualizer.resources,
                   dlux.topology.resources,
                   dlux.core.resources,
+                  dlux.graph.resources,
                 </includeArtifactIds>
                 <excludes>META-INF\/**</excludes>
                 <excludeTransitive>true</excludeTransitive>
@@ -238,8 +244,8 @@
             </execution>
           </executions>
           <configuration>
-            <nodeVersion>v0.12.7</nodeVersion>
-            <npmVersion>3.1.3</npmVersion>
+            <nodeVersion>v0.10.18</nodeVersion>
+            <npmVersion>1.3.8</npmVersion>
           </configuration>
         </plugin>
         </plugins>

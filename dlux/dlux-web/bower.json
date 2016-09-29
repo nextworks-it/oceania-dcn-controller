@@ -11,7 +11,7 @@
     "angular-cookies": "~1.4.0",
     "angular-sanitize": "~1.4.0",
     "angular-ui-date": "~0.0.11",
-    "requirejs": "~2.1.14",
+    "requirejs": "2.1.14",
     "font-awesome": "~4.0.3",
     "bootstrap": "~3.0.2",
     "angular-ui-router": "~0.2.10",
@@ -29,10 +29,7 @@
     "vis": "2.0.0",
     "sigma": "https://github.com/jacomyal/sigma.js/releases/download/v1.0.3/release-v1.0.3.zip",
     "ng-slider": "2.2.2",
-    "ng-tiny-scrollbar": "~0.9.0",
-    "zeroclipboard": "~2.2.0",
-    "ng-clip": "~0.2.6",
-    "angular-translate-loader-partial": "~2.7.2"
+    "pixi": "~2.2.5"
   },
   "devDependencies": {
     "angular": "~1.4.0",
@@ -40,13 +37,13 @@
     "bootstrap": "~3.0.2",
     "angular-bootstrap": "~0.13.0",
     "ng-grid": "~2.0.7",
+    "angularAMD": "~0.1.1",
     "requirejs-domready": "~2.0.1",
     "ocLazyLoad": "0.3.0",
     "angular-css-injector": "~1.0.3",
     "grunt-shell": "~0.7.0"
   },
   "resolutions": {
-    "angular": "~1.4.0",
-    "angular-translate": "~2.7.2"
+    "angular": "~1.4.0"
   }
 }

@@ -1,20 +1,19 @@
-/*global angular, define*/
 define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
-    appaff.factory('ODLRest', function(Restangular, ENV) {
+    appaff.register.factory('ODLRest', function(Restangular, ENV) {
         return Restangular.withConfig(function(RestangularConfig) {
             RestangularConfig.setBaseUrl(ENV.getBaseURL("MD_SAL"));
         });
     });
 
-    appaff.factory('AARest', function(Restangular) {
+    appaff.register.factory('AARest', function(Restangular) {
         return Restangular.withConfig(function(RestangularConfig) {
           var url = window.location.protocol+"//"+window.location.hostname+":"+"8089/";
           RestangularConfig.setBaseUrl(url);
         });
       });
 
-    appaff.factory('appaffinitySvc', function(AARest, ODLRest) {
+    appaff.register.factory('appaffinitySvc', function(AARest, ODLRest) {
         var svc = {
 
             // TODO: determine them someway and cut this out!
@@ -34,7 +33,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
         svc.getTraffic = function(cb) {
             return svc.tMat().get().then(function(mat) {
-                nodes = {};
+                var nodes = {};
                 var i,j;
                 var n = mat.length;
                 for (i = 0; i < n; i++) {
@@ -57,7 +56,6 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                             }
                             nodes[desId].incoming.push([srcId, mat[i][j]]);
                             nodes[srcId].outgoing.push([desId, mat[i][j]]);
-                            ;
                         }
                     }
                 }
@@ -86,10 +84,10 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
             var outAction = flow.instructions.instruction[0]['apply-actions'].action[0]['output-action'];
             output.outPort = outAction['output-node-connector'];
-            if (outAction.timeslot) {
+            if (outAction.timeslot !== undefined) {
                 output.timeslot = outAction.timeslot;
             }
-            if (outAction.wavelength) {
+            if (outAction.wavelength !== undefined) {
                 output.wavelength = outAction.wavelength;
             }
 
@@ -98,18 +96,18 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             return output;
         };
 
-        svc.parseNode = function(node) {
-            node.rows = 0;
+        svc.parseNode = function(data, node) {
             var flowList;
-            for (var i = 0; i< node['flow-node-inventory:table'].length; i++) {
-                 if (node['flow-node-inventory:table'][i].id == 0) {
-                     flowList = node['flow-node-inventory:table'][i].flow;
+            for (var i = 0; i< data['flow-node-inventory:table'].length; i++) {
+                 if (data['flow-node-inventory:table'][i].id == '0') {
+                     flowList = data['flow-node-inventory:table'][i].flow;
+                     i = data['flow-node-inventory:table'].length;
                  }
             }
             var outflows = [];
-            for (var flow in flowList) {
-                outflows.push(svc.parseFlow(flow));
-                node.rows = node.rows + 1;
+            for (var j = 0; j < flowList.length; j++) {
+                var flow = flowList[j];
+                node.flows.push(svc.parseFlow(flow));
             }
             return outflows;
         };
@@ -117,12 +115,14 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
         svc.getFlows= function(cb) {
             return svc.inventory().get().then(function(inventory) {
-                lst = inventory['nodes']['node'];
+                var lst = inventory['nodes']['node'];
                 var nodes = [];
-                for (var data in lst) {
+                for (var i = 0; i<lst.length; i++) {
+                    var data = lst[i];
                     var node = {};
                     node.id = data.id;
-                    node.flows = svc.parseNode(node);
+                    node.flows = [];
+                    svc.parseNode(data, node);
                     nodes.push(node);
                 }
                 cb(nodes);
@@ -132,8 +132,8 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
         };
 
         svc.submitService = function(service) {
-            return svc.affinity().all('connection').post(service)
-        }
+            return svc.affinity().all('connection').post(service);
+        };
         return svc;
     });
 });
