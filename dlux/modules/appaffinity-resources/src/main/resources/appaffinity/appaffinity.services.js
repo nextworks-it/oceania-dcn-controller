@@ -18,7 +18,8 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
             // TODO: determine them someway and cut this out!
             P : 3,
-            W : 2,
+            W : 4,
+            T : 12.
 
             inventory: function() {
                 return ODLRest.one('restconf/config/opendaylight-inventory:nodes');
@@ -85,7 +86,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             var outAction = flow.instructions.instruction[0]['apply-actions'].action[0]['output-action'];
             output.outPort = outAction['output-node-connector'];
             if (outAction.timeslot !== undefined) {
-                output.timeslot = outAction.timeslot;
+                output.timeslot = outAction.timeslot.substring(0, svc.T);
             }
             if (outAction.wavelength !== undefined) {
                 output.wavelength = outAction.wavelength;
