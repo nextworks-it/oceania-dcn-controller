@@ -26,14 +26,14 @@ class Pod extends Node {
 				Integer i=0;
 				while (i<(Const.P * Const.W * Const.Z)){ //Check if it should be forwarded
 					if (Const.matrix[t + (plane * Const.T)][i] == 0){i= i+1;}
-					else if ((Const.matrix[t*Const.I+plane][i]-1) == podID*Const.W+lam){
-						bmpBuilder = bmpBuilder.append('0'); //must be dropped, hence not forwarded.
+					else if ((Const.matrix[t + (plane * Const.T)][i]-1) == podID*Const.W+lam){
+						bmpBuilder.append('0'); //must be dropped, hence not forwarded.
 						break;
 					}
 					else{ i= i+1;}
 				}
-				if (i== (Const.P * Const.W)){ //there was no need to drop the wavelength
-					bmpBuilder = bmpBuilder.append('1');
+				if (i== (Const.P * Const.W * Const.Z)){ //there was no need to drop the wavelength
+					bmpBuilder.append('1');
 				}
 			}
 			try {
@@ -48,7 +48,7 @@ class Pod extends Node {
 			}
 			catch (IllegalArgumentException exc) {
 				log.error("Pod: " + nodeId + " while processing wavelength " + lam.toString() +
-                "got exception ", exc);
+                " got exception ", exc);
                 throw exc;
 			}
 		}

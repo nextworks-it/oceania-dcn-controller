@@ -16,7 +16,7 @@ public class TrafficData {
 	
 	public synchronized String addProfile(AppProfile appProfile){
 		for (Tunnel conn : appProfile.tunnelList){
-			matrix[conn.source][conn.dest] =
+			matrix[conn.source][(conn.dest / Const.Z)] =
 					matrix[conn.source][(conn.dest / Const.Z)] + conn.bandwidth;
 		}
 
