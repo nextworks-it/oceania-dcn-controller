@@ -130,6 +130,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 cb(nodes);
             }, function(response) {
                 console.log("error with status code " + response.status);
+                cb(undefined);
             });
         };
 
