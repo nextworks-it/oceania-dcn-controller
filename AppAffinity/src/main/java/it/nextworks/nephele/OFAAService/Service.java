@@ -47,6 +47,6 @@ public class Service {
 			}
 			return true;
 		}
-		else return false;
+		else throw new IllegalArgumentException("At least one connection must be submitted.");
 	}
 }

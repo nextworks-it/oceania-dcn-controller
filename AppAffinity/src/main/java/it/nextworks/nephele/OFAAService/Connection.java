@@ -21,7 +21,7 @@ public class Connection {
 	private Recovery recovery;
 	
 	public Tunnel makeTunnel(){
-		return new Tunnel(source.intNode(), source.server, dest.intNode(), profile.bandwidth);
+		return new Tunnel(source.intNode(), dest.intNode(), profile.bandwidth);
 	}
 	
 	public void setConnType(ConnectionType type){

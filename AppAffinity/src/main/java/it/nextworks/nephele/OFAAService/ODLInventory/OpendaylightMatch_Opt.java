@@ -14,7 +14,7 @@ public class OpendaylightMatch_Opt extends OpendaylightMatch {
 	public OpendaylightMatch_Opt(OFComprehensiveMatch inMatch){
 		super(inMatch);
 				
-		timeslot = pad(inMatch.gettBitmap());
+		timeslot = pad(inMatch.getTimeBitmap());
 		
 		wavelength = inMatch.getLambda();
 		

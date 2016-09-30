@@ -12,17 +12,6 @@ public class EthOFMatch extends OFMatch {
 		IP=inputIP;
 	}
 
-	public String getAddress() {
-		return IP[0].toString()+"."+
-				IP[1].toString()+"."+
-				IP[2].toString()+"."+
-				IP[3].toString();
-	}
-	
-	public EthOFMatch(){
-		
-	}
-
 	public Integer[] getIP() {
 		return IP;
 	}

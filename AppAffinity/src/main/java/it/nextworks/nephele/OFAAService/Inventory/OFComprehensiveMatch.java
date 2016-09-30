@@ -6,7 +6,7 @@ public class OFComprehensiveMatch{
 	
 
 	private Integer lambda;
-	private Bitmap tBitmap;
+	private Bitmap timeBitmap;
 	
 	private Integer[] IP;
 	
@@ -24,8 +24,8 @@ public class OFComprehensiveMatch{
 		return lambda;
 	}
 
-	public String gettBitmap() {
-		return tBitmap.getBitmap();
+	public String getTimeBitmap() {
+		return timeBitmap.getBitmap();
 	}
 	
 	public OFComprehensiveMatch(){
@@ -36,8 +36,8 @@ public class OFComprehensiveMatch{
 		this.lambda = lambda;
 	}
 
-	public void settBitmap(Bitmap tBitmap) {
-		this.tBitmap = tBitmap;
+	public void setTimeBitmap(Bitmap timeBitmap) {
+		this.timeBitmap = timeBitmap;
 	}
 	
 	public String getAddress() {

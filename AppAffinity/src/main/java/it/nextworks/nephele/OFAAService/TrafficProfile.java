@@ -8,7 +8,8 @@ public class TrafficProfile {
 	public Integer bandwidth;
 
 	public boolean validate(){
-		return (bandwidth != null);
+		if (bandwidth != null) return true;
+		else throw new IllegalArgumentException("Reserved bandwidth must not be null.");
 	}
 
 }

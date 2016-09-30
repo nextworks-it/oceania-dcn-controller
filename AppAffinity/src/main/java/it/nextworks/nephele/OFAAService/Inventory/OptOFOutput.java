@@ -5,22 +5,22 @@ import it.nextworks.nephele.OFTranslator.Bitmap;
 public class OptOFOutput extends OFOutput {
 	
 	private Integer lambda;
-	private Bitmap tBitmap;
+	private Bitmap timeBitmap;
 	
 	public Integer getLambda() {
 		return lambda;
 	}
 
-	public String gettBitmap() {
-		return tBitmap.getBitmap();
+	public String getTimeBitmap() {
+		return timeBitmap.getBitmap();
 	}
 
 	public void setLambda(Integer lambda) {
 		this.lambda = lambda;
 	}
 
-	public void settBitmap(Bitmap tBitmap) {
-		this.tBitmap = tBitmap;
+	public void setTimeBitmap(Bitmap timeBitmap) {
+		this.timeBitmap = timeBitmap;
 	}
 	
 	public OptOFOutput(){

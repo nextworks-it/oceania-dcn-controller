@@ -48,8 +48,8 @@ public class AppAffinityController {
             @ApiResponse(code = 200, message = "Success", response = ConnectionResponse.class)})
 	public ConnectionResponse postConnection(@RequestBody Service service){
 
-		if (!service.validateAndInit()){
-			throw new IllegalArgumentException("Invalid service: " +
+		if (!service.validateAndInit()){ //actually it's either true or an exception...
+			throw new IllegalArgumentException("Invalid service: " + //Safety net, should not be reached
                     "at least one connection with valid source and destination must be specified.");
 		}
 

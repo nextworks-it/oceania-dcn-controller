@@ -1,4 +1,4 @@
-package it.nextworks.nephele.OFAAService.ODLInventory;
+package it.nextworks.nephele.OFAAService;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -12,7 +12,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
 
-        registry.addMapping("/**");
+        registry.addMapping("/*/**");
 
     }
 }

@@ -13,7 +13,7 @@ public class OpendaylightOutputAction_Opt extends OpendaylightOutputAction {
 	public OpendaylightOutputAction_Opt(OptOFOutput inOutAction){
 		super(inOutAction);
 		
-		timeslot = pad(inOutAction.gettBitmap());
+		timeslot = pad(inOutAction.getTimeBitmap());
 		
 		wavelength = inOutAction.getLambda();
 		

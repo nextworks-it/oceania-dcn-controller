@@ -11,26 +11,29 @@ public class ConnectionEndPoint {
     @JsonProperty("Pod_ID")
     public Integer pod;
 
-	@JsonProperty("ToR_ID")
-	public Integer tor;
-	
-	@JsonProperty("Zone_ID")
-	public Integer server;
+    @JsonProperty("ToR_ID")
+    public Integer tor;
+
+    @JsonProperty("Zone_ID")
+    public Integer server;
 
     private Integer intNode;
 
-	public boolean validateAndInit(){
-		if (pod == null || tor == null) return false;
-		if ((server == null) || (server >= Const.Z)) return false;
-        if (tor >= Const.W) return false;
-        if (pod >= Const.P) return false;
-        intNode = pod*Const.W + tor;
+    private boolean auxValidateAndInit() {
+        if ((pod == null) || (pod >= Const.P)) return false;
+        if ((tor == null) || (tor >= Const.W)) return false;
+        if ((server == null) || (server >= Const.Z)) return false;
+        intNode = pod * Const.W * Const.Z + tor * Const.Z + server;
         return true;
-	}
+    }
 
-	public int intNode(){
+    public int intNode() {
         if (intNode == null) throw new IllegalStateException("Connection not yet validated.");
         return intNode;
-	}
+    }
 
+    public boolean validateAndInit() {
+        if (auxValidateAndInit()) return true;
+        else throw new IllegalArgumentException("Connection end point identifiers null or out of bounds.");
+    }
 }

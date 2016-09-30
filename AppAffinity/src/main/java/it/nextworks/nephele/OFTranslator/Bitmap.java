@@ -52,10 +52,5 @@ public class Bitmap {
 	public Bitmap(){
 		bmp = new boolean[Const.T];
 	}
-	
-	public Bitmap invert(){
-		Bitmap bmp2= new Bitmap();
-		for (Integer i=0;i<Const.T;i++){bmp2.bmp[i]= !this.bmp[i];}
-		return bmp2;
-	}
+
 }
