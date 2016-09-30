@@ -23,7 +23,7 @@ public class ConnectionEndPoint {
         if ((pod == null) || (pod >= Const.P)) return false;
         if ((tor == null) || (tor >= Const.W)) return false;
         if ((server == null) || (server >= Const.Z)) return false;
-        intNode = pod * Const.W * Const.Z + tor * Const.Z + server;
+        intNode = (pod * Const.W * Const.Z) + (tor * Const.Z) + server;
         return true;
     }
 
