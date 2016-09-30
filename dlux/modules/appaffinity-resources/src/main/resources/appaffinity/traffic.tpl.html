@@ -1,18 +1,18 @@
 <form role="form" name="trafficForm" style="width: 100%">
-
+  <div class="row">
     <div class="col-md-2">
         <h2>Traffic status</h2>
         <button class="btn btn-primary" ng-click="refreshTraffic()">Reload</button>
     </div>
 
-    <table class="footable table">
+    <table class="footable table col-md-10">
         <thead>
             <tr>
                 <th>Node</th>
                 <th>Traffic requests</th>
                 <th>Bandwidth</th>
             </tr>
-            <tr ng-hide="nodes.length > 1">
+            <tr ng-hide="Object.keys(nodes).length > 1">
                 <td colspan="3" class="centerAlign">No data found.</td>
             </tr>
         </thead>
@@ -34,6 +34,6 @@
             </tr>
         </tbody>
     </table>
-
+  </div>
 </form>
 

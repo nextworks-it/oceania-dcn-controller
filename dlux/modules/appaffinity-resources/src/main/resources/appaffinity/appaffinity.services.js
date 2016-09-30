@@ -19,7 +19,8 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             // TODO: determine them someway and cut this out!
             P : 3,
             W : 4,
-            T : 12.
+            Z : 3,
+            T : 12,
 
             inventory: function() {
                 return ODLRest.one('restconf/config/opendaylight-inventory:nodes');
@@ -37,16 +38,16 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 var nodes = {};
                 var i,j;
                 var n = mat.length;
-                for (i = 0; i < n; i++) {
-                    for (j = 0; j < n; j++) {
+                for (i = 0; i < svc.P * svc.W * svc.Z; i++) {
+                    for (j = 0; j < svc.P * svc.W; j++) {
                         if (mat[i][j] !== 0){
 
-                            var pSrc = Math.floor(i/svc.W),
-                            wSrc = i % svc.W,
+                            var pSrc = Math.floor(i/(svc.W * svc.Z)),
+                            wSrc = Math.floor((i % (svc.W * svc.Z))/svc.Z),
                             srcId = 'p' + pSrc + '-w' + wSrc;
 
-                            var pDes = Math.floor(j/svc.W),
-                            wDes = j % svc.W,
+                            var pDes = Math.floor(j/(svc.W * svc.Z)),
+                            wDes = Math.floor((j % (svc.W * svc.Z))/svc.Z),
                             desId = 'p' + pDes + '-w' + wDes;
 
                             if (nodes[srcId] === undefined) {
