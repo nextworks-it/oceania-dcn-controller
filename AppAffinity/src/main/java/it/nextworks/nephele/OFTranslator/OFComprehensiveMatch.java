@@ -25,7 +25,8 @@ public class OFComprehensiveMatch{
 	}
 
 	public String getTimeBitmap() {
-		return timeBitmap.getBitmap();
+        if (timeBitmap == null) return null;
+		else return timeBitmap.getBitmap();
 	}
 	
 	public OFComprehensiveMatch(){
