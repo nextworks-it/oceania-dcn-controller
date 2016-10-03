@@ -27,7 +27,7 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                 appaffinitySvc.submitService(out_data).then( function(response) {
                     alert("Request sent.");
                 }, function(response) {
-                    alert("Error " + response);
+                    alert("Error " + response.message);
                 });
             };
 
