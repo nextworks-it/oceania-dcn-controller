@@ -57,7 +57,8 @@ public class OptOFOutput extends OFOutput {
 	}
 
 	public String getTimeBitmap() {
-		return timeBitmap.getBitmap();
+        if (timeBitmap == null) return null;
+		else return timeBitmap.getBitmap();
 	}
 	
 }
