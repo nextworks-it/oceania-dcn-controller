@@ -37,7 +37,6 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             return svc.tMat().get().then(function(mat) {
                 var nodes = {};
                 var i,j;
-                var n = mat.length;
                 for (i = 0; i < svc.P * svc.W * svc.Z; i++) {
                     for (j = 0; j < svc.P * svc.W; j++) {
                         if (mat[i][j] !== 0){
