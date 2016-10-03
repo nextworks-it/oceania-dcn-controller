@@ -3,8 +3,8 @@ package it.nextworks.nephele.OFAAService.ODLInventory;
 import java.util.ArrayList;
 
 import io.swagger.annotations.ApiModelProperty;
-import it.nextworks.nephele.OFAAService.Inventory.Node;
 import it.nextworks.nephele.OFTranslator.Inventory;
+import it.nextworks.nephele.OFTranslator.Node;
 
 public class OpendaylightNodesContainer {
 	

@@ -1,11 +1,9 @@
 package it.nextworks.nephele.OFAAService.ODLInventory;
 
-import it.nextworks.nephele.OFAAService.Inventory.OFComprehensiveMatch;
+import it.nextworks.nephele.OFTranslator.OFComprehensiveMatch;
 
 public class OpendaylightMatch_Opt extends OpendaylightMatch {
-	
-	//TODO Make these two container adhere to the recursive construction policy too.
-	
+
 	private String timeslot;
 	
 	private int wavelength;

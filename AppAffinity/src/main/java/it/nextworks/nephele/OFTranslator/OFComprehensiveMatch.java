@@ -1,4 +1,4 @@
-package it.nextworks.nephele.OFAAService.Inventory;
+package it.nextworks.nephele.OFTranslator;
 
 import it.nextworks.nephele.OFTranslator.Bitmap;
 
@@ -32,6 +32,18 @@ public class OFComprehensiveMatch{
 		
 	}
 
+	public OFComprehensiveMatch(OFMatch match){
+        inputPort = match.getInputPort();
+        if (match instanceof OptOFMatch){
+            OptOFMatch optMatch = (OptOFMatch) match;
+            lambda = optMatch.getLambda();
+            timeBitmap = new Bitmap(optMatch.getTimeBitmap());
+        }
+        if (match instanceof EthOFMatch){
+            IP = ((EthOFMatch) match).getIP();
+        }
+	}
+
 	public void setLambda(Integer lambda) {
 		this.lambda = lambda;
 	}
@@ -47,6 +59,10 @@ public class OFComprehensiveMatch{
 				IP[2].toString()+"."+
 				IP[3].toString();
 	}
+
+    public Integer[] getIP() {
+        return IP;
+    }
 
 	public void setIP(Integer[] iP) {
 		IP = iP;

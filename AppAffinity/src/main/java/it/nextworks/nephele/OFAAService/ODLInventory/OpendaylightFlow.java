@@ -5,8 +5,8 @@ package it.nextworks.nephele.OFAAService.ODLInventory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import it.nextworks.nephele.OFAAService.Inventory.FlowEntry;
-import it.nextworks.nephele.OFAAService.Inventory.OFComprehensiveMatch;
+import it.nextworks.nephele.OFTranslator.FlowEntry;
+import it.nextworks.nephele.OFTranslator.OFComprehensiveMatch;
 
 public class OpendaylightFlow {
 	

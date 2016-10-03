@@ -1,7 +1,7 @@
 package it.nextworks.nephele.OFAAService.ODLInventory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.nextworks.nephele.OFTranslator.OFOutput;
+import it.nextworks.nephele.OFTranslator.OptOFOutput;
 
 public class OpendaylightOutputAction {
 	
@@ -11,7 +11,7 @@ public class OpendaylightOutputAction {
 	@JsonProperty("output-node-connector")
 	private String outPort;
 	
-	public OpendaylightOutputAction(OFOutput inOutAction){
+	public OpendaylightOutputAction(OptOFOutput inOutAction){
 		outPort=inOutAction.getOutputPort();
 		len = 0;
 	}

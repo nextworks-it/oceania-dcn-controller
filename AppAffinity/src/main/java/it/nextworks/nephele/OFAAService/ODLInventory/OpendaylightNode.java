@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModelProperty;
-import it.nextworks.nephele.OFAAService.Inventory.Node;
+import it.nextworks.nephele.OFTranslator.Node;
 
 public class OpendaylightNode {
 	

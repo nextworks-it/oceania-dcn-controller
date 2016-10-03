@@ -1,13 +1,11 @@
 package it.nextworks.nephele.OFTranslator;
 
-import it.nextworks.nephele.OFAAService.Inventory.FlowEntry;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 
-class ToR extends TranslNodeImpl {
+class ToR extends Node {
 
 	private Integer torIdentifier; 
 	/* = pod*W + w
@@ -23,8 +21,8 @@ class ToR extends TranslNodeImpl {
 	 * Value field is IP address of a server.
 	 */
 	
-	private Set<TranslFlowEntryImpl> staticFlowChart; //Intra-rack traffic
-	private Set<TranslFlowEntryImpl> dynFlowChart; //Inter-rack traffic
+	private Set<FlowEntry> staticFlowChart; //Intra-rack traffic
+	private Set<FlowEntry> dynFlowChart; //Inter-rack traffic
 		
 	private void BuildStaticFlowChart() {
 		/* Builds an entry for each in-rack IP forwarding all packets
@@ -35,11 +33,11 @@ class ToR extends TranslNodeImpl {
 			Integer[] IP = entry.getValue();
 			Integer port = entry.getKey();
 			for (String inPort : podPorts.values()){
-				staticFlowChart.add(new TranslFlowEntryImpl(new EthOFMatch(IP, inPort), port.toString()));
+				staticFlowChart.add(new FlowEntry(new EthOFMatch(IP, inPort), port.toString()));
 			}
 			for (Integer inPort : rackPorts.keySet()){
 				if (!inPort.equals(port)){
-					staticFlowChart.add(new TranslFlowEntryImpl(new EthOFMatch(IP, inPort.toString()), port.toString()));
+					staticFlowChart.add(new FlowEntry(new EthOFMatch(IP, inPort.toString()), port.toString()));
 				}
 			}
 		}
@@ -63,7 +61,7 @@ class ToR extends TranslNodeImpl {
 			if (!dest.equals(torIdentifier)) {
 				Integer[] IP = torAddresses.get(dest);
 				for (Integer i = 0; i < Const.I; i++) {
-					dynFlowChart.add(new TranslFlowEntryImpl(
+					dynFlowChart.add(new FlowEntry(
 							IP,
 							inPort.toString(),
 							(dest % Const.W),

@@ -1,12 +1,9 @@
 package it.nextworks.nephele.OFTranslator;
 
-import it.nextworks.nephele.OFAAService.Inventory.FlowEntry;
-import it.nextworks.nephele.OFAAService.Inventory.Node;
-
 import java.util.HashSet;
 import java.util.Set;
 
-public class TranslNodeImpl implements Node {
+public class Node{
 	
 	protected String nodeId;
 	protected Set<FlowEntry> flowTable;

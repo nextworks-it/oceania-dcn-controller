@@ -63,10 +63,10 @@ class NetworkBuilder {
 
 	private Inventory makeInv(){
         Inventory inventory = new Inventory();
-        for (TranslNodeImpl node : pods){
+        for (Node node : pods){
             inventory.addNode(node.getNodeId(), node);
         }
-        for (TranslNodeImpl node : tors){
+        for (Node node : tors){
             inventory.addNode(node.getNodeId(), node);
         }
         return inventory;

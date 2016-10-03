@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.HashSet;
 
-class Pod extends TranslNodeImpl {
+class Pod extends Node {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -40,11 +40,11 @@ class Pod extends TranslNodeImpl {
 				String tBmp = bmpBuilder.toString();
 				OptOFMatch match = new OptOFMatch(lam, tBmp, "any");
 				OptOFOutput out = new OptOFOutput(lam, tBmp, ringPorts.get(lam)[1]);
-				flowTable.add(new TranslFlowEntryImpl(match, out));
+				flowTable.add(new FlowEntry(match, out));
 				Bitmap bmp2 = Bitmap.inverting(tBmp);
 				OptOFMatch match2 = new OptOFMatch(lam, bmp2, "any");
 				OptOFOutput out2 = new OptOFOutput(lam, bmp2, torPorts.get(lam));
-				flowTable.add(new TranslFlowEntryImpl(match2, out2));
+				flowTable.add(new FlowEntry(match2, out2));
 			}
 			catch (IllegalArgumentException exc) {
 				log.error("Pod: " + nodeId + " while processing wavelength " + lam.toString() +

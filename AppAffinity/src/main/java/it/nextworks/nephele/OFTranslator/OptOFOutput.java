@@ -5,9 +5,8 @@ public class OptOFOutput extends OFOutput {
 	private Integer lambda;
 	private Bitmap timeBitmap;
 	
-	public OptOFOutput(Integer inLambda, Bitmap inBitmap, String inPort) throws IllegalArgumentException{
+	OptOFOutput(Integer inLambda, Bitmap inBitmap, String inPort) throws IllegalArgumentException{
 		super(inPort);
-		//System.out.println(inLambda);
 		if ((inLambda<0) || (inLambda > Const.W -1)) {
 			throw new IllegalArgumentException("Illegal lambda."); 
 		}
@@ -17,9 +16,8 @@ public class OptOFOutput extends OFOutput {
 		
 	}
 	
-	public OptOFOutput(Integer inLambda, String inBitmap, String inPort) throws IllegalArgumentException{
+	OptOFOutput(Integer inLambda, String inBitmap, String inPort) throws IllegalArgumentException{
 		super(inPort);
-		//System.out.println(inLambda);
 		if ((inLambda<0) || (inLambda > Const.W -1)) {
 			throw new IllegalArgumentException("Illegal lambda."); 
 		}
@@ -29,8 +27,21 @@ public class OptOFOutput extends OFOutput {
 		
 	}
 
-    public OptOFOutput(){
+    OptOFOutput(){
 
+    }
+
+    OptOFOutput(String port){
+        super(port);
+    }
+
+    OptOFOutput(OFOutput output){
+        super(output.getOutputPort());
+        if (output instanceof OptOFOutput){
+            OptOFOutput optOut = (OptOFOutput) output;
+            lambda = optOut.getLambda();
+            timeBitmap = new Bitmap(optOut.getTimeBitmap());
+        }
     }
 
 	public void setLambda(Integer lambda) {

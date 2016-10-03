@@ -3,7 +3,7 @@ package it.nextworks.nephele.OFTranslator;
 public class OptOFMatch extends OFMatch {
 	
 	private Integer lambda;
-	private Bitmap tBitmap;
+	private Bitmap timeBitmap;
 	
 	public OptOFMatch(Integer inLambda, Bitmap inBitmap, String inPort){
 		super(inPort);
@@ -11,7 +11,7 @@ public class OptOFMatch extends OFMatch {
 			throw new IllegalArgumentException("Illegal lambda."); 
 		}
 		lambda = inLambda;
-		tBitmap = inBitmap;
+		timeBitmap = inBitmap;
 	}
 	
 	public OptOFMatch(Integer inLambda, String inBitmap, String inPort){
@@ -20,7 +20,7 @@ public class OptOFMatch extends OFMatch {
 			throw new IllegalArgumentException("Illegal lambda."); 
 		}
 		lambda = inLambda;
-		tBitmap = new Bitmap(inBitmap);
+		timeBitmap = new Bitmap(inBitmap);
 	}
 
 
@@ -28,8 +28,8 @@ public class OptOFMatch extends OFMatch {
 		return lambda;
 	}
 
-	public String gettBitmap() {
-		return tBitmap.getBitmap();
+	public String getTimeBitmap() {
+		return timeBitmap.getBitmap();
 	}
 	
 }

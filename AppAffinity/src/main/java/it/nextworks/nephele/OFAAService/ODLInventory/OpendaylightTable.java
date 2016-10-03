@@ -1,9 +1,9 @@
 package it.nextworks.nephele.OFAAService.ODLInventory;
 
+import it.nextworks.nephele.OFTranslator.FlowEntry;
+
 import java.util.ArrayList;
 import java.util.Set;
-
-import it.nextworks.nephele.OFAAService.Inventory.FlowEntry;
 
 public class OpendaylightTable {
 	
