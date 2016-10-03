@@ -46,8 +46,8 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                             wSrc = Math.floor((i % (svc.W * svc.Z))/svc.Z),
                             srcId = 'p' + pSrc + '-w' + wSrc;
 
-                            var pDes = Math.floor(j/(svc.W * svc.Z)),
-                            wDes = Math.floor((j % (svc.W * svc.Z))/svc.Z),
+                            var pDes = Math.floor(j/(svc.W)),
+                            wDes = (j % (svc.W),
                             desId = 'p' + pDes + '-w' + wDes;
 
                             if (nodes[srcId] === undefined) {

@@ -8,6 +8,7 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                 appaffinitySvc.getTraffic(function(data) {
                     if (data){
                         $scope.nodes = data;
+                        $scope.nodes.rows = Object.keys(data).length;
                     }
                 });
             };
@@ -26,7 +27,7 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                 appaffinitySvc.submitService(out_data).then( function(response) {
                     alert("Request sent.");
                 }, function(response) {
-                    alert("Error " + response.status);
+                    alert("Error " + response);
                 });
             };
 
