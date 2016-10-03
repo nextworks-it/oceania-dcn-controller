@@ -3,8 +3,6 @@ package it.nextworks.nephele.OFAAService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.nextworks.nephele.OFTranslator.Const;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ConnectionEndPoint {
 

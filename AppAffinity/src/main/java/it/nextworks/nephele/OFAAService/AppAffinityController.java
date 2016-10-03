@@ -1,6 +1,8 @@
 package it.nextworks.nephele.OFAAService;
 
 
+import it.nextworks.nephele.OFAAService.ODLInventory.OpendaylightInventory;
+import it.nextworks.nephele.OFTranslator.Inventory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -137,27 +139,18 @@ public class AppAffinityController {
 		}
 	}
 	
-/*
-	@RequestMapping(value="/invtest", method=RequestMethod.GET)
+
+	@RequestMapping(value="/test/invtest", method=RequestMethod.GET)
 	@ApiOperation(value = "getInvTest", nickname = "Test inventory generation")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "Success", response = OpendaylightInventory.class)})
-	public OpendaylightInventory getInventory(){
+	public OpendaylightInventory getInventory(int[][] nall){
 	
 		RestTemplate restTemplate = new RestTemplate();
-		
-		int[][] nall = { 	
-							{2,0,4,0,6,0},
-							{0,1,0,3,0,5},
-							{3,0,0,0,0,2},
-							{0,4,0,0,1,0},
-							{4,0,0,5,0,0},
-							{0,3,6,0,0,0}
-						};
-		
+
 		
 		UriComponentsBuilder urlbuilder = 
-				UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:8080/translate");
+				UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:" + serverPort + "/translate");
 		
 		HttpEntity<int[][]> entity = new HttpEntity<>(nall);
 		ResponseEntity<Inventory> response =
@@ -166,7 +159,7 @@ public class AppAffinityController {
 		
 		return new OpendaylightInventory(response.getBody());
 	}
-*/
+
 	
 	@ExceptionHandler(NullPointerException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)

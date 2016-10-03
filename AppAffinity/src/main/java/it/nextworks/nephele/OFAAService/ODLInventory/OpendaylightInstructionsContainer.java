@@ -1,8 +1,8 @@
 package it.nextworks.nephele.OFAAService.ODLInventory;
 
-import java.util.ArrayList;
+import it.nextworks.nephele.OFTranslator.OptOFOutput;
 
-import it.nextworks.nephele.OFAAService.Inventory.OptOFOutput;
+import java.util.ArrayList;
 
 public class OpendaylightInstructionsContainer {
 	

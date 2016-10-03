@@ -11,7 +11,7 @@ public class OpendaylightTable {
 	
 	private ArrayList<OpendaylightFlow> flow = new ArrayList<>();
 	
-	public OpendaylightTable(Set<FlowEntry> input){
+	public OpendaylightTable(Set<? extends FlowEntry> input){
 		
 		id = 0;
 		

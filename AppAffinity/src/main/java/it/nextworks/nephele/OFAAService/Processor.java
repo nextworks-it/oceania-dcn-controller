@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.*;
 
-import it.nextworks.nephele.OFAAService.Inventory.Inventory;
+import it.nextworks.nephele.OFTranslator.Inventory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -161,13 +161,13 @@ public class Processor {
             try {
                 Inventory inventory = this.get();
                 tasks.add(new InventoryPutter(inventory, ODLURL));
-                log.debug("Sending inventory to ODL.");
+                log.debug("Sending inventory.");
             }
             catch (InterruptedException | CancellationException intExc){
                 log.error("Computation interrupted:\n", intExc);
             }
             catch (ExecutionException execExc){
-                log.error("Error while GETting the inventory:\n", execExc);
+                log.error("Error while translating the inventory:\n", execExc);
             }
         }
     }

@@ -1,8 +1,7 @@
 package it.nextworks.nephele.OFAAService.ODLInventory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import it.nextworks.nephele.OFAAService.Inventory.OFOutput;
+import it.nextworks.nephele.OFTranslator.OFOutput;
 
 public class OpendaylightOutputAction {
 	

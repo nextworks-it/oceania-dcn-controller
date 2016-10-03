@@ -1,5 +1,6 @@
 package it.nextworks.nephele.OFAAService;
 
+import it.nextworks.nephele.OFTranslator.Inventory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -8,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import it.nextworks.nephele.OFAAService.Inventory.Inventory;
 import it.nextworks.nephele.OFAAService.ODLInventory.OpendaylightInventory;
 
 import java.util.Arrays;

@@ -1,5 +1,7 @@
 package it.nextworks.nephele.OFTranslator;
 
+import it.nextworks.nephele.OFAAService.Inventory.Node;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +13,7 @@ public class Inventory {
 		return nodes;
 	}
 	
-	public void addNode(String id, Node node){
+	public void addNode(String id, TranslNodeImpl node){
 		nodes.put(id, node);
 	}
 }

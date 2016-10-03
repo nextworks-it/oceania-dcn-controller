@@ -1,7 +1,7 @@
 package it.nextworks.nephele.OFAAService.ODLInventory;
 
 
-import it.nextworks.nephele.OFAAService.Inventory.OptOFOutput;
+import it.nextworks.nephele.OFTranslator.OptOFOutput;
 
 public class OpendaylightOutputAction_Opt extends OpendaylightOutputAction {
 	

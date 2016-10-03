@@ -20,7 +20,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
             .select()
             .apis(RequestHandlerSelectors.any())
-            .paths(PathSelectors.regex("(/affinity/.*)|(/trafficmatrix/.*)|(/translate)"))
+            .paths(PathSelectors.regex("(/affinity/connection.*)|(/trafficmatrix/.*)|(/translate)"))
             .build()
             .apiInfo(apiInfo());
     }

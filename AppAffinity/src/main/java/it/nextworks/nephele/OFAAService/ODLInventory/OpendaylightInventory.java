@@ -1,7 +1,7 @@
 package it.nextworks.nephele.OFAAService.ODLInventory;
 
 import io.swagger.annotations.ApiModelProperty;
-import it.nextworks.nephele.OFAAService.Inventory.Inventory;
+import it.nextworks.nephele.OFTranslator.Inventory;
 
 public class OpendaylightInventory {
 	
