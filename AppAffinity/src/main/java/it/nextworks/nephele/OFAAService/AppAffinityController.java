@@ -165,14 +165,14 @@ public class AppAffinityController {
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public String handleNullPointer(NullPointerException ex) {
 		log.info(ex.getMessage(), ex);
-		return "{ \"message\": " + ex.getMessage() + "}";
+		return "{ \"message\": '" + ex.getMessage() + "'}";
 	}
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleIllegalArgument(IllegalArgumentException ex) {
         log.info(ex.getMessage(), ex);
-        return "{ \"message\": " + ex.getMessage() + "}";
+        return "{ \"message\": '" + ex.getMessage() + "'}";
     }
 
 }
