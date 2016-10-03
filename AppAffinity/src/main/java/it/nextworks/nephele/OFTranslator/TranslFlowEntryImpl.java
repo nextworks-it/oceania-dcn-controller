@@ -58,15 +58,20 @@ public class TranslFlowEntryImpl implements FlowEntry {
 	}
 
 	@Override
-	public OptOFOutput getOutput() {
-        OptOFOutput result = new OptOFOutput();
-        result.setOutputPort(output.getOutputPort());
+	public OFOutput getOutput() {
         if (output instanceof OptOFOutput){
+            OptOFOutput result = new OptOFOutput();
             OptOFOutput optOut = (OptOFOutput) output;
             result.setLambda(optOut.getLambda());
             result.setTimeBitmap(new Bitmap(optOut.getTimeBitmap()));
+            result.setOutputPort(optOut.getOutputPort());
+            return result;
         }
-        return result;
+        else {
+            OFOutput result = new OFOutput();
+            result.setOutputPort(output.getOutputPort());
+            return result;
+        }
 	}
 
 }
