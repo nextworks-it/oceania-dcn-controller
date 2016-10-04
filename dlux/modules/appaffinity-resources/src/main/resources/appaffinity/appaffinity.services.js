@@ -74,7 +74,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 cb(nodes);
             },
             function(response) {
-                console.log("Error with status code ", response.status);
+                console.log("Error: " + response.data.message + " with status code ", response.status);
                 cb(undefined); //sends null data to the controller since the call failed
             });
         };
@@ -128,7 +128,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 }
                 cb(nodes);
             }, function(response) {
-                console.log("error with status code " + response.status);
+                console.log("Error: " + response.data.message +" with status code ", response.status);
                 cb(undefined);
             });
         };
