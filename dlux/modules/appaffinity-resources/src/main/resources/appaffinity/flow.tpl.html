@@ -1,37 +1,41 @@
 <form role="form" name="flowForm" style="width: 100%">
-  <div class="row">
-    <div class="col-md-2">
-        <h2>Flow rules</h2>
-        <button class="btn btn-primary" ng-click="refreshFlows()">Reload</button>
+    <div class="row">
+        <div class="col-md-2">
+            <h2>Flow rules</h2>
+            <button class="btn btn-primary" ng-click="refreshFlows()">Reload</button>
+        </div>
     </div>
 
-    <table class="footable table col-md-10 col-lg-offset-1">
-        <thead>
-            <tr>
-                <th>Node</th>
-                <th>Flow</th>
-                <th>In port</th>
-                <th>Out port</th>
-                <th>Time slot</th>
-                <th>Wavelength</th>
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <table class="footable table">
+                <thead>
+                <tr>
+                    <th>Node</th>
+                    <th>Flow</th>
+                    <th>In port</th>
+                    <th>Out port</th>
+                    <th>Time slot</th>
+                    <th>Wavelength</th>
 
-            </tr>
-            <tr ng-hide="nodeFlows.length > 0">
-                <td colspan="6" class="centerAlign">No data found.</td>
-            </tr>
-        </thead>
-        <tbody ng-repeat="item in nodeFlows">
-            <tr>
-                <td rowspan="{{item.flows.length + 1}}">{{item.id}}</td>
-            </tr>
-            <tr ng-repeat="flow in item.flows">
-                <td>{{flow.id}}</td>
-                <td>{{flow.inPort}}</td>
-                <td>{{flow.outPort}}</td>
-                <td>{{flow.timeslot ? flow.timeslot : 'N/A'}}</td>
-                <td>{{flow.wavelength !== undefined ? flow.wavelength : 'N/A'}}</td>
-            </tr>
-        </tbody>
-    </table>
-  </div>
+                </tr>
+                <tr ng-hide="nodeFlows.length > 0">
+                    <td colspan="6" class="centerAlign">No data found.</td>
+                </tr>
+                </thead>
+                <tbody ng-repeat="item in nodeFlows">
+                <tr>
+                    <td rowspan="{{item.flows.length + 1}}">{{item.id}}</td>
+                </tr>
+                <tr ng-repeat="flow in item.flows">
+                    <td>{{flow.id}}</td>
+                    <td>{{flow.inPort}}</td>
+                    <td>{{flow.outPort}}</td>
+                    <td>{{flow.timeslot ? flow.timeslot : 'N/A'}}</td>
+                    <td>{{flow.wavelength !== undefined ? flow.wavelength : 'N/A'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </form>

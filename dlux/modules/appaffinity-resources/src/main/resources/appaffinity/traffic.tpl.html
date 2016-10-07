@@ -8,9 +8,9 @@
     <table class="footable table col-md-10 col-lg-offset-1">
         <thead>
             <tr>
-                <th>Node</th>
-                <th>Traffic requests</th>
-                <th>Bandwidth</th>
+                <th>End point 1 ToR</th>
+                <th>End point 2 ToR</th>
+                <th>Bandwidth (Mbit/s)</th>
             </tr>
             <tr ng-hide="nodes.rows>0">
                 <td colspan="3" class="centerAlign">No data found.</td>
@@ -22,15 +22,15 @@
                 <td ng-hide="item.incoming.length<1" colspan="2" class="centerAlign">Incoming traffic</td>
             </tr>
             <tr ng-repeat="detail in item.incoming">
-                <td>{{detail[0]}}</td>
-                <td>{{detail[1]}}</td>
+                <td>Destination: {{detail[0]}}</td>
+                <td>{{detail[1] * 100}}</td>
             </tr>
             <tr>
                 <td ng-hide="item.outgoing.length<1" colspan="2" class="centerAlign">Outgoing traffic</td>
             </tr>
             <tr ng-repeat="detail in item.outgoing">
-                <td>{{detail[0]}}</td>
-                <td>{{detail[1]}}</td>
+                <td>Source: {{detail[0]}}</td>
+                <td>{{detail[1] * 100}}</td>
             </tr>
         </tbody>
     </table>

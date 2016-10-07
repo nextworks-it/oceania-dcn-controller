@@ -33,8 +33,6 @@ define(['angularAMD', 'app/routingConfig', 'app/core/core.services', 'Restangula
                     "description": "Application Affinity Client"
                 }
             });
-
-            // Show cross-connections
             $stateProvider.state('main.appaffinity.traffic', {
                 url: '/traffic',
                 access: access.public,
@@ -45,7 +43,6 @@ define(['angularAMD', 'app/routingConfig', 'app/core/core.services', 'Restangula
                     }
                 }
             });
-            // Create cross-connection
             $stateProvider.state('main.appaffinity.create', {
                 url: '/create',
                 access: access.public,
@@ -56,13 +53,22 @@ define(['angularAMD', 'app/routingConfig', 'app/core/core.services', 'Restangula
                     }
                 }
             });
-            // Delete cross-connection
             $stateProvider.state('main.appaffinity.flow', {
                 url: '/flows',
                 access: access.public,
                 views: {
                     '': {
                         templateUrl: 'src/app/appaffinity/flow.tpl.html',
+                        controller: 'appaffinityCtrl'
+                    }
+                }
+            });
+            $stateProvider.state('main.appaffinity.path', {
+                url: '/path',
+                access: access.public,
+                views: {
+                    '': {
+                        templateUrl: 'src/app/appaffinity/path.tpl.html',
                         controller: 'appaffinityCtrl'
                     }
                 }
