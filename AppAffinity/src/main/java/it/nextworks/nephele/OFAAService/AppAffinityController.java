@@ -134,7 +134,7 @@ public class AppAffinityController {
             processor.addTerminating(requested);
 			UriComponentsBuilder urlbuilder = 
 				UriComponentsBuilder.fromHttpUrl(
-				"http://127.0.0.1:8080/trafficmatrix/applicationprofile/" + connID);
+				"http://127.0.0.1:" + serverPort + "/trafficmatrix/applicationprofile/" + connID);
 			restTemplate.delete(urlbuilder.toUriString());
 		}
 	}

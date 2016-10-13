@@ -4,7 +4,7 @@ public class EthOFMatch extends OFMatch {
 	
 	private Integer[] IP;
 	
-	public EthOFMatch(Integer[] inputIP, String port) throws IllegalArgumentException{
+	public EthOFMatch(Integer[] inputIP, String port) {
 		super(port);
 		if (!(IPValidator.validate(inputIP))){
 			throw new IllegalArgumentException("Illegal IP address");

@@ -1,0 +1,110 @@
+<form role="form" name="createForm" style="width: 100%">
+
+
+    <h2>Profile management</h2>
+
+    <div class="row">
+        <div class="form-group col-md-5">
+            <label for="profileID">Profile ID</label>
+            <select class="form-control input-sm control-label" id="profileID" ui-select2 ng-model="profileID"
+                    ng-required="true">
+                <option ng-repeat="c in profiles" value="{{c}}">{{c}}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <button class="btn btn-primary" ng-click="refreshConnection(profileID)">Show profile details</button>
+        </div>
+        <div class="col-md-3 col-md-offset-3">
+            <button class="btn btn-primary" ng-click="deleteConnection(profileID)">DELETE profile</button>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-5 col-md-offset-3" ng-if="profile === undefined">
+            <span style="color:white">Please select an application profile and an operation.</span>
+        </div>
+
+        <div class="col-md-10 col-md-offset-2" ng-if="profile !== undefined">
+            <h3>Profile Details</h3>
+
+            <div class="row">
+                <div class="form-group col-md-5">
+                    <span style="color:white"><b>Profile status:</b> {{profile.status}}</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-5">
+                    <label for="connectionIndex">Profile Connections:</label>
+                    <select class="form-control input-sm control-label" id="connectionIndex" ui-select2
+                            ng-model="connectionIndex" ng-required="true">
+                        <option ng-repeat="c in profile.connections track by $index" value="{{$index}}">{{$index}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="footable table">
+                        <thead>
+                        <th colspan="2">Connection details</th>
+                        </thead>
+                        <tbody>
+                        <tr ng-hide="connectionIndex !== undefined">
+                            <td colspan="2" class="centerAlign">Please select a connection from those pertaining to the
+                                chosen profile.
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tbody ng-if="connectionIndex !== undefined">
+                        <tr>
+                            <td>Connection type:</td>
+                            <td>{{profile.connections[connectionIndex]['Connection_type']}}</td>
+                        </tr>
+                        <tr>
+                            <td>Connection recovery:</td>
+                            <td>{{profile.connections[connectionIndex]['Recovery']}}</td>
+                        </tr>
+                        <tr>
+                            <td>Connection bandwidth:</td>
+                            <td>{{profile.connections[connectionIndex]['Traffic_profile']['Reserved_bandwidth']}}00
+                                Mbit/s
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Source pod:</td>
+                            <td>{{profile.connections[connectionIndex]['Source_end_point']['Pod_ID']}}</td>
+                        </tr>
+                        <tr>
+                            <td>Source ToR:</td>
+                            <td>{{profile.connections[connectionIndex]['Source_end_point']['ToR_ID']}}</td>
+                        </tr>
+                        <tr>
+                            <td>Source zone:</td>
+                            <td>{{profile.connections[connectionIndex]['Source_end_point']['Zone_ID']}}</td>
+                        </tr>
+                        <tr>
+                            <td>Destination pod:</td>
+                            <td>{{profile.connections[connectionIndex]['Destination_end_point']['Pod_ID']}}</td>
+                        </tr>
+                        <tr>
+                            <td>Destination ToR:</td>
+                            <td>{{profile.connections[connectionIndex]['Destination_end_point']['ToR_ID']}}</td>
+                        </tr>
+                        <tr>
+                            <td>Destination zone:</td>
+                            <td>{{profile.connections[connectionIndex]['Destination_end_point']['Zone_ID']}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>

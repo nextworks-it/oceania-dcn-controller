@@ -4,7 +4,7 @@ public class OFMatch {
 	
 	protected String inputPort;
 	
-	public OFMatch(String inPort) throws IllegalArgumentException {
+	public OFMatch(String inPort) {
 		inputPort=inPort;
 	}
 

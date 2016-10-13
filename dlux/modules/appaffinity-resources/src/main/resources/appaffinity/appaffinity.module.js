@@ -53,6 +53,16 @@ define(['angularAMD', 'app/routingConfig', 'app/core/core.services', 'Restangula
                     }
                 }
             });
+            $stateProvider.state('main.appaffinity.manage', {
+                url: '/manage',
+                access: access.public,
+                views: {
+                    '': {
+                        templateUrl: 'src/app/appaffinity/manage.tpl.html',
+                        controller: 'appaffinityCtrl'
+                    }
+                }
+            });
             $stateProvider.state('main.appaffinity.flow', {
                 url: '/flows',
                 access: access.public,

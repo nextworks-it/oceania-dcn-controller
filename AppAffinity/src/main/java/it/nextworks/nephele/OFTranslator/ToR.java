@@ -27,19 +27,11 @@ class ToR extends Node {
 	private void BuildStaticFlowChart() {
 		/* Builds an entry for each in-rack IP forwarding all packets
 		 * directed to that IP to the correct port
-		 * TODO: use 'ANY' port?
 		 */
 		for (Map.Entry<Integer, Integer[]> entry: rackPorts.entrySet()){
 			Integer[] IP = entry.getValue();
 			Integer port = entry.getKey();
-			for (String inPort : podPorts.values()){
-				staticFlowChart.add(new FlowEntry(new EthOFMatch(IP, inPort), port.toString()));
-			}
-			for (Integer inPort : rackPorts.keySet()){
-				if (!inPort.equals(port)){
-					staticFlowChart.add(new FlowEntry(new EthOFMatch(IP, inPort.toString()), port.toString()));
-				}
-			}
+			staticFlowChart.add(new FlowEntry(new EthOFMatch(IP, "any"), port.toString()));
 		}
 	}
 
@@ -80,7 +72,7 @@ class ToR extends Node {
 		rackPorts = rack;
 		podPorts = inPodPorts;
 		torAddresses = tors;
-		nodeId = "ToR:" + w.toString() + ":" + p.toString();
+		nodeId = "ToR:" + p.toString() + ":" + w.toString();
 		
 		flowTable = new HashSet<>();
 		staticFlowChart = new HashSet<>();

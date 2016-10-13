@@ -47,7 +47,14 @@ public class Connection {
 	}
 
 	public boolean validateAndInit(){
-	    return (source.validateAndInit() && dest.validateAndInit() && profile.validate());
+	    if (source.validateAndInit()
+				&& dest.validateAndInit()
+				&& profile.validate()
+				&& (source.intNode() != dest.intNode())
+		) return true;
+		else throw new IllegalArgumentException("Source and destination ToRs must be different.");
+		// Every "validate" function either returns true or throws an exception.
+		// Hence, false here means that source.intNode() == dest.intNode().
     }
 	
 	
