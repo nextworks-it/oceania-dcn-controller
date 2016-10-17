@@ -21,6 +21,18 @@ can then be found at http://localhost:8089/swagger-ui.html
 Info: m.capitani@nextworks.it
 
 -------------------------------------
+ODL
+-------------------------------------
+There might be problems if ODL plugins are not installed in the correct order.
+Best working order is:
+
+odl-openflowpugin-all
+odl-dlux-all
+odl-aaa-authn-no-cluster
+
+This will install the minimum needed for the demo.
+
+-------------------------------------
 DLUX GUI
 -------------------------------------
 To compile:
@@ -30,7 +42,6 @@ mvn clean install [-DskipTests -DchckStyle.skip=true]
 To install:
 from ODL karaf console
 feature-install odl-dlux-all
-bundle:install mvn:org.opendaylight.dlux/dlux.appaffinity/0.2.4-Lithium-SR4
 
 User Guide:
 GUI can be found at
