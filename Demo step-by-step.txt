@@ -34,6 +34,11 @@ Da qui, basta seguire l'interfaccia di DLUX. Gli errori dovrebbero essere chiari
 -> Profile Management
    visualizzazione e disabilitazione di profili. Ogni profilo puo' avere piu'
    connessioni, da cui la seconda scelta, anche se quelli da GUI ne hanno una sola.
+   NOTA: se si cancella un profilo, viene impostato come "TERMINATING". Per far si'
+   che vengano prese delle misure al riguardo, bisogna far partire un ricalcolo, che
+   al momento avviene solo con la richiesta di creazione e non di rimozione.
+   Quindi per veder sparire il traffico e i path, bisogna creare un nuovo profilo.
+   Allora il profilo rimosso passera' a "DELETED".
 -> Traffic
    visualizzazione della matrice di traffico nella forma
    -------------------------------------------------------------------------------------
