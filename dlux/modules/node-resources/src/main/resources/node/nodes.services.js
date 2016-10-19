@@ -29,7 +29,7 @@ define(['app/node/nodes.module'],function(node) {
   node.register.factory('NodeInventorySvc', function(NodeRestangular) {
     var svc = {
       base: function() {
-        return NodeRestangular.one('restconf').one('operational').one('opendaylight-inventory:nodes');
+        return NodeRestangular.one('restconf').one('config').one('opendaylight-inventory:nodes');
       },
       data : null
     };

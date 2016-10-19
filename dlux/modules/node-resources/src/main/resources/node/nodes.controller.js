@@ -33,6 +33,12 @@ define(['app/node/nodes.module','app/node/nodes.services'], function(node) {
         tableRendered = true;
       }
     });
+
+    $scope.getNodeName = function(nodeId) {
+      var matches = nodeId.match(/^(ToR|POD):(.*):(.*)$/);
+      if (matches[1] == "POD") { return "Plane " + matches[3] + ", pod " + matches[2] + "."; }
+      else if (matches[1] == "ToR") { return "Pod " + matches[2] + ", wavelength " + matches[3] + "."; }
+    };
   });
 
   node.register.controller('nodeConnectorCtrl', function($scope, $stateParams, NodeInventorySvc, $timeout, nodeConnectorFactory) {
@@ -57,13 +63,13 @@ define(['app/node/nodes.module','app/node/nodes.services'], function(node) {
       }
     });
 
-      $scope.$on('lastentry', function() {
-        // Initialize footable table
-        if(!tableRendered){
-          $('.footable').footable();
-          tableRendered = true;
-        }
-      });
+    $scope.$on('lastentry', function() {
+      // Initialize footable table
+      if(!tableRendered){
+        $('.footable').footable();
+        tableRendered = true;
+      }
+    });
 
     $scope.checkActiveFlow = function(index) {
       return nodeConnectorFactory.getActiveFlow($scope.data['flow-node-inventory:table'], index);
