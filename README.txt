@@ -9,13 +9,15 @@ What is OCEANiA?
 -------------------------------------
 
 OCEANiA DCN Controller is an SDN controller developed for the 
-NEPHELE project, funded by the EU under the H2020 Research and
-Innovation programme.
+NEPHELE project.
+NEPHELE is a research project on optical network technologies, 
+supported by the Horizon2020 Framework Programme for Research 
+and Innovation of the European Commission.
 
-It is a tool that automates the configuration of a hybrid
+OCEANiA is a controller automating the configuration of a hybrid
 opto-electrical data center network, leveraging SDN principles
 and the OpenFlow protocol. It is developed to be used on top of
-with the OpenDaylight SDN controller, and makes use of its REST API.
+the OpenDaylight SDN controller, and makes use of its REST API.
 
 NEPHELE project homepage:
 http://www.nepheleproject.eu/
