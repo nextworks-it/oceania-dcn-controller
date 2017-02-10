@@ -68,3 +68,7 @@ local.properties
 # Packages
 AppAffinity.tar.gz
 ODLextensions.tar.gz
+
+# IntelliJ artifacts
+*.iml
+.idea
