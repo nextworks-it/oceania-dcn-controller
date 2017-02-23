@@ -1,0 +1,32 @@
+module translator-api {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:translator-api";
+    prefix "trapi";
+
+    import optical-translator {prefix optr; revision-date "2016-12-28";}
+
+    revision "2016-12-28" {
+        description "Initial revision of optical-translator model";
+    }
+
+    rpc translate-add-optical-flow {
+        input {
+            uses optr:add-opt-flow-input;
+        }
+    }
+
+    rpc translate-remove-optical-flow {
+        input {
+            uses optr:remove-opt-flow-input;
+        }
+    }
+
+    rpc get-translator-type {
+        output {
+            leaf translator-type {
+                type string;
+                description "The name of the translator currently active.";
+            }
+        }
+    }
+}

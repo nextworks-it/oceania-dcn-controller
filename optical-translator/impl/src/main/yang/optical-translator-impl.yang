@@ -1,0 +1,35 @@
+module optical-translator-impl {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:optical-translator:impl";
+    prefix "optical-translator-impl";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
+
+    description
+        "Service definition for optical-translator project";
+
+    revision "2016-12-28" {
+        description
+            "Initial revision";
+    }
+
+    identity optical-translator {
+        base config:module-type;
+        config:java-name-prefix OpticalTranslator;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case optical-translator {
+            when "/config:modules/config:module/config:type = 'optical-translator'";
+            container broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,86 @@
+module optical-translator-nephele {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:optical-translator-nephele";
+    prefix "optrnephele";
+
+    import optical-translator {prefix optr; revision-date "2016-12-28";}
+    import yang-ext {prefix "ext"; revision-date "2013-07-09";}
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+
+    revision "2016-12-28" {
+        description "Initial revision of optical-translator model for NEPHELE data plane";
+    }
+
+    rpc activate-nephele-translator {
+
+    }
+
+    rpc deactivate-nephele-translator {
+
+    }
+
+    rpc add-nephele-flow {
+        input {
+            container nephele-flow-added {
+                uses optr:optical-flow-attributes;
+                uses nephele-flow-attributes;
+            }
+            leaf node-ref {
+                type instance-identifier;
+            }
+        }
+    }
+
+    rpc remove-nephele-flow {
+        input {
+            container nephele-flow-removed {
+                uses optr:optical-flow-attributes;
+                uses nephele-flow-attributes;
+            }
+            leaf node-ref {
+                type instance-identifier;
+            }
+        }
+    }
+
+    grouping nephele-flow-attributes {
+        leaf schedule-id {
+            type uint8;
+        }
+        leaf flow-counter {
+            type uint8;
+        }
+    }
+
+    augment "/inv:nodes/inv:node/optr:optical-flow-table/optr:optical-flow/optr:optical-flow-type/optr:opt-opt-flow/optr:opt-opt-case/optr:opt-match-type" {
+        description
+            "Store power state data in the topology node";
+
+        ext:augment-identifier "nephele-flow-pod-match";
+        uses nephele-flow-attributes;
+    }
+
+    augment "/inv:nodes/inv:node/optr:optical-flow-table/optr:optical-flow/optr:optical-flow-type/optr:opt-opt-flow/optr:opt-opt-case/optr:opt-output-type" {
+        description
+            "Store power state data in the topology node";
+
+        ext:augment-identifier "nephele-flow-pod-out";
+        uses nephele-flow-attributes;
+    }
+
+    augment "/inv:nodes/inv:node/optr:optical-flow-table/optr:optical-flow/optr:optical-flow-type/optr:eth-opt-flow/optr:eth-opt-case/optr:opt-output-type" {
+        description
+            "Store power state data in the topology node";
+
+        ext:augment-identifier "nephele-flow-tor-out";
+        uses nephele-flow-attributes;
+    }
+
+    augment "/inv:nodes/inv:node/optr:optical-flow-table/optr:optical-flow/optr:optical-flow-type/optr:opt-eth-flow/optr:opt-eth-case/optr:opt-match-type" {
+        description
+            "Store power state data in the topology node";
+
+        ext:augment-identifier "nephele-flow-tor-match";
+        uses nephele-flow-attributes;
+    }
+}
