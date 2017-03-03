@@ -19,6 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.translator.rev161228.optical.flow.attributes.optical.flow.type.OptEthFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.translator.rev161228.optical.flow.attributes.optical.flow.type.OptOptFlow;
 
+import javax.annotation.Nullable;
+
 public class MatchParser {
 
     private final MetadataMaker metadataMaker;
@@ -48,14 +50,19 @@ public class MatchParser {
         OptMatchType optMatch = optOptFlow.getOptOptCase().getOptMatchType();
         OptOutputType optOutput = optOptFlow.getOptOptCase().getOptOutputType();
 
-        String inPort = "openflow:" + optMatch.getWport().toString();
+        String inPort;
+        if (null != optMatch.getWport()) {
+            inPort = "openflow:" + optMatch.getWport().toString();
+        }
+        else {
+            inPort = null;
+        }
 
         Metadata metadata = metadataMaker.buildMetadata(optMatch, optOutput, nepheleData, false);
 
         return wrapMatch(inPort, metadata);
     }
 
-    // TODO check match-action
     private Match createMatchOptEth(OptEthFlow optEthFlow, NepheleFlowAttributes nepheleData) throws FlowParserException {
 
         OptMatchType optMatch = optEthFlow.getOptEthCase().getOptMatchType();
@@ -63,14 +70,19 @@ public class MatchParser {
         if (null == nepheleData)
             throw new FlowParserException("Nephele data not present, error.");
 
-        String inPort = "openflow:" + optMatch.getWport().toString();
+        String inPort;
+        if (null != optMatch.getWport()) {
+            inPort = "openflow:" + optMatch.getWport().toString();
+        }
+        else {
+            inPort = null;
+        }
 
         Metadata metadata = metadataMaker.buildMetadata(optMatch, null, nepheleData, true);
 
         return wrapMatch(inPort, metadata);
     }
 
-    // TODO check match-action
     private Match createMatchEthOpt(EthOptFlow ethOptFlow, NepheleFlowAttributes nepheleData) throws FlowParserException {
 
         OptOutputType optOutput = ethOptFlow.getEthOptCase().getOptOutputType();
@@ -83,7 +95,7 @@ public class MatchParser {
         return wrapMatch(metadata, ethOptFlow.getEthOptCase().getEthMatchType());
     }
 
-    private static Match wrapMatch(String inPort, Metadata metadata) {
+    private static Match wrapMatch(@Nullable String inPort, Metadata metadata) {
         return wrapMatch(inPort, metadata, new MatchBuilder());
     }
 
@@ -91,7 +103,7 @@ public class MatchParser {
         return wrapMatch(null, metadata, new MatchBuilder(base));
     }
 
-    private static Match wrapMatch(String inPort, Metadata metadata, MatchBuilder base) {
+    private static Match wrapMatch(@Nullable String inPort, Metadata metadata, MatchBuilder base) {
         if (null != inPort)
             base.setInPort(new NodeConnectorId(inPort));
         if (metadata != null)

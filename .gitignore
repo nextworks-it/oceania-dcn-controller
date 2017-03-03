@@ -1,4 +1,6 @@
-.gitignore
+#ODL generated sources
+yang-gen-sal/
+yang-gen-config/
 
 #Maven artifacts
 

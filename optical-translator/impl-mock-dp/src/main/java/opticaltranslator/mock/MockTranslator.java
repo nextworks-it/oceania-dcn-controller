@@ -98,6 +98,7 @@ public class MockTranslator implements TranslatorApiService {
 
             OpticalFlowType flowType = unwrapInput(input.getFlowAdded());
 
+            // TODO contains getVlan call
             Match match = parser.createMatch(flowType);
 
             if (flowType instanceof OptOptFlow) {
@@ -123,6 +124,7 @@ public class MockTranslator implements TranslatorApiService {
                         match,
                         fetcher.extractOutPort(flowType),
                         new NodeRef(input.getNodeRef()),
+                        // TODO check getVlan call
                         vlanProvider.getVLan(((EthOptFlow)flowType).getEthOptCase().getOptOutputType())
                 );
                 return swapper.generalizeFuture(flowService.addFlow(addFlow));
@@ -151,6 +153,7 @@ public class MockTranslator implements TranslatorApiService {
 
             OpticalFlowType flowType = unwrapInput(input.getFlowRemoved());
 
+            // TODO contains getVlan call
             Match match = parser.createMatch(flowType);
 
             if (flowType instanceof OptOptFlow) {
@@ -176,6 +179,7 @@ public class MockTranslator implements TranslatorApiService {
                         match,
                         fetcher.extractOutPort(flowType),
                         new NodeRef(input.getNodeRef()),
+                        // TODO check getVlan call
                         vlanProvider.getVLan((EthOptFlow)flowType)
                 );
                 return swapper.generalizeFuture(flowService.removeFlow(removeFlow));

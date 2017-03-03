@@ -1,5 +1,9 @@
 package it.nextworks.nephele.OFTranslator;
 
+import it.nextworks.nephele.OFAAService.ODLInventory.Const;
+
+import java.util.Arrays;
+
 public class Bitmap {
 	
 	private boolean[] bmp = new boolean[Const.T];
@@ -53,4 +57,18 @@ public class Bitmap {
 		bmp = new boolean[Const.T];
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Bitmap bitmap = (Bitmap) o;
+
+		return Arrays.equals(bmp, bitmap.bmp);
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(bmp);
+	}
 }

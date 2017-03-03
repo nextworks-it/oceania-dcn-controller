@@ -21,6 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.translator.rev161228.optical.flow.attributes.optical.flow.type.OptEthFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.translator.rev161228.optical.flow.attributes.optical.flow.type.OptOptFlow;
 
+import javax.annotation.Nullable;
+
 public class MatchParser {
 
     private final VlanProvider provider;
@@ -45,8 +47,15 @@ public class MatchParser {
 
     private Match createMatch(OptMatchType optMatch)
             throws ReadFailedException, OutOfTagsException, TransactionCommitFailedException {
-        String inPort = "openflow:" + optMatch.getWport().toString();
+        String inPort;
+        if (null != optMatch.getWport()) {
+            inPort = "openflow:" + optMatch.getWport().toString();
+        }
+        else {
+            inPort = null;
+        }
 
+        // TODO check getVlan call
         VlanId vLanId = provider.getVLan(optMatch);
         return wrapMatch(inPort, vLanId);
     }
@@ -55,12 +64,14 @@ public class MatchParser {
         return match;
     }
 
-    private static Match wrapMatch(String inPort, VlanId vLanId) {
+    private static Match wrapMatch(@Nullable String inPort, VlanId vLanId) {
         MatchBuilder match = new MatchBuilder();
-        match.setInPort(new NodeConnectorId(inPort));
-        if (vLanId != null)
+        if (null != inPort) {
+            match.setInPort(new NodeConnectorId(inPort));
+        }
+        if (vLanId != null) {
             match.setVlanMatch(new VlanMatchBuilder().setVlanId(vLanId).build());
-
+        }
         return(match.build());
     }
 }

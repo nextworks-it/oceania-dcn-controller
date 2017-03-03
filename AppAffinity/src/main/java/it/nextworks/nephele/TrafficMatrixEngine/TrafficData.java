@@ -1,6 +1,6 @@
 package it.nextworks.nephele.TrafficMatrixEngine;
 
-import it.nextworks.nephele.OFTranslator.Const;
+import it.nextworks.nephele.OFAAService.ODLInventory.Const;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

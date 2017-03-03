@@ -68,6 +68,27 @@ public class MetadataTest {
     }
 
     @Test
+    public void testRandom() throws FlowParserException{
+        OpticalResourceAttributes match = makeResources(
+                new BigInteger("11000111", 2),
+                "11111000000000111100110011101000000000000000111011011110001111100000111011110011",
+                2
+        );
+        OpticalResourceAttributes output = makeResources(
+                new BigInteger("11000111", 2),
+                "11111000000000111100110011101000000000000000111011011110001111100000111011110011",
+                1
+        );
+        NepheleFlowAttributes nepheleResources = makeNepheleResources(
+                fromBinaryString("10101001"),
+                fromBinaryString("00111001")
+        );
+        Metadata metadata = maker.buildMetadata(match, output, nepheleResources, true);
+        Assert.assertEquals(new BigInteger("100606773632124500", 10), metadata.getMetadata());
+        Assert.assertEquals(new BigInteger("63620968874668943", 10), metadata.getMetadataMask());
+    }
+
+    @Test
     public void testAll0() throws FlowParserException{
         OpticalResourceAttributes match = makeResources(
                 new BigInteger("00000000", 2),
@@ -170,6 +191,27 @@ public class MetadataTest {
         );
         Metadata metadata = maker.buildMetadata(match, output, nepheleResources, true);
         Assert.assertEquals(new BigInteger("999999999999999999", 10), metadata.getMetadata());
+        Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadataMask()); // Should not be 0 but absent
+    }
+
+    @Test
+    public void testsmall() throws FlowParserException{
+        OpticalResourceAttributes match = makeResources(
+                new BigInteger("00000000", 2),
+                "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                2
+        );
+        OpticalResourceAttributes output = makeResources(
+                new BigInteger("00000001", 2),
+                "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                1
+        );
+        NepheleFlowAttributes nepheleResources = makeNepheleResources(
+                fromBinaryString("00000000"),
+                fromBinaryString("00000000")
+        );
+        Metadata metadata = maker.buildMetadata(match, output, nepheleResources, false);
+        Assert.assertEquals(new BigInteger("2", 10), metadata.getMetadata());
         Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadataMask()); // Should not be 0 but absent
     }
 }

@@ -38,9 +38,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
         <module>api</module>
         <module>api-mock</module>
         <module>api-nephele</module>
+        <module>api-nephele-mock</module>
         <module>impl</module>
         <module>impl-mock-dp</module>
         <module>impl-nephele-dp</module>
+        <module>impl-nephele-mock</module>
         <module>karaf</module>
         <module>features</module>
         <module>artifacts</module>

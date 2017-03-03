@@ -1,7 +1,5 @@
 package it.nextworks.nephele.OFAAService.ODLInventory;
 
-import it.nextworks.nephele.OFTranslator.Const;
-
 public class OpendaylightMetadataContainer {
 	
 	private Integer metadata;

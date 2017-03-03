@@ -104,22 +104,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
             <type>xml</type>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>optical-translator-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>optical-translator-impl</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>optical-translator-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
     </dependencies>
 </project>

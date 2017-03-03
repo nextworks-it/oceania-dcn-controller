@@ -1,7 +1,7 @@
 package it.nextworks.nephele.OFAAService;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.nextworks.nephele.OFTranslator.Const;
+import it.nextworks.nephele.OFAAService.ODLInventory.Const;
 
 
 public class ConnectionEndPoint {

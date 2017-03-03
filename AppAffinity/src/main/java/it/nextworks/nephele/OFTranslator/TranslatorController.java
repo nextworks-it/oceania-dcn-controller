@@ -1,5 +1,6 @@
 package it.nextworks.nephele.OFTranslator;
 
+import it.nextworks.nephele.OFAAService.ODLInventory.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

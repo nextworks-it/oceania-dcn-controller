@@ -140,11 +140,11 @@ public class AppAffinityController {
 	}
 	
 
-	@RequestMapping(value="/test/invtest", method=RequestMethod.GET)
+	@RequestMapping(value="/test/invtest", method=RequestMethod.POST)
 	@ApiOperation(value = "getInvTest", nickname = "Test inventory generation")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "Success", response = OpendaylightInventory.class)})
-	public OpendaylightInventory getInventory(int[][] nall){
+	public OpendaylightInventory getInventory(@RequestBody int[][] nall){
 	
 		RestTemplate restTemplate = new RestTemplate();
 
