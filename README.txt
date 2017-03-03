@@ -26,47 +26,36 @@ H2020 programme homepage:
 https://ec.europa.eu/programmes/horizon2020/en
 
 -------------------------------------
+Installation
+-------------------------------------
+Launch the
+./install.sh
+script.
+This will install both the Application affinity service and the
+optical translator ODL module.
+
+-------------------------------------
 Application Affinity Service
 -------------------------------------
-To compile:
-cd AppAffinity
-mvn clean install
-
 To launch:
-cd AppAffinityService/
+cd AppAffinity/
 ./run.sh
 
 User guide:
-Launch by following instructions above. ReST API documentation
+ReST API documentation
 can then be found at http://localhost:8089/swagger-ui.html
 
 Info: m.capitani@nextworks.it
 
 -------------------------------------
-ODL
+Optical translator
 -------------------------------------
-There might be problems if the ODL plugins are not installed
-in the correct order. Best working order is:
+After installation, from the karaf console of ODL, launch the following commands:
 
-odl-openflowpugin-all
-odl-dlux-all
-odl-aaa-authn-no-cluster
+feature:repo-add mvn:opticaltranslator/optical-translator-features/1.0.0-SNAPSHOT/xml/features
+feature:install odl-optical-translator-nephele
 
-This will install the minimum needed for the demo.
-Notice that the extensions must be compiled first. 
-If some or all of these plugins are installed without
-extensions, from bin folder of ODL launch
-
-./karaf clean
-
-This will wipe all data and let you start with a "fresh install" of ODL.
-Compile the extensions, then install the features as above.
-
--------------------------------------
-OpenFlow Plugin extensions
--------------------------------------
-
-TO BE COMPLETED
+This will install and start the optical translator for the processing of optical informations.
 
 -------------------------------------
 DLUX GUI
