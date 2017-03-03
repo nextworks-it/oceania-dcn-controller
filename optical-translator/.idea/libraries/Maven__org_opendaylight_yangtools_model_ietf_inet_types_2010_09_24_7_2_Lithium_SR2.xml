@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.opendaylight.yangtools.model:ietf-inet-types:2010.09.24.7.2-Lithium-SR2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/model/ietf-inet-types/2010.09.24.7.2-Lithium-SR2/ietf-inet-types-2010.09.24.7.2-Lithium-SR2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/model/ietf-inet-types/2010.09.24.7.2-Lithium-SR2/ietf-inet-types-2010.09.24.7.2-Lithium-SR2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/model/ietf-inet-types/2010.09.24.7.2-Lithium-SR2/ietf-inet-types-2010.09.24.7.2-Lithium-SR2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

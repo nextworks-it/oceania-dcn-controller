@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Nextworks s.r.l.
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<features name="odl-optical-translator-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+    <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
+    <repository>
+        mvn:org.opendaylight.openflowplugin/features-openflowplugin/${openflowplugin.version}/xml/features
+    </repository>
+
+    <!-- APIs -->
+    <feature name='odl-optical-translator-api' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: api'>
+        <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+        <feature version='${openflowplugin.version}'>odl-openflowplugin-nsf-model</feature>
+        <bundle>mvn:opticaltranslator/optical-translator-api/${project.version}</bundle>
+    </feature>
+    <feature name='odl-optical-translator-api-emulation' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: api :: mock'>
+        <feature version='${project.version}'>odl-optical-translator-api</feature>
+        <bundle>mvn:opticaltranslator/optical-translator-api-mock/${project.version}</bundle>
+    </feature>
+    <feature name='odl-optical-translator-api-nephele' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: api :: nephele'>
+        <feature version='${project.version}'>odl-optical-translator-api</feature>
+        <bundle>mvn:opticaltranslator/optical-translator-api-nephele/${project.version}</bundle>
+    </feature>
+    <feature name='odl-optical-translator-api-nephele-mock' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: api :: nephele'>
+        <feature version='${project.version}'>odl-optical-translator-api</feature>
+        <bundle>mvn:opticaltranslator/optical-translator-api-nephele-mock/${project.version}</bundle>
+    </feature>
+
+    <!-- Impls -->
+    <feature name='odl-optical-translator' version='${project.version}'
+             description='OpenDaylight :: optical-translator'>
+        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version='${project.version}'>odl-optical-translator-api</feature>
+        <feature version='${openflowplugin.version}'>odl-openflowplugin-flow-services</feature>
+        <bundle>mvn:opticaltranslator/optical-translator-impl/${project.version}</bundle>
+        <configfile finalname="${configfile.directory}/optical-translator.xml">
+            mvn:opticaltranslator/optical-translator-impl/${project.version}/xml/config
+        </configfile>
+    </feature>
+    <feature name='odl-optical-translator-emulation' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: mock'>
+        <feature version='${project.version}'>odl-optical-translator</feature>
+        <feature version='${project.version}'>odl-optical-translator-api-emulation</feature>
+        <bundle>mvn:opticaltranslator/optical-translator-impl-mock/${project.version}</bundle>
+        <configfile finalname="${configfile.directory}/optical-translator-mock.xml">
+            mvn:opticaltranslator/optical-translator-impl-mock/${project.version}/xml/config
+        </configfile>
+    </feature>
+    <feature name='odl-optical-translator-nephele' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: nephele'>
+        <feature version='${project.version}'>odl-optical-translator</feature>
+        <feature version='${project.version}'>odl-optical-translator-api-nephele</feature>
+        <bundle>mvn:opticaltranslator/optical-translator-impl-nephele/${project.version}</bundle>
+        <configfile finalname="${configfile.directory}/optical-translator-nephele.xml">
+            mvn:opticaltranslator/optical-translator-impl-nephele/${project.version}/xml/config
+        </configfile>
+    </feature>
+    <feature name='odl-optical-translator-nephelemock' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: nephelemock'>
+        <feature version='${project.version}'>odl-optical-translator-nephele</feature>
+        <feature version='${project.version}'>odl-optical-translator-api-nephele-mock</feature>
+        <bundle>mvn:opticaltranslator/optical-translator-nephele-impl-mock/${project.version}</bundle>
+        <configfile finalname="${configfile.directory}/optical-translator-nephele-mock.xml">
+            mvn:opticaltranslator/optical-translator-nephele-impl-mock/${project.version}/xml/config
+        </configfile>
+    </feature>
+    <feature name='odl-optical-translator-all-impl' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: all'>
+        <feature version='${project.version}'>odl-optical-translator-emulation</feature>
+        <feature version='${project.version}'>odl-optical-translator-nephele</feature>
+        <feature version='${project.version}'>odl-optical-translator-nephelemock</feature>
+    </feature>
+
+    <!-- Rests and UIs -->
+    <!-- Core -->
+    <feature name='odl-optical-translator-rest' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: REST'>
+        <feature version="${project.version}">odl-optical-translator</feature>
+        <feature version="${mdsal.version}">odl-restconf</feature>
+    </feature>
+    <feature name='odl-optical-translator-ui' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: UI'>
+        <feature version="${project.version}">odl-optical-translator-rest</feature>
+        <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
+        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+    </feature>
+
+    <!-- VLAN -->
+    <feature name='odl-optical-translator-rest-emulation' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: REST :: mock'>
+        <feature version="${project.version}">odl-optical-translator-emulation</feature>
+        <feature version="${mdsal.version}">odl-restconf</feature>
+    </feature>
+    <feature name='odl-optical-translator-ui-emulation' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: UI :: mock'>
+        <feature version="${project.version}">odl-optical-translator-rest-emulation</feature>
+        <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
+        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+    </feature>
+
+    <!-- NEPHELE -->
+    <feature name='odl-optical-translator-rest-nephele' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: REST :: nephele'>
+        <feature version="${project.version}">odl-optical-translator-nephele</feature>
+        <feature version="${mdsal.version}">odl-restconf</feature>
+    </feature>
+    <feature name='odl-optical-translator-ui-nephele' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: UI :: nephele'>
+        <feature version="${project.version}">odl-optical-translator-rest-nephele</feature>
+        <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
+        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+    </feature>
+
+    <!-- NEPHELE MOCK -->
+    <feature name='odl-optical-translator-rest-nephelemock' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: REST :: nephelemock'>
+        <feature version="${project.version}">odl-optical-translator-nephelemock</feature>
+        <feature version="${mdsal.version}">odl-restconf</feature>
+    </feature>
+    <feature name='odl-optical-translator-ui-nephele' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: UI :: nephelemock'>
+        <feature version="${project.version}">odl-optical-translator-rest-nephelemock</feature>
+        <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
+        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+    </feature>
+
+    <!-- ALL -->
+    <feature name='odl-optical-translator-rest-all' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: REST :: all'>
+        <feature version="${project.version}">odl-optical-translator-all-impl</feature>
+        <feature version="${mdsal.version}">odl-restconf</feature>
+    </feature>
+    <feature name='odl-optical-translator-ui-all' version='${project.version}'
+             description='OpenDaylight :: optical-translator :: UI :: all'>
+        <feature version="${project.version}">odl-optical-translator-rest-all</feature>
+        <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
+        <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+    </feature>
+
+</features>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="optical-translator-api" />
+        <module name="optical-translator-api-mock" />
+        <module name="optical-translator-api-nephele" />
+        <module name="optical-translator-api-nephele-mock" />
+        <module name="optical-translator-features" />
+        <module name="optical-translator-impl" />
+        <module name="optical-translator-impl-mock" />
+        <module name="optical-translator-impl-nephele" />
+        <module name="optical-translator-karaf" />
+        <module name="optical-translator-nephele-impl-mock" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="optical-translator-aggregator" target="1.7" />
+      <module name="optical-translator-api" target="1.7" />
+      <module name="optical-translator-api-mock" target="1.7" />
+      <module name="optical-translator-api-nephele" target="1.7" />
+      <module name="optical-translator-api-nephele-mock" target="1.7" />
+      <module name="optical-translator-artifacts" target="1.5" />
+      <module name="optical-translator-features" target="1.7" />
+      <module name="optical-translator-impl" target="1.8" />
+      <module name="optical-translator-impl-mock" target="1.8" />
+      <module name="optical-translator-impl-nephele" target="1.8" />
+      <module name="optical-translator-karaf" target="1.7" />
+      <module name="optical-translator-nephele-impl-mock" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

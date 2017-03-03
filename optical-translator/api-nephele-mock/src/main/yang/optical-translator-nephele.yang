@@ -1,0 +1,37 @@
+module optical-translator-nephele-mock {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:optical-translator-nephele-mock";
+    prefix "optrnephelemock";
+
+    import optical-translator {prefix optr; revision-date "2016-12-28";}
+    import yang-ext {prefix "ext"; revision-date "2013-07-09";}
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+
+    revision "2016-12-28" {
+        description "Initial revision of optical-translator model for NEPHELE data plane";
+    }
+
+    rpc activate-nephele-mock-translator {
+
+    }
+
+    rpc deactivate-nephele-mock-translator {
+
+    }
+
+    /*
+    grouping neph-emu-flow-attributes {
+        leaf priority {
+            type uint16;
+        }
+    }
+
+    augment "/inv:nodes/inv:node/optr:optical-flow-table/optr:optical-flow" {
+        description
+            "Priority for nephele emulation";
+
+        ext:augment-identifier "nephele-emulated-flow";
+        uses neph-emu-flow-attributes;
+    }
+    */
+}

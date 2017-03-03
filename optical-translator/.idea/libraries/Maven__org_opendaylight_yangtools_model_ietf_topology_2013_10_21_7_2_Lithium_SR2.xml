@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.opendaylight.yangtools.model:ietf-topology:2013.10.21.7.2-Lithium-SR2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/model/ietf-topology/2013.10.21.7.2-Lithium-SR2/ietf-topology-2013.10.21.7.2-Lithium-SR2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/model/ietf-topology/2013.10.21.7.2-Lithium-SR2/ietf-topology-2013.10.21.7.2-Lithium-SR2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/model/ietf-topology/2013.10.21.7.2-Lithium-SR2/ietf-topology-2013.10.21.7.2-Lithium-SR2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
