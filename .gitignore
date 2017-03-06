@@ -10,6 +10,9 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
+#IntelliJ artifact
+.idea/
+
 #Eclipse artifacts
 
 .metadata
