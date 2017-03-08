@@ -85,12 +85,6 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
             var outAction = flow.instructions.instruction[0]['apply-actions'].action[0]['output-action'];
             output.outPort = outAction['output-node-connector'];
-            if (outAction.timeslot !== undefined) {
-                output.timeslot = outAction.timeslot.substring(0, svc.T);
-            }
-            if (outAction.wavelength !== undefined) {
-                output.wavelength = outAction.wavelength;
-            }
             if (flow.match['ipv4-destination'] !== undefined) {
                 output.destination = flow.match['ipv4-destination'];
             }
@@ -99,10 +93,38 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             return output;
         };
 
+        svc.parseOpticalFlow = function(flow) {
+            var output = {};
+            if (flow['opt-opt-case']) {
+                output.outPort = flow['opt-opt-case']['opt-output-type']['wport'];
+                if (flow['opt-opt-case']['opt-match-type']['wport']) {
+                    output.inPort = flow['opt-opt-case']['opt-match-type']['wport'];
+                } else {
+                    output.inPort = "ANY";
+                }
+
+                output.timeslot = flow['opt-opt-case']['opt-output-type']['timeslots'].substring(0, svc.T);
+                output.wavelength = flow['opt-opt-case']['opt-output-type']['wavelength'];
+
+            }
+
+            if (flow['eth-opt-case']) {
+                output.outPort = flow['eth-opt-case']['opt-output-type']['wport'];
+                output.timeslot = flow['eth-opt-case']['opt-output-type']['timeslots'].substring(0, svc.T);
+                output.wavelength = flow['eth-opt-case']['opt-output-type']['wavelength'];
+                if (flow['eth-opt-case']['eth-match-type']['in-port']) {
+                    output.inPort = flow['eth-opt-case']['eth-match-type']['in-port'];
+                } else {
+                    output.inPort = "ANY";
+                }
+            }
+            return output;
+        };
+
         svc.parseNode = function(data, node) {
             var flowList;
             for (var i = 0; i< data['flow-node-inventory:table'].length; i++) {
-                 if (data['flow-node-inventory:table'][i].id == '0') {
+                 if (data['flow-node-inventory:table'][i].id == '1') {
                      flowList = data['flow-node-inventory:table'][i].flow;
                      i = data['flow-node-inventory:table'].length;
                  }
@@ -110,6 +132,11 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             for (var j = 0; j < flowList.length; j++) {
                 var flow = flowList[j];
                 node.flows.push(svc.parseFlow(flow));
+            }
+            var optFlowList = data['optical-translator:optical-flow-table']['optical-flow'];
+            for (var k = 0; k < optFlowList.length; k++) {
+                var optFlow = optFlowList[k];
+                node.flows.push(svc.parseOpticalFlow(optFlow));
             }
         };
 
@@ -135,28 +162,30 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
         svc.graphics = function(nodes, sourceTor, sourceZone, destTor) {
             if (nodes === undefined) {return undefined;}
-            var lambda = parseInt(destTor.match(/^ToR:.*:(.*)$/)[1]);
-            var destPod = parseInt(destTor.match(/^ToR:(.*):.*$/)[1]);
-            var destTorId = destPod*svc.W + lambda;
-            var destIP = "10.0." + String(destTorId + 1) + ".0/32";
+            var lambda = parseInt(destTor.match(/^openflow:10[1-9]00([1-9])$/)[1]);
+            var destPod = parseInt(destTor.match(/^openflow:10([1-9])00[1-9]$/)[1]);
+            var destIP = "10." + String(destPod) + "." + String(lambda) + ".";
+
             var data = {};
             data.destPod = destPod;
-            data.srcPod = parseInt(sourceTor.match(/^ToR:(.*):.*$/)[1]);
+            data.srcPod = parseInt(sourceTor.match(/^openflow:10([1-9])00[1-9]$/)[1]);
             data.lambda = lambda;
-            data.srcLambda = parseInt(sourceTor.match(/^ToR:.*:(.*)$/)[1]);
+            data.srcLambda = parseInt(sourceTor.match(/^openflow:10[1-9]00([1-9])$/)[1]);
             var node;
             var flow;
             data.source = [];
             for (var i = 0; i<nodes.length; i++) {
                 node = nodes[i];
-                if (node.id.match(/^POD.*/)) {
+                if (node.id.match(/^openflow:2.*/)) {
                     data[node.id] = {};
                     for (var j = 0; j<node.flows.length; j++) {
                         flow = node.flows[j];
-                        if (flow.wavelength == lambda && flow.outPort.match(/^Ring.*/)) {
+                        // TODO This is configuration dependant.
+                        if (flow.wavelength == lambda && flow.outPort.match(/^[24]$/)) {
                             data[node.id]['forward'] = flow.timeslot;
                         }
-                        if (flow.wavelength == lambda && flow.outPort.match(/^ToR.*/)) {
+                        // TODO This is configuration dependant.
+                        if (flow.wavelength == lambda && flow.outPort.match(/^[5678]$/)) {
                             data[node.id]['drop'] = flow.timeslot;
                         }
                     }
@@ -164,12 +193,12 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 else if (node.id == sourceTor) {
                     for (var k = 0; k<node.flows.length; k++) {
                         flow = node.flows[k];
-                        if (flow.inPort == sourceZone && flow.destination == destIP) {
+                        if (flow.inPort == sourceZone && flow.destination.includes(destIP)) {
                             data.source.push({node: node.id, time: flow.timeslot, outPort: flow.outPort});
                             if (data[node.id] === undefined) {
                                 data[node.id] = {};
                             }
-                            data[node.id][flow.outPort.match(/^plane(.*)$/)[1]] = flow.timeslot;
+                            data[node.id][flow.outPort] = flow.timeslot;
                         }
                     }
                 }
@@ -189,13 +218,13 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 path = [];
                 flow = data.source[i];
                 path.push(flow.node);
-                plane = flow.outPort.match(/^plane(.*)$/)[1];
+                plane = flow.outPort;
                 time = flow.time;
-                next = "POD:" + flow.node.match(/^ToR:(.*):.*$/)[1] + ":" + plane;
+                next = "openflow:20" + plane + "00" + flow.node.match(/^openflow:10([1-9])00[1-9]$/)[1];
                 while (next !== null) {
                     flow = data[next];
                     path.push(next);
-                    if (destPod == next.match(/^POD:(.*):.*$/)[1]) {
+                    if (destPod == next.match(/^openflow:20[1-9]00([1-9])$/)[1]) {
                         next = null;
                         time = svc.intersect(time, flow.drop);
                     }
@@ -210,10 +239,10 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
         };
 
         svc.incrementNext = function(next) {
-            var plane = next.match(/^POD:.*:(.*)$/)[1];
-            var current = parseInt(next.match(/^POD:(.*):.*$/)[1]);
-            var incremented = (current + 1) % svc.P;
-            return "POD:" + incremented.toString() + ":" + plane;
+            var plane = next.match(/^openflow:10([1-9])00[1-9]$/)[1];
+            var current = parseInt(next.match(/^openflow:10[1-9]00([1-9])$/)[1]);
+            var incremented = ((current) % svc.P) + 1;
+            return "openflow:20" + plane + "00" + incremented.toString();
         };
 
         svc.intersect = function(str1, str2) {
@@ -234,7 +263,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                     var direction;
                     if (k === (det.path.length -1)) {direction = 'drop';}
                     else if (k > 0) {direction = 'forward';}
-                    else if (k === 0) {direction = det.path[1].match(/^POD:.*:(.*)$/)[1];}
+                    else if (k === 0) {direction = det.path[1].match(/^openflow:20([1-9])00[1-9]$/)[1];}
                     data[node][direction] = svc.replaceChars(data[node][direction], det.time);
                 }
             }
