@@ -13,7 +13,7 @@ public class OpendaylightOpticalTable {
 
     public OpendaylightOpticalTable(Set<? extends FlowEntry> input, String nodeId) {
 
-        Integer i = 0;
+        Integer i = 1000;
         for (FlowEntry inFlow : input) {
             String flowId = String.format("OF%s_F%s", nodeId, i);
             flow.add(OpendaylightOpticalFlow.buildFlow(inFlow, flowId));

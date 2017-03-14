@@ -94,7 +94,7 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
 
             //Utility filter
             $scope.torFilter = function(node) {
-               return /^ToR:.*$/.test(node.id);
+               return /^openflow:1.*$/.test(node.id);
             };
 
             //load data

@@ -95,6 +95,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
         svc.parseOpticalFlow = function(flow) {
             var output = {};
+            output.id = flow['flow-id'];
             if (flow['opt-opt-case']) {
                 output.outPort = flow['opt-opt-case']['opt-output-type']['wport'];
                 if (flow['opt-opt-case']['opt-match-type']['wport']) {
@@ -117,6 +118,11 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 } else {
                     output.inPort = "ANY";
                 }
+                if (flow['eth-opt-case']['eth-match-type']['ipv4-destination']) {
+                    output.destination = flow['eth-opt-case']['eth-match-type']['ipv4-destination'];
+                } else {
+                    output.destination = "N/A";
+                }
             }
             return output;
         };
@@ -126,6 +132,9 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             for (var i = 0; i< data['flow-node-inventory:table'].length; i++) {
                  if (data['flow-node-inventory:table'][i].id == '1') {
                      flowList = data['flow-node-inventory:table'][i].flow;
+                     if (flowList === undefined) {
+                        flowList = [];
+                     }
                      i = data['flow-node-inventory:table'].length;
                  }
             }
@@ -134,6 +143,9 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 node.flows.push(svc.parseFlow(flow));
             }
             var optFlowList = data['optical-translator:optical-flow-table']['optical-flow'];
+            if (optFlowList === undefined) {
+                optFlowList = [];
+            }
             for (var k = 0; k < optFlowList.length; k++) {
                 var optFlow = optFlowList[k];
                 node.flows.push(svc.parseOpticalFlow(optFlow));
@@ -162,15 +174,16 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
 
         svc.graphics = function(nodes, sourceTor, sourceZone, destTor) {
             if (nodes === undefined) {return undefined;}
-            var lambda = parseInt(destTor.match(/^openflow:10[1-9]00([1-9])$/)[1]);
-            var destPod = parseInt(destTor.match(/^openflow:10([1-9])00[1-9]$/)[1]);
-            var destIP = "10." + String(destPod) + "." + String(lambda) + ".";
+            var lambda = parseInt(destTor.match(/^openflow:10[1-9]00([1-9])$/)[1]) - 1;
+            var destPod = parseInt(destTor.match(/^openflow:10([1-9])00[1-9]$/)[1]) - 1;
+            var destIP = "10." + String(destPod + 1) + "." + String(lambda + 1) + ".";
+            var actualSourceZone = sourceZone
 
             var data = {};
             data.destPod = destPod;
-            data.srcPod = parseInt(sourceTor.match(/^openflow:10([1-9])00[1-9]$/)[1]);
+            data.srcPod = parseInt(sourceTor.match(/^openflow:10([1-9])00[1-9]$/)[1]) - 1;
             data.lambda = lambda;
-            data.srcLambda = parseInt(sourceTor.match(/^openflow:10[1-9]00([1-9])$/)[1]);
+            data.srcLambda = parseInt(sourceTor.match(/^openflow:10[1-9]00([1-9])$/)[1]) - 1;
             var node;
             var flow;
             data.source = [];
@@ -181,11 +194,11 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                     for (var j = 0; j<node.flows.length; j++) {
                         flow = node.flows[j];
                         // TODO This is configuration dependant.
-                        if (flow.wavelength == lambda && flow.outPort.match(/^[24]$/)) {
+                        if (flow.wavelength == lambda && flow.outPort.toString().match(/^[24]$/)) {
                             data[node.id]['forward'] = flow.timeslot;
                         }
                         // TODO This is configuration dependant.
-                        if (flow.wavelength == lambda && flow.outPort.match(/^[5678]$/)) {
+                        if (flow.wavelength == lambda && flow.outPort.toString().match(/^[5678]$/)) {
                             data[node.id]['drop'] = flow.timeslot;
                         }
                     }
@@ -193,7 +206,8 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 else if (node.id == sourceTor) {
                     for (var k = 0; k<node.flows.length; k++) {
                         flow = node.flows[k];
-                        if (flow.inPort == sourceZone && flow.destination.includes(destIP)) {
+                        // TODO this is configuration dependant
+                        if ((flow.inPort == 3 + parseInt(sourceZone)) && flow.destination.includes(destIP)) {
                             data.source.push({node: node.id, time: flow.timeslot, outPort: flow.outPort});
                             if (data[node.id] === undefined) {
                                 data[node.id] = {};
@@ -224,7 +238,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 while (next !== null) {
                     flow = data[next];
                     path.push(next);
-                    if (destPod == next.match(/^openflow:20[1-9]00([1-9])$/)[1]) {
+                    if (destPod + 1 == next.match(/^openflow:20[1-9]00([1-9])$/)[1]) {
                         next = null;
                         time = svc.intersect(time, flow.drop);
                     }
@@ -239,8 +253,8 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
         };
 
         svc.incrementNext = function(next) {
-            var plane = next.match(/^openflow:10([1-9])00[1-9]$/)[1];
-            var current = parseInt(next.match(/^openflow:10[1-9]00([1-9])$/)[1]);
+            var plane = next.match(/^openflow:20([1-9])00[1-9]$/)[1];
+            var current = parseInt(next.match(/^openflow:20[1-9]00([1-9])$/)[1]);
             var incremented = ((current) % svc.P) + 1;
             return "openflow:20" + plane + "00" + incremented.toString();
         };
@@ -272,7 +286,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
         svc.replaceChars = function(str, boolStr) {
             var result = "";
             for (var i = 0; i<str.length; i++) {
-                result += (boolStr[i] == 1) ? 2 : str[i]; // replaces with 2 all chars at indexes given by boolStr
+                result += (boolStr[i] == 1) ? "2" : str[i]; // replaces with 2 all chars at indexes given by boolStr
             }
             return result;
         };
