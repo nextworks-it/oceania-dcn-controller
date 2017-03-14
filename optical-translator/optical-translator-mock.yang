@@ -1,0 +1,35 @@
+module optical-translator-mock {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:optical-translator-mock";
+    prefix "optrmock";
+
+    import optical-translator {prefix optr; revision-date "2016-12-28";}
+
+    revision "2016-12-28" {
+        description "Initial revision of optical-translator-mock model";
+    }
+
+    grouping vlan-optical-correspondance {
+        leaf vlan-tag {
+            type uint32;
+        }
+        container optical-resource {
+            uses optr:optical-resource-attributes;
+        }
+    }
+
+    container vlan-tags-map {
+        list vlan-tag-assignment {
+            key "vlan-tag";
+            uses vlan-optical-correspondance;
+        }
+    }
+
+    rpc activate-emulation-translator {
+
+    }
+
+    rpc deactivate-emulation-translator {
+
+    }
+}

@@ -1,4 +1,4 @@
-package it.nextworks.nephele.OFTranslator;
+package it.nextworks.nephele.OFAAService.ODLInventory;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,7 @@ public class Const {
 	public static Integer T;
     public static Integer R;
 	public static Integer Z; //servers under each ToR
+    public static boolean EMULATED;
 
     @Value("${P}")
     private int auxP;
@@ -27,6 +28,8 @@ public class Const {
     private int auxR;
     @Value("${Z}")
     private int auxz;
+    @Value("${emulated}")
+    private boolean emulated;
 
     @PostConstruct
 	public void initialize(){
@@ -36,11 +39,12 @@ public class Const {
         T = auxT;
         R = auxR;
         Z = auxz;
+        EMULATED = emulated;
     }
 	
 	public static Integer[][] matrix;
 
-	static void init(int[][] inMat) {
+	public static void init(int[][] inMat) {
         matrix = new Integer[I * T][P * W * Z];
 		for (int i = 0; i< (I * T); i++){
 			for (int j = 0; j< (P * W * Z); j++){

@@ -1,0 +1,167 @@
+module optical-translator {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:optical-translator";
+    prefix "optr";
+
+    import ietf-inet-types {prefix inet; revision-date "2010-09-24";}
+    import opendaylight-match-types {prefix mt; revision-date "2013-10-26";}
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    import yang-ext {prefix "ext"; revision-date "2013-07-09";}
+
+    organization "Nextworks S.r.l";
+    contact
+        "Marco Capitani: m DOT capitani AT nextworks.it
+
+        Nextworks S.r.l.
+        Via Livornese 1027
+        56122 Pisa
+        Italy";
+
+    description "Implements the augmentation necessary for optical flow translation";
+
+    revision "2016-12-28" {
+        description "Initial revision of optical-translator model";
+    }
+
+    typedef flow-id {
+        description "MD-SAL identifier of openflow flow. ";
+        type inet:uri;
+    }
+
+    grouping optical-resource-attributes {
+        leaf wavelength {
+            type uint64;
+        }
+        leaf timeslots {
+            type string {
+                pattern '[01]+';
+            }
+        }
+    }
+
+    grouping opt-match-type-attributes {
+        container opt-match-type {
+            leaf wport {
+                type uint16;
+            }
+            uses optical-resource-attributes;
+        }
+    }
+
+    grouping eth-match-type-attributes {
+        container eth-match-type {
+            uses mt:match;
+        }
+    }
+
+    grouping opt-output-type-attributes {
+        container opt-output-type {
+            leaf wport {
+                type uint16;
+            }
+            uses optical-resource-attributes;
+        }
+    }
+
+    grouping eth-output-type-attributes {
+        container eth-output-type {
+            leaf output-node-connector {
+                type inet:uri;
+            }
+
+            leaf max-length {
+                type uint16;
+            }
+        }
+    }
+
+    grouping optical-flow-attributes {
+        leaf flow-id {
+            type flow-id;
+        }
+        choice optical-flow-type {
+            case opt-opt-flow {
+                container opt-opt-case {
+                    uses opt-match-type-attributes;
+                    uses opt-output-type-attributes;
+                }
+            }
+            case eth-opt-flow {
+                container eth-opt-case {
+                    uses eth-match-type-attributes;
+                    uses opt-output-type-attributes;
+                }
+            }
+            case opt-eth-flow {
+                container opt-eth-case {
+                    uses opt-match-type-attributes;
+                    uses eth-output-type-attributes;
+                }
+            }
+        }
+    }
+
+    grouping optical-flow-table {
+        list optical-flow {
+            key "flow-id";
+            uses optical-flow-attributes;
+        }
+    }
+
+    grouping optical-flow-node-attributes {
+        uses optical-flow-table;
+    }
+
+    augment "/inv:nodes/inv:node" {
+        ext:augment-identifier "optical-flow-node";
+
+        uses optical-flow-node-attributes;
+    }
+
+    grouping add-opt-flow-input {
+        container flow-added {
+            uses optical-flow-attributes;
+        }
+        leaf node-ref {
+            type instance-identifier;
+        }
+    }
+
+    grouping remove-opt-flow-input {
+        container flow-removed {
+            uses optical-flow-attributes;
+        }
+        leaf node-ref {
+            type instance-identifier;
+        }
+    }
+
+    rpc add-optical-flow {
+        input {
+            uses add-opt-flow-input;
+        }
+    }
+
+    rpc remove-optical-flow {
+        input {
+            uses remove-opt-flow-input;
+        }
+    }
+
+    rpc deactivate-real-translator {
+
+    }
+
+    rpc activate-real-translator {
+
+    }
+
+    rpc reload-translator-implementation {
+        output {
+            leaf translator-type {
+                type string;
+                description "The name of the translator currently active.";
+            }
+        }
+    }
+}

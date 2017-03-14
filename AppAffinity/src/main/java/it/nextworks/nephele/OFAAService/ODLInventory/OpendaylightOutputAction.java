@@ -3,16 +3,13 @@ package it.nextworks.nephele.OFAAService.ODLInventory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.nextworks.nephele.OFTranslator.OptOFOutput;
 
-public class OpendaylightOutputAction {
+public class OpendaylightOutputAction extends OpendaylightBaseOutputAction {
 	
 	@JsonProperty("max-length")
 	private Integer len;
-	
-	@JsonProperty("output-node-connector")
-	private String outPort;
-	
+
 	public OpendaylightOutputAction(OptOFOutput inOutAction){
-		outPort=inOutAction.getOutputPort();
+		super(inOutAction);
 		len = 0;
 	}
 	
@@ -20,7 +17,7 @@ public class OpendaylightOutputAction {
 	public Integer getLen() {
 		return len;
 	}
-	
+
 	@JsonProperty("output-node-connector")
 	public String getOutPort() {
 		return outPort;

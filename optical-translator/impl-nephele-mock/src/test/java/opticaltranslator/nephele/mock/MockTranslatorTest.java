@@ -125,7 +125,7 @@ public class MockTranslatorTest {
                 .setFlowRemoved(new FlowRemovedBuilder(flow).build())
                 .build();
     }
-
+/*
     @Test
     public void addGoodFlow()
             throws InterruptedException, ExecutionException, TransactionCommitFailedException, ReadFailedException, OutOfTagsException, FlowParserException {
@@ -190,7 +190,7 @@ public class MockTranslatorTest {
         inOrder2.verify(flowService).removeFlow(any(RemoveFlowInput.class));
         inOrder2.verify(swapper).generalizeFutureList(any());
     }
-
+*/
     @Test
     public void getType() throws InterruptedException, ExecutionException {
         Assert.assertEquals("Emulated NEPHELE data plane translator",
