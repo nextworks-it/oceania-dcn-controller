@@ -9,6 +9,7 @@ package opticaltranslator.nephele;
 
 import com.google.common.util.concurrent.Futures;
 import opticaltranslator.nephele.flowutils.FlowParserException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.translator.nephele.rev161228.AddNepheleFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.translator.nephele.rev161228.AddNepheleFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.translator.nephele.rev161228.NepheleFlowAttributes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.optical.translator.nephele.rev161228.NepheleFlowPodMatch;
@@ -80,19 +81,26 @@ public class NepheleTranslator implements TranslatorApiService {
             ).buildFuture();
         }
         LOG.debug("Successfully recovered nephele specific data, starting flow push.");
+        AddNepheleFlowInput addFlowInput = new AddNepheleFlowInputBuilder()
+                .setNodeRef(input.getNodeRef())
+                .setNepheleFlowAdded(
+                        new NepheleFlowAddedBuilder(nepheleResources)
+                                // ^ this injects nephele resources
+                                .setOpticalFlowType(input.getFlowAdded().getOpticalFlowType())
+                                // ^ this injects everything else
+                                .setFlowId(input.getFlowAdded().getFlowId())
+                                // except the flow ID
+                                .build()
+                )
+                .build();
+
+        LOG.debug(
+                "Flow data: optFlow = {}, schedule = {}, count = {}",
+                input.getFlowAdded().getOpticalFlowType(),
+                nepheleResources.getScheduleId(), nepheleResources.getFlowCounter()
+        );
         return nepheleService.addNepheleFlow(
-                new AddNepheleFlowInputBuilder()
-                        .setNodeRef(input.getNodeRef())
-                        .setNepheleFlowAdded(
-                                new NepheleFlowAddedBuilder(nepheleResources)
-                                        // ^ this injects nephele resources
-                                        .setOpticalFlowType(input.getFlowAdded().getOpticalFlowType())
-                                        // ^ this injects everything else
-                                        .setFlowId(input.getFlowAdded().getFlowId())
-                                        // except the flow ID
-                                        .build()
-                        )
-                        .build()
+                addFlowInput
         );
     }
 

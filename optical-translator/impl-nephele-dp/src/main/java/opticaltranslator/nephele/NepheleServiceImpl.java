@@ -110,6 +110,7 @@ public class NepheleServiceImpl implements OpticalTranslatorNepheleService, Auto
                     new NodeRef(input.getNodeRef())
             );
             LOG.debug("Sending request for flow '{}'.", flowId);
+
             return swapper.generalizeFuture(flowService.addFlow(addFlow));
 
         } catch (FlowParserException exc) {

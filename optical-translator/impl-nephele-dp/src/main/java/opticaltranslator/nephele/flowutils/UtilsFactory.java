@@ -30,7 +30,7 @@ public class UtilsFactory {
     }
 
     public static MetadataMaker newMetadataMaker() {
-        return new MetadataMaker();
+        return new MetadataMakerNew();
     }
 
 }

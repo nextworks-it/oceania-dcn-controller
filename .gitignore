@@ -23,6 +23,7 @@ optical-translator/karaf
 
 #IntelliJ artifact
 .idea/
+*.iml
 
 #Eclipse artifacts
 

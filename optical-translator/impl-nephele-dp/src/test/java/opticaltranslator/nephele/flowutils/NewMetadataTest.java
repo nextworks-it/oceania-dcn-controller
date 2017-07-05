@@ -21,11 +21,11 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MetadataTest {
+public class NewMetadataTest {
 
     private MetadataMaker maker;
 
-    private String revPad(String inString, short size) throws FlowParserException {
+    private String rPad(String inString, short size) throws FlowParserException {
         StringBuilder outString = new StringBuilder("");
         outString.append(inString);
         if (inString.length() > size) {
@@ -40,52 +40,60 @@ public class MetadataTest {
         return outString.toString();
     }
 
-    private Map<String, Object> decode(Metadata metadata) {
+
+    private String lPad(String inString, short size) throws FlowParserException {
+        StringBuilder outString = new StringBuilder("");
+        if (inString.length() > size) {
+            throw new FlowParserException("field size is greater than " + String.valueOf(size) + ", not supported.");
+        } else if (inString.length() < size) {
+            short missingZeroes = (short) (size - inString.length());
+            for (short i = 0; i < missingZeroes; i++) {
+                outString.append("0");
+            }
+        }
+        outString.append(inString);
+        return outString.toString();
+    }
+
+    private Map<String, Object> decode(Metadata metadata) throws FlowParserException {
         Map<String, Object> output = new HashMap<>();
-        BigInteger bigDec = new BigInteger(
-                metadata.getMetadata().toString() + metadata.getMetadataMask().toString(),
-                10
-        );
-        System.out.println(metadata.getMetadata());
-        System.out.println(metadata.getMetadataMask());
-        System.out.println(bigDec.toString());
 
-        String big_bin = bigDec.toString(2);
-        System.out.println(big_bin);
+        String metadataStr = metadata.getMetadata().toString(2);
+        String mask = metadata.getMetadataMask().toString(2);
+        metadataStr = lPad(metadataStr, (short) 64);
+        mask = lPad(mask, (short) 64);
 
-        String extraBit = big_bin.substring(big_bin.length() - 1);
-        big_bin = big_bin.substring(0, big_bin.length() - 1);
-        System.out.println(big_bin);
+        String remainder = mask.substring(0, mask.length() - 15);
+        remainder = lPad(remainder, (short) 49);
 
-        String oWave = big_bin.substring(big_bin.length() - 8);
-        big_bin = big_bin.substring(0, big_bin.length() - 8);
-        System.out.println(big_bin);
+        String extraBit = remainder.substring(remainder.length() - 1);
+        remainder = remainder.substring(0, remainder.length() -1);
 
-        String count = big_bin.substring(big_bin.length() - 8);
-        big_bin = big_bin.substring(0, big_bin.length() - 8);
-        System.out.println(big_bin);
+        String oWave = remainder.substring(remainder.length() - 8);
+        remainder = remainder.substring(0, remainder.length() - 8);
 
-        String schedule = big_bin.substring(big_bin.length() - 8);
-        big_bin = big_bin.substring(0, big_bin.length() - 8);
-        System.out.println(big_bin);
+        String count = remainder.substring(remainder.length() - 8);
+        remainder = remainder.substring(0, remainder.length() - 8);
 
-        String mWave = big_bin.substring(big_bin.length() - 8);
-        big_bin = big_bin.substring(0, big_bin.length() - 8);
-        System.out.println(big_bin);
+        String schedule = remainder.substring(remainder.length() - 8);
+        remainder = remainder.substring(0, remainder.length() - 8);
 
-        String timeslots = big_bin;
+        String mWave = remainder.substring(remainder.length() - 8);
+        remainder = remainder.substring(0, remainder.length() - 8);
+
+        String timeslots = metadataStr + remainder;
         output.put("extraBit", extraBit.replaceFirst("^0+(?!$)", ""));
         output.put("oWave", oWave.replaceFirst("^0+(?!$)", ""));
         output.put("count", count.replaceFirst("^0+(?!$)", ""));
         output.put("schedule", schedule.replaceFirst("^0+(?!$)", ""));
         output.put("mWave", mWave.replaceFirst("^0+(?!$)", ""));
-        output.put("timeslots", timeslots.replaceFirst("^0+(?!$)", ""));
+        output.put("timeslots", timeslots);
         return output;
     }
-    /*
+
     @Before
     public void setup() {
-        maker = new MetadataMakerOld();
+        maker = new MetadataMakerNew();
     }
 
     private OpticalResourceAttributes makeResources(BigInteger wavelength, String timeslot, Integer port) {
@@ -124,8 +132,14 @@ public class MetadataTest {
                 fromBinaryString("11111111")
         );
         Metadata metadata = maker.buildMetadata(match, output, nepheleResources, true);
-        Assert.assertEquals(new BigInteger("103845937170696552", 10), metadata.getMetadata());
-        Assert.assertEquals(new BigInteger("57060992658440191", 10), metadata.getMetadataMask());
+        Assert.assertEquals(
+                new BigInteger("1111111111111111111111111111111111111111111111111111111111111111", 2),
+                metadata.getMetadata()
+        );
+        Assert.assertEquals(
+                new BigInteger("1111111111111111111111111111111111111111111111111000000000000000", 2),
+                metadata.getMetadataMask()
+        );
     }
 
     @Test
@@ -145,8 +159,14 @@ public class MetadataTest {
                 fromBinaryString("00111001")
         );
         Metadata metadata = maker.buildMetadata(match, output, nepheleResources, true);
-        Assert.assertEquals(new BigInteger("100606773632124500", 10), metadata.getMetadata());
-        Assert.assertEquals(new BigInteger("63620968874668943", 10), metadata.getMetadataMask());
+        Assert.assertEquals(
+                new BigInteger("1111100000000011110011001110100000000000000011101101111000111110", 2),
+                metadata.getMetadata()
+        );
+        Assert.assertEquals(
+                new BigInteger("0000111011110011110001111010100100111001110001111000000000000000", 2),
+                metadata.getMetadataMask()
+        );
     }
 
     @Test
@@ -187,8 +207,8 @@ public class MetadataTest {
                 fromBinaryString("00000000")
         );
         Metadata metadata = maker.buildMetadata(match, output, nepheleResources, true);
-        Assert.assertEquals(new BigInteger("1", 10), metadata.getMetadata());
-        Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadataMask());
+        Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadata());
+        Assert.assertEquals(new BigInteger("1000000000000000", 2), metadata.getMetadataMask());
     }
 
     @Test
@@ -208,29 +228,38 @@ public class MetadataTest {
                 fromBinaryString("11111111")
         );
         Metadata metadata = maker.buildMetadata(match, output, nepheleResources, true);
-        Assert.assertEquals(new BigInteger("562949953421311", 10), metadata.getMetadata());
-        Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadataMask());
+        Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadata());
+        Assert.assertEquals(
+                new BigInteger("1111111111111111111111111111111111111111111111111000000000000000", 2),
+                metadata.getMetadataMask()
+        );
     }
 
     @Test
     public void testWeird() throws FlowParserException{
         OpticalResourceAttributes match = makeResources(
-                new BigInteger("252", 10),
+                new BigInteger("11111100", 2),
                 "00000100110011001100110011001100110011001100110011001100110011011110101011011010",
                 4
         );
         OpticalResourceAttributes output = makeResources(
-                new BigInteger("1", 10),
+                new BigInteger("00000001", 2),
                 "00000100110011001100110011001100110011001100110011001100110011011110101011011010",
                 1
         );
         NepheleFlowAttributes nepheleResources = makeNepheleResources(
-                (short) 137,
-                (short) 4
+                fromBinaryString("10001001"),
+                fromBinaryString("00000100")
         );
         Metadata metadata = maker.buildMetadata(match, output, nepheleResources, false);
-        Assert.assertEquals(new BigInteger("02b3c0be3c4ce9a4", 16), metadata.getMetadata());
-        Assert.assertEquals(new BigInteger("00027badbf680802", 16), metadata.getMetadataMask());
+        Assert.assertEquals(
+                new BigInteger("0000010011001100110011001100110011001100110011001100110011001101", 2),
+                metadata.getMetadata()
+        );
+        Assert.assertEquals(
+                new BigInteger("1110101011011010111111001000100100000100000000010000000000000000", 2),
+                metadata.getMetadataMask()
+        );
     }
 
     @Test
@@ -250,38 +279,50 @@ public class MetadataTest {
                 fromBinaryString("00000000")
         );
         Metadata metadata = maker.buildMetadata(match, output, nepheleResources, false);
-        Assert.assertEquals(new BigInteger("100000000000000000", 10), metadata.getMetadata());
-        Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadataMask());
+        Assert.assertEquals(
+                new BigInteger("0000000000000000000000000000000000000000000000000000011011110000", 2),
+                metadata.getMetadata()
+        );
+        Assert.assertEquals(
+                new BigInteger("0101101101011001110100111011001000000000000000000000000000000000", 2),
+                metadata.getMetadataMask()
+        );
     }
 
     @Test
-    public void testAllLow() throws FlowParserException{
+    public void testAllLow() throws FlowParserException {
         for (Integer i = 1; i<30; i++) {
-            OpticalResourceAttributes match = makeResources(
-                    new BigInteger(i.toString(), 10),
-                    revPad(Integer.toBinaryString(i*i), (short) 80),
-                    2
-            );
-            OpticalResourceAttributes output = makeResources(
-                    new BigInteger(i.toString(), 10),
-                    revPad(Integer.toBinaryString(i*i), (short) 80),
-                    1
-            );
-            NepheleFlowAttributes nepheleResources = makeNepheleResources(
-                    fromBinaryString("10110010"),
-                    fromBinaryString("00000001")
-            );
-            Metadata metadata = maker.buildMetadata(match, output, nepheleResources, false);
-            Map<String, Object> decoded = decode(metadata);
-            try {
-                Assert.assertEquals(decoded.get("oWave"), Integer.toBinaryString(i));
-                Assert.assertEquals(decoded.get("mWave"), Integer.toBinaryString(i));
-                Assert.assertEquals(decoded.get("count"), Integer.toBinaryString(1));
-                Assert.assertEquals(decoded.get("schedule"), Integer.toBinaryString(178));
-                Assert.assertEquals(decoded.get("timeslots"), revPad(Integer.toBinaryString(i * i), (short) 80));
-            } catch (ComparisonFailure e) {
-                System.out.println("parameter = " + i);
-                throw e;
+            for (short j = 0; j<50; j++) {
+                for (short k = 1; k < 30; k++) {
+                    OpticalResourceAttributes match = makeResources(
+                            new BigInteger(i.toString(), 10),
+                            rPad(Integer.toBinaryString((int) Math.pow(i, j) % (k + 33)), (short) 80),
+                            2
+                    );
+                    OpticalResourceAttributes output = makeResources(
+                            new BigInteger(i.toString(), 10),
+                            rPad(Integer.toBinaryString((int) Math.pow(i, j) % (k + 33)), (short) 80),
+                            1
+                    );
+                    NepheleFlowAttributes nepheleResources = makeNepheleResources(
+                            j,
+                            k
+                    );
+                    Metadata metadata = maker.buildMetadata(match, output, nepheleResources, false);
+                    Map<String, Object> decoded = decode(metadata);
+                    try {
+                        Assert.assertEquals(decoded.get("oWave"), Integer.toBinaryString(i));
+                        Assert.assertEquals(decoded.get("mWave"), Integer.toBinaryString(i));
+                        Assert.assertEquals(decoded.get("count"), Integer.toBinaryString(k));
+                        Assert.assertEquals(decoded.get("schedule"), Integer.toBinaryString(j));
+                        Assert.assertEquals(decoded.get("timeslots"), rPad(Integer.toBinaryString(
+                                (int) Math.pow(i, j) % (k + 33)
+                        ), (short) 80));
+                    } catch (ComparisonFailure e) {
+                        System.out.printf("(i, j, k) = %s, %s, %s.\n", i, j, k);
+                        throw e;
+                    }
+                }
             }
         }
     }
@@ -291,12 +332,12 @@ public class MetadataTest {
         Integer i = 15;
         OpticalResourceAttributes match = makeResources(
                 new BigInteger(i.toString(), 10),
-                revPad(Integer.toBinaryString(i * i), (short) 80),
+                rPad(Integer.toBinaryString(i * i), (short) 80),
                 2
         );
         OpticalResourceAttributes output = makeResources(
                 new BigInteger(i.toString(), 10),
-                revPad(Integer.toBinaryString(i * i), (short) 80),
+                rPad(Integer.toBinaryString(i * i), (short) 80),
                 1
         );
         NepheleFlowAttributes nepheleResources = makeNepheleResources(
@@ -310,14 +351,13 @@ public class MetadataTest {
             Assert.assertEquals(decoded.get("count"), Integer.toBinaryString(1));
             Assert.assertEquals(decoded.get("schedule"), Integer.toBinaryString(178));
             Assert.assertEquals(decoded.get("mWave"), Integer.toBinaryString(i));
-            Assert.assertEquals(decoded.get("timeslots"), revPad(Integer.toBinaryString(i * i), (short) 80));
+            Assert.assertEquals(decoded.get("timeslots"), rPad(Integer.toBinaryString(i * i), (short) 80));
         } catch (ComparisonFailure e) {
             System.out.println("parameter = " + i);
             throw e;
         }
     }
 
-    // TODO: should not work like this. See what they say at GWDG
     @Test
     public void test18digits() throws FlowParserException{
         OpticalResourceAttributes match = makeResources(
@@ -335,8 +375,14 @@ public class MetadataTest {
                 fromBinaryString("11111111")
         );
         Metadata metadata = maker.buildMetadata(match, output, nepheleResources, true);
-        Assert.assertEquals(new BigInteger("999999999999999999", 10), metadata.getMetadata());
-        Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadataMask()); // Should not be 0 but absent
+        Assert.assertEquals(
+                new BigInteger("0000000000000000000000000000000000000000000000000000011011110000", 2),
+                metadata.getMetadata()
+        );
+        Assert.assertEquals(
+                new BigInteger("0101101101011001110100111011000111111111111111111000000000000000", 2),
+                metadata.getMetadataMask()
+        );
     }
 
     @Test
@@ -356,8 +402,8 @@ public class MetadataTest {
                 fromBinaryString("00000000")
         );
         Metadata metadata = maker.buildMetadata(match, output, nepheleResources, false);
-        Assert.assertEquals(new BigInteger("2", 10), metadata.getMetadata());
-        Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadataMask()); // Should not be 0 but absent
+        Assert.assertEquals(new BigInteger("0", 10), metadata.getMetadata());
+        Assert.assertEquals(new BigInteger("10000000000000000", 2), metadata.getMetadataMask());
     }
-    */
+
 }

@@ -43,6 +43,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
         <module>impl-mock-dp</module>
         <module>impl-nephele-dp</module>
         <module>impl-nephele-mock</module>
+        <module>karaf</module>
         <module>features</module>
         <module>artifacts</module>
     </modules>

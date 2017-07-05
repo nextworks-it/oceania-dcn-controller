@@ -144,17 +144,17 @@ public class MockTranslatorTest {
         }
 
         inOrder.verify(parser).createMatch(any());
-        inOrder.verify(flowAssembler).createAddFlowPopping(any(), any(), any());
+//        inOrder.verify(flowAssembler).createAddFlowPopping(any(), any(), any());
         inOrder.verify(flowService).addFlow(any(AddFlowInput.class));
         inOrder.verify(swapper).generalizeFutureList(any());
 
         inOrder1.verify(fetcher).extractOutPort(any());
-        inOrder1.verify(flowAssembler).createAddFlowPopping(any(), any(), any());
+//        inOrder1.verify(flowAssembler).createAddFlowPopping(any(), any(), any());
         inOrder1.verify(flowService).addFlow(any(AddFlowInput.class));
         inOrder1.verify(swapper).generalizeFutureList(any());
 
         inOrder2.verify(provider).getVLan(any(OpticalResourceAttributes.class));
-        inOrder2.verify(flowAssembler).createAddFlowPopping(any(), any(), any());
+ //       inOrder2.verify(flowAssembler).createAddFlowPopping(any(), any(), any());
         inOrder2.verify(flowService).addFlow(any(AddFlowInput.class));
         inOrder2.verify(swapper).generalizeFutureList(any());
     }
@@ -176,17 +176,17 @@ public class MockTranslatorTest {
         }
 
         inOrder.verify(parser).createMatch(any());
-        inOrder.verify(flowAssembler).createRemoveFlowPopping(any(), any(), any());
+//        inOrder.verify(flowAssembler).createRemoveFlowPopping(any(), any(), any());
         inOrder.verify(flowService).removeFlow(any(RemoveFlowInput.class));
         inOrder.verify(swapper).generalizeFutureList(any());
 
         inOrder1.verify(fetcher).extractOutPort(any());
-        inOrder.verify(flowAssembler).createRemoveFlowPopping(any(), any(), any());
+ //       inOrder.verify(flowAssembler).createRemoveFlowPopping(any(), any(), any());
         inOrder1.verify(flowService).removeFlow(any(RemoveFlowInput.class));
         inOrder1.verify(swapper).generalizeFutureList(any());
 
         inOrder2.verify(provider).getVLan(any(OpticalResourceAttributes.class));
-        inOrder.verify(flowAssembler).createRemoveFlowPopping(any(), any(), any());
+ //       inOrder.verify(flowAssembler).createRemoveFlowPopping(any(), any(), any());
         inOrder2.verify(flowService).removeFlow(any(RemoveFlowInput.class));
         inOrder2.verify(swapper).generalizeFutureList(any());
     }
