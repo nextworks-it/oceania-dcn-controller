@@ -25,7 +25,7 @@ public class Connection {
 	}
 	
 	public void setConnType(ConnectionType type){
-		if ( !(type.equals(ConnectionType.POINTTOPOINT)) ) 
+		if ( !(type.equals(ConnectionType.POINT_TO_POINT)) ) 
 			throw new IllegalArgumentException("Unsupported connection type.");
 		else connType = type;
 	}

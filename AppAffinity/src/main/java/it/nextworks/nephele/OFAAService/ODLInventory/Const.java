@@ -14,6 +14,7 @@ public class Const {
 	public static Integer T;
     public static Integer R;
 	public static Integer Z; //servers under each ToR
+    public static Integer firstPod;
     public static boolean EMULATED;
 
     @Value("${P}")
@@ -28,6 +29,8 @@ public class Const {
     private int auxR;
     @Value("${Z}")
     private int auxz;
+    @Value("${firstPod}")
+    private int auxFirstPod;
     @Value("${emulated}")
     private boolean emulated;
 
@@ -39,6 +42,7 @@ public class Const {
         T = auxT;
         R = auxR;
         Z = auxz;
+        firstPod = auxFirstPod;
         EMULATED = emulated;
     }
 	

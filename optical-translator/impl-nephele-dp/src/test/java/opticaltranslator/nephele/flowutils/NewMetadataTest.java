@@ -290,6 +290,45 @@ public class NewMetadataTest {
     }
 
     @Test
+    public void testZeroFirst() throws FlowParserException {
+        for (Integer i = 1; i<30; i++) {
+            for (short j = 0; j < 50; j++) {
+                for (short k = 1; k < 30; k++) {
+                    OpticalResourceAttributes match = makeResources(
+                            new BigInteger(i.toString(), 10),
+                            lPad(Integer.toBinaryString((int) Math.pow(i, j) % (k + 33)), (short) 80),
+                            2
+                    );
+                    OpticalResourceAttributes output = makeResources(
+                            new BigInteger(i.toString(), 10),
+                            lPad(Integer.toBinaryString((int) Math.pow(i, j) % (k + 33)), (short) 80),
+                            1
+                    );
+                    NepheleFlowAttributes nepheleResources = makeNepheleResources(
+                            j,
+                            k
+                    );
+                    Metadata metadata = maker.buildMetadata(match, output, nepheleResources, false);
+                    assert metadata.getMetadata().equals(BigInteger.ZERO);
+                    Map<String, Object> decoded = decode(metadata);
+                    try {
+                        Assert.assertEquals(decoded.get("oWave"), Integer.toBinaryString(i));
+                        Assert.assertEquals(decoded.get("mWave"), Integer.toBinaryString(i));
+                        Assert.assertEquals(decoded.get("count"), Integer.toBinaryString(k));
+                        Assert.assertEquals(decoded.get("schedule"), Integer.toBinaryString(j));
+                        Assert.assertEquals(decoded.get("timeslots"), lPad(Integer.toBinaryString(
+                                (int) Math.pow(i, j) % (k + 33)
+                        ), (short) 80));
+                    } catch (ComparisonFailure e) {
+                        System.out.printf("(i, j, k) = %s, %s, %s.\n", i, j, k);
+                        throw e;
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     public void testAllLow() throws FlowParserException {
         for (Integer i = 1; i<30; i++) {
             for (short j = 0; j<50; j++) {
