@@ -23,6 +23,9 @@ folder=$(pwd)
     wget http://ftp.cc.uoc.gr/mirrors/apache/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.tar.gz
     tar xvzf apache-maven-3.5.0-bin.tar.gz
     export PATH="$HOME/apache-maven-3.5.0/bin:$PATH"
+    if [ ! -a ~/.m2/settings.xml ]; then
+        mkdir -p ~/.m2 && touch ~/.m2/settings.xml
+    fi
     wget -q -O - https://raw.githubusercontent.com/opendaylight/odlparent/master/settings.xml > ~/.m2/settings.xml
     cd "$folder"
 }
