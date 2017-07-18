@@ -121,21 +121,22 @@ public class AppAffinityController {
 	@ApiOperation(value = "deleteConnection", nickname = "Delete service")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "Success")})
-	public void delConnectionById(@PathVariable String connID){
-		
+	public void delConnectionById(@PathVariable String connID) {
+
 		RestTemplate restTemplate = new RestTemplate();
-		
+
 		Service requested = connList.get(connID);
-		
-		if(requested == null) throw new NullPointerException("Nonexistent connection.");
-		
-		else{
+
+		if (requested == null) throw new NullPointerException("Nonexistent connection.");
+
+		else {
 			requested.status = ServiceStatus.TERMINATING;
-            processor.addTerminating(requested);
-			UriComponentsBuilder urlbuilder = 
-				UriComponentsBuilder.fromHttpUrl(
-				"http://127.0.0.1:" + serverPort + "/trafficmatrix/applicationprofile/" + connID);
+			processor.addTerminating(requested);
+			UriComponentsBuilder urlbuilder =
+					UriComponentsBuilder.fromHttpUrl(
+							"http://127.0.0.1:" + serverPort + "/trafficmatrix/applicationprofile/" + connID);
 			restTemplate.delete(urlbuilder.toUriString());
+			processor.startRefreshing();
 		}
 	}
 	

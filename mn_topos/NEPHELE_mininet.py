@@ -35,7 +35,6 @@ class SlowStartingNet(Mininet):
         info('*** Starting %s switches\n' % len(self.switches))
         for i, switch in enumerate(self.switches):
             info(switch.name + ' ')
-            switch.start(self.controllers)
         started = {}
         for swclass, switches in groupby(
                 sorted(self.switches, key=type), type):
@@ -45,6 +44,8 @@ class SlowStartingNet(Mininet):
                 info('*** Switch batch: '
                      + ' '.join((s.name for s in switches))
                      + '\n')
+                for switch in switches:
+                    switch.start(self.controllers)
                 if hasattr(swclass, 'batchStartup'):
                     success = swclass.batchStartup(switches)
                     started.update({s: s for s in success})
@@ -176,6 +177,7 @@ if __name__ == "__main__":
     controller_ip = args.controller if args.controller is not None \
         else '127.0.0.1'
     setLogLevel('info')
+    info('Controller IP is {}'.format(controller_ip))
     # use Linux Traffic Control emulated links
     net = SlowStartingNet(link=TCLink)
 

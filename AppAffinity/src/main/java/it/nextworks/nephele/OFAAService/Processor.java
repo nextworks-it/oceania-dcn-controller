@@ -82,6 +82,10 @@ public class Processor {
         scheduled.add(serv);
 	}
 
+    void startRefreshing() {
+        tasks.add(new TrafficMatGetter());
+    }
+
 	private void callbackScheduled(){
         for (Service service : scheduled){
             service.status = ServiceStatus.ESTABLISHING;
