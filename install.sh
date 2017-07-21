@@ -37,3 +37,7 @@ wget https://nexus.opendaylight.org/content/repositories/opendaylight.release/or
 cd $folder
 echo "Installing the Optical Translator Opendaylight plugin."
 cd optical-translator; mvn clean install -DskipTests -Dcheckstyle.skip=true
+cd $folder
+echo "Installing the DLUX GUI."
+cd dlux; mvn clean install -DskipTests -Dcheckstyle.skip=true
+
