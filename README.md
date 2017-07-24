@@ -1,10 +1,9 @@
 # OCEANiA DCN Controller
 
-## (OPtiCal Electrical ApplicatioN Aware Data Center Network Controller)
+#### (OPtiCal Electrical ApplicatioN Aware Data Center Network Controller)
 
 
-1. What is OCEANiA?
--------------------------------------
+## 1. What is OCEANiA?
 
 OCEANiA DCN Controller is an SDN controller developed for the
 NEPHELE project.
@@ -25,8 +24,7 @@ and the OpenFlow protocol. It is developed to be used on top of
 the OpenDaylight SDN controller, and makes use of its REST API.
 
 
-2. Installation
--------------------------------------
+## 2. Installation
 Launch the `./install.sh` script.
 This will install
 + [Apache Maven](https://maven.apache.org "Maven"),
@@ -39,8 +37,7 @@ This will install
 + The modified NEPHELE DLUX GUI
 
 
-3. Application Affinity Service
--------------------------------------
+## 3. Application Affinity Service
 To launch:
 ```
 cd AppAffinity/
@@ -51,8 +48,7 @@ The ReST API documentation
 can then be found at http://&lt;controller-IP&gt;:8089/swagger-ui.html
 
 
-4. Optical translator
--------------------------------------
+## 4. Optical translator
 After installation, to run the OpenDaylight controller, use `./../distribution-karaf-0.3.4-Lithium-SR4/bin/karaf`. This will start ODL and
 log into the karaf console.
 From the karaf console of ODL then use the following commands:
@@ -64,8 +60,7 @@ feature:install odl-optical-translator-nephele
 This will install and start the optical translator, which will then process
 the requests for optical flows.
 
-5. DLUX GUI
--------------------------------------
+## 5. DLUX GUI
 After Installation, from the karaf console of ODL, use the following commands:
 ```
 feature:install odl-dlux-all
