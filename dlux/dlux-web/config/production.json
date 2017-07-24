@@ -1,0 +1,6 @@
+{
+    "configEnv":"ENV_PROD",
+    "baseURL": "",
+    "adSalPort": "8080",
+    "mdSalPort" : "8181"
+}

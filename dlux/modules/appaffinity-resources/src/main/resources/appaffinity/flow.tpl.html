@@ -1,0 +1,45 @@
+<form role="form" name="flowForm" style="width: 100%">
+    <div class="row">
+        <h2>Flow rules</h2>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary" ng-click="refreshFlows()">Reload</button>
+    </div>
+
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <table class="footable table">
+                <thead>
+                <tr>
+                    <th>Node</th>
+                    <th>Flow</th>
+                    <th>In port</th>
+                    <th>Out port</th>
+                    <th>Destination</th>
+                    <th>Time slot</th>
+                    <th>Wavelength</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-hide="nodeFlows.length > 0">
+                    <td colspan="6" class="centerAlign">No data found.</td>
+                </tr>
+                </tbody>
+                <tbody ng-repeat="item in nodeFlows">
+                <tr>
+                    <td rowspan="{{item.flows.length + 1}}">{{item.id}}</td>
+                </tr>
+                <tr ng-repeat="flow in item.flows">
+                    <td>{{flow.id}}</td>
+                    <td>{{flow.inPort}}</td>
+                    <td>{{flow.outPort}}</td>
+                    <td>{{flow.destination ? flow.destination : 'any'}}</td>
+                    <td>{{flow.timeslot ? flow.timeslot : 'N/A'}}</td>
+                    <td>{{flow.wavelength !== undefined ? flow.wavelength : 'N/A'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>

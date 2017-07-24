@@ -112,7 +112,7 @@ public class AppAffinityController {
 		Service output = connList.get(connID);
 
 		
-		if(output == null) throw new NullPointerException("Nonexistent connection.");
+		if(output == null) throw new NullPointerException("Nonexistent connection " + connID);
 		
 		else return output;
 	}
@@ -121,20 +121,20 @@ public class AppAffinityController {
 	@ApiOperation(value = "deleteConnection", nickname = "Delete service")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "Success")})
-	public void delConnectionById(@PathVariable String connID) {
-
+	public void delConnectionById(@PathVariable String connID){
+		
 		RestTemplate restTemplate = new RestTemplate();
-
+		
 		Service requested = connList.get(connID);
-
-		if (requested == null) throw new NullPointerException("Nonexistent connection.");
-
-		else {
+		
+		if(requested == null) throw new NullPointerException("Nonexistent connection " + connID);
+		
+		else{
 			requested.status = ServiceStatus.TERMINATING;
-			processor.addTerminating(requested);
-			UriComponentsBuilder urlbuilder =
-					UriComponentsBuilder.fromHttpUrl(
-							"http://127.0.0.1:" + serverPort + "/trafficmatrix/applicationprofile/" + connID);
+            processor.addTerminating(requested);
+			UriComponentsBuilder urlbuilder = 
+				UriComponentsBuilder.fromHttpUrl(
+				"http://127.0.0.1:" + serverPort + "/trafficmatrix/applicationprofile/" + connID);
 			restTemplate.delete(urlbuilder.toUriString());
 			processor.startRefreshing();
 		}
@@ -165,14 +165,16 @@ public class AppAffinityController {
 	@ExceptionHandler(NullPointerException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public String handleNullPointer(NullPointerException ex) {
-		log.info(ex.getMessage(), ex);
+		log.warn("Error during call: {}.", ex.getMessage());
+		log.debug("Exception details: ", ex);
 		return "{ \"message\": \"" + ex.getMessage() + "\"}";
 	}
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleIllegalArgument(IllegalArgumentException ex) {
-        log.info(ex.getMessage(), ex);
+		log.warn("Error during call: {}.", ex.getMessage());
+        log.debug("Exception details: ", ex);
         return "{ \"message\": \"" + ex.getMessage() + "\"}";
     }
 
