@@ -40,6 +40,10 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                 });
             };
 
+            $scope.$watch('profileID', function() {
+                $scope.refreshConnection($scope.profileID);
+            });
+
             $scope.refreshGraphics = function() {
                 if ($scope.nodeFlows === undefined) {
                     alert("There is no data available. Please reload.");

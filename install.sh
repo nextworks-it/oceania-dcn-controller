@@ -23,6 +23,7 @@ folder=$(pwd)
     wget http://ftp.cc.uoc.gr/mirrors/apache/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.tar.gz
     tar xvzf apache-maven-3.5.0-bin.tar.gz
     export PATH="$HOME/apache-maven-3.5.0/bin:$PATH"
+    echo 'PATH="$HOME/apache-maven-3.5.0/bin:$PATH"' >> "$HOME/.profile"
     if [ ! -a ~/.m2/settings.xml ]; then
         mkdir -p ~/.m2 && touch ~/.m2/settings.xml
     fi
