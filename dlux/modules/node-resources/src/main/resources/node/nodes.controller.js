@@ -35,9 +35,12 @@ define(['app/node/nodes.module','app/node/nodes.services'], function(node) {
     });
 
     $scope.getNodeName = function(nodeId) {
-      var matches = nodeId.match(/^(ToR|POD):(.*):(.*)$/);
-      if (matches[1] == "POD") { return "Plane " + matches[3] + ", pod " + matches[2] + "."; }
-      else if (matches[1] == "ToR") { return "Pod " + matches[2] + ", wavelength " + matches[3] + "."; }
+      var matches = nodeId.match(/^openflow:(1|2)(.{2})(.{3})$/);
+      if (matches[1] == "2") {
+        return "Plane " + parseInt(matches[2]) + ", pod " + parseInt(matches[3]) + ".";
+      } else if (matches[1] == "1") {
+        return "Pod " + parseInt(matches[2]) + ", wavelength " + parseInt(matches[3]) + ".";
+      }
     };
   });
 
