@@ -177,9 +177,8 @@ def link_zones(m_net, tors, zones, fws):
 
 def bind_fws(fws, intfs):
     intfs_no = len(intfs)
-    for fw, index in fws.items():
-        if index < intfs_no:
-            Intf(intfs[index], node=fw)
+    for i in range(intfs_no):
+        Intf(intfs[i], node=fws[i])
 
 
 def build_net(m_net, intfs):
@@ -191,7 +190,7 @@ def build_net(m_net, intfs):
     link_rings(m_net, pods)
     link_tors(m_net, pods, tors)
     link_zones(m_net, tors, zones, fws)
-    info("*** Binding access nodes ***")
+    info("*** Binding access nodes ***\n")
     bind_fws(fws, intfs)
     return fws
 
@@ -200,7 +199,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Mininet for NIDO.')
     parser.add_argument('-C', '--controller', metavar='ADDRESS', type=str,
                         help='IP of the Oceania Controller for this net')
-    parser.add_argument('-I', '-interfaces', metavar='INTERFACES', type=str,
+    parser.add_argument('-I', '--interfaces', metavar='INTERFACES', type=str,
                         help='Comma separated list of up to 3 interfaces to connect'
                              'with the emulated DCN')
     args = parser.parse_args()
@@ -227,7 +226,7 @@ if __name__ == "__main__":
     net.staticArp()
     net.start()
     info("*** Take care to configure the access nodes {}. ***"
-         .format(" ".join((a_n.name for a_n in accesses))))
+         .format(" ".join((a_n.name for a_n in accesses.values()))))
 
     # cli
     CLI(net)
