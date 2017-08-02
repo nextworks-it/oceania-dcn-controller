@@ -221,8 +221,8 @@ if __name__ == "__main__":
     net.addController(c)
 
     # start
-    build_net(net, interfaces)
-    accesses = net.build()
+    accesses = build_net(net, interfaces)
+    net.build()
     net.staticArp()
     net.start()
     info("*** Take care to configure the access nodes {}. ***"
