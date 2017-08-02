@@ -90,7 +90,7 @@ def build_pods(m_net):
 
 def build_tors(m_net):
     tors = {}
-    for p in [x for x in pod_nos()][:-3]:
+    for p in pod_nos():
         for w in range(1, W+1):
             # tor_id = (p * W) + w
             tors[(p, w)] = m_net.addSwitch('ToR1{0:02}0{1:02}'.format(p, w))
@@ -103,7 +103,7 @@ def build_zones(m_net):
     fws = {}
     for p in pod_nos():
         for w in range(1, W+1):
-            if p in gw_pods and w == W+1:
+            if p in gw_pods and w == W:
                 # This is a gateway, not a common TOR, so we build a 'firewall'
                 fws[gw_pods[p]] = m_net.addSwitch('FW9{}'.format(gw_pods[p]))
             else:
@@ -156,7 +156,7 @@ def link_tors(m_net, pods, tors):
 def link_zones(m_net, tors, zones, fws):
     for p in pod_nos():
         for w in range(1, 1+W):
-            if p in gw_pods and w == W+1:
+            if p in gw_pods and w == W:
                 m_net.addLink(
                     tors[(p, w)],
                     fws[gw_pods[p]],
@@ -177,9 +177,9 @@ def link_zones(m_net, tors, zones, fws):
 
 def bind_fws(fws, intfs):
     intfs_no = len(intfs)
-    connected_fws = fws[:intfs_no]
-    for fw, intf in zip(connected_fws, intfs):
-        Intf(intf, node=fw)
+    for fw, index in fws.items():
+        if index < intfs_no:
+            Intf(intfs[index], node=fw)
 
 
 def build_net(m_net, intfs):
