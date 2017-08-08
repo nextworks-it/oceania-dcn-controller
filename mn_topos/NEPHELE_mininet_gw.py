@@ -208,6 +208,8 @@ if __name__ == "__main__":
 
     controller_ip = args.controller if args.controller is not None \
         else '127.0.0.1'
+    if args.controller is None:
+        info('***Warning: Falling back to localhost controller.\n')
     interfaces = args.interfaces.split()
     if len(interfaces) > 3:
         error('Too many interfaces provided. Expected up to 3.\n')
@@ -223,9 +225,8 @@ if __name__ == "__main__":
     # start
     accesses = build_net(net, interfaces)
     net.build()
-    net.staticArp()
     net.start()
-    info("*** Take care to configure the access nodes {}. ***"
+    info("*** Take care to configure the access nodes {}. ***\n"
          .format(" ".join((a_n.name for a_n in accesses.values()))))
 
     # cli
