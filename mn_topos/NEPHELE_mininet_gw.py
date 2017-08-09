@@ -109,11 +109,13 @@ def build_zones(m_net):
             else:
                 for z in range(1, Z+1):
                     zone_id = ((p-1) * (W * Z)) + ((w-1) * Z) + z
-                    zones[(p, w, z)] = m_net.addHost(
+                    temp = m_net.addHost(
                         'zone{}'.format(zone_id),
-                        ip='10.{0}.{1}.{2}'.format(p, w, z),
+                        ip='10.{0}.{1}.{2}/16'.format(p, w, z),
                         mac='00:04:00:{0:02x}:{1:02x}:{2:02x}'.format(p, w, z)
                     )
+                    zones[(p, w, z)] = temp
+
     return zones, fws
 
 
@@ -192,7 +194,14 @@ def build_net(m_net, intfs):
     link_zones(m_net, tors, zones, fws)
     info("*** Binding access nodes ***\n")
     bind_fws(fws, intfs)
-    return fws
+    return fws, zones
+
+
+def configure_zones(zones):
+    for (p, w, z) in zones:
+        zone = zones[(p, w, z)]
+        zone.setARP('10.{}.255.1'.format(p), '0a:0b:0c:0d:0e:0f')
+        zone.cmd('route add -net 10.0.0.0/8 gateway 10.{}.255.1'.format(p))
 
 
 if __name__ == "__main__":
@@ -202,10 +211,13 @@ if __name__ == "__main__":
     parser.add_argument('-I', '--interfaces', metavar='INTERFACES', type=str,
                         help='Comma separated list of up to 3 interfaces to connect'
                              'with the emulated DCN')
+    parser.add_argument('-P', '--pod', metavar='POD', type=int, default=10,
+                        help='Number of first pod of the DCN')
     args = parser.parse_args()
 
     setLogLevel('info')
 
+    START_POD = args.pod
     controller_ip = args.controller if args.controller is not None \
         else '127.0.0.1'
     if args.controller is None:
@@ -223,11 +235,14 @@ if __name__ == "__main__":
     net.addController(c)
 
     # start
-    accesses = build_net(net, interfaces)
+    accesses, zs = build_net(net, interfaces)
     net.build()
     net.start()
     info("*** Take care to configure the access nodes {}. ***\n"
          .format(" ".join((a_n.name for a_n in accesses.values()))))
+
+    # configure routes and fake ARP entries
+    configure_zones(zs)
 
     # cli
     CLI(net)
