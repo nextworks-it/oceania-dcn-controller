@@ -28,7 +28,7 @@ class Pod extends Node {
                 while (i < (Const.P * Const.W * Const.Z)) { //Check if it should be forwarded
                     if (Const.matrix[t + (plane * Const.T)][i] == 0) {
                         i = i + 1;
-                    } else if ((Const.matrix[t + (plane * Const.T)][i] - 1) == podID * Const.W + lam) {
+                    } else if ((Const.matrix[t + (plane * Const.T)][i] - 1) == (podID - Const.firstPod) * Const.W + lam) {
                         bmpBuilder.append('0'); //must be dropped, hence not forwarded.
                         break;
                     } else {
@@ -63,7 +63,7 @@ class Pod extends Node {
         podID = ID;
         ringPorts = inrPorts;
         torPorts = intPorts;
-        nodeId = String.format("openflow:2%1$02d0%2$02d", plane + 1, podID + Const.firstPod);
+        nodeId = String.format("openflow:2%1$02d0%2$02d", plane + 1, podID);
         BuildFlowChart();
 
         short totalFlows = (short) flowTable.size();

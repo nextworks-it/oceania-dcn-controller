@@ -12,4 +12,18 @@ public class TrafficProfile {
 		else throw new IllegalArgumentException("Reserved bandwidth must not be null.");
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		TrafficProfile that = (TrafficProfile) o;
+
+		return bandwidth.equals(that.bandwidth);
+	}
+
+	@Override
+	public int hashCode() {
+		return bandwidth.hashCode();
+	}
 }

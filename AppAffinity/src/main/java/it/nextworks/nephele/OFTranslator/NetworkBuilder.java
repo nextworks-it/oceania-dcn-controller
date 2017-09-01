@@ -15,6 +15,7 @@ class NetworkBuilder {
     private Integer R = Const.R;
     private Integer I = Const.I;
     private Integer Z = Const.Z;
+    private Integer startP = Const.firstPod;
 
     private ToR[] tors;
     private Pod[] pods;
@@ -26,18 +27,19 @@ class NetworkBuilder {
         Map<Integer, Integer[]> torAddressesMap = buildTorAddress();
 
         for (Integer p = 0; p < P; p++) {
+            Integer podNo = p + startP;
             for (Integer w = 0; w < W; w++) {
                 Map<Integer, Integer[]> torRack = new HashMap<>();
                 for (Integer i = 0; i < Z; i++) {
-                    torRack.put(I + i + 1, new Integer[]{10, p + 1, w + 1, i + 1});
+                    torRack.put(I + i + 1, new Integer[]{10, podNo, w + 1, i + 1});
                 }
                 Map<Integer, String> torPods = new HashMap<>();
                 for (Integer i = 0; i < I; i++) {
                     torPods.put(i, String.valueOf(i + 1));
                 }
                 Map<Integer, Integer[]> torAddresses = new HashMap<>(torAddressesMap);
-                torAddresses.remove(p * Const.W + w);
-                tors[W * p + w] = new ToR(p, w, torRack, torPods, torAddresses);
+                torAddresses.remove(p * W + w);
+                tors[W * p + w] = new ToR(podNo, w, torRack, torPods, torAddresses);
             }
         }
 
@@ -48,8 +50,9 @@ class NetworkBuilder {
 
         for (Integer pl = 0; pl < I; pl++) {
             for (Integer id = 0; id < P; id++) {
+                Integer podNo = id + startP;
 
-                Integer[] pID = new Integer[]{pl, id};
+                Integer[] pID = new Integer[]{pl, podNo};
                 podRings.put(pID, new HashMap<>());
                 for (Integer i = 0; i < W; i++) {
                     Integer ringUsed = 1 + (i % R); // in case R < W
@@ -61,7 +64,7 @@ class NetworkBuilder {
                 for (Integer i = 0; i < W; i++) {
                     podTors.get(pID).put(i, String.valueOf(2 * R + i + 1));
                 }
-                pods[pl * P + id] = new Pod(pl, id, podRings.get(pID), podTors.get(pID));
+                pods[pl * P + id] = new Pod(pl, podNo, podRings.get(pID), podTors.get(pID));
             }
         }
         return makeInv();
@@ -91,8 +94,9 @@ class NetworkBuilder {
     private Map<Integer, Integer[]> buildTorAddress() {
         Map<Integer, Integer[]> output = new HashMap<>();
         for (Integer p = 0; p < P; p++) {
+            Integer podNo = p + startP;
             for (Integer w = 0; w < W; w++) {
-                output.put(p * W + w, new Integer[]{10, p + 1, w + 1, 0});
+                output.put(p * W + w, new Integer[]{10, podNo, w + 1, 0});
             }
         }
         return output;

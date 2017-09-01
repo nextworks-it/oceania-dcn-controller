@@ -83,11 +83,11 @@ class ToR extends Node {
     ToR(Integer p, Integer w, Map<Integer, Integer[]> rack,
         Map<Integer, String> inPodPorts, Map<Integer, Integer[]> tors) {
 
-        torIdentifier = Const.W * p + w;
+        torIdentifier = Const.W * (p - Const.firstPod) + w;
         rackPorts = rack;
         podPorts = inPodPorts;
         torAddresses = tors;
-        nodeId = String.format("openflow:1%1$02d0%2$02d", p + Const.firstPod, w + 1);
+        nodeId = String.format("openflow:1%1$02d0%2$02d", p, w + 1);
 
         flowTable = new HashSet<>();
         optFlowTable = new HashSet<>();

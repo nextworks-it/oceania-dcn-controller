@@ -17,6 +17,9 @@ public class Connection {
 	
 	@JsonProperty("Traffic_profile")
 	public TrafficProfile profile;
+
+	@JsonProperty("Destination_IP")
+	public String destIp;
 	
 	private Recovery recovery;
 	
@@ -56,7 +59,30 @@ public class Connection {
 		// Every "validate" function either returns true or throws an exception.
 		// Hence, false here means that source.intNode() == dest.intNode().
     }
-	
-	
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Connection that = (Connection) o;
+
+		if (connType != that.connType) return false;
+		if (!source.equals(that.source)) return false;
+		if (!dest.equals(that.dest)) return false;
+		if (!profile.equals(that.profile)) return false;
+		if (destIp != null ? !destIp.equals(that.destIp) : that.destIp != null) return false;
+		return recovery == that.recovery;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = connType.hashCode();
+		result = 31 * result + source.hashCode();
+		result = 31 * result + dest.hashCode();
+		result = 31 * result + profile.hashCode();
+		result = 31 * result + (destIp != null ? destIp.hashCode() : 0);
+		result = 31 * result + recovery.hashCode();
+		return result;
+	}
 }

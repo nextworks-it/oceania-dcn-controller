@@ -50,4 +50,24 @@ public class ConnectionEndPoint {
         if (errorString == null) return true;
         else throw new IllegalArgumentException("Error: " + errorString);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ConnectionEndPoint that = (ConnectionEndPoint) o;
+
+        if (!pod.equals(that.pod)) return false;
+        if (!tor.equals(that.tor)) return false;
+        return server.equals(that.server);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = pod.hashCode();
+        result = 31 * result + tor.hashCode();
+        result = 31 * result + server.hashCode();
+        return result;
+    }
 }
