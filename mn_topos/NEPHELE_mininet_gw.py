@@ -25,8 +25,10 @@ def pod_nos():
     for i in range(START_POD, START_POD + P):
         yield i
 
-gw_pods = {pod: index for index, pod in enumerate([pod_no for pod_no in pod_nos()][-3:])}
-# This is a dict {N-2: 0, N-1: 1, N: 2} where N is the last pod number
+
+def gw_pods():
+    return {pod: index for index, pod in enumerate([pod_no for pod_no in pod_nos()][-3:])}
+    # This is a dict {N-2: 0, N-1: 1, N: 2} where N is the last pod number
 
 
 class SlowStartingNet(Mininet):
@@ -103,15 +105,15 @@ def build_zones(m_net):
     fws = {}
     for p in pod_nos():
         for w in range(1, W+1):
-            if p in gw_pods and w == W:
+            if False:  # p in gw_pods() and w == W:
                 # This is a gateway, not a common TOR, so we build a 'firewall'
-                fws[gw_pods[p]] = m_net.addSwitch('FW9{}'.format(gw_pods[p]))
+                fws[gw_pods()[p]] = m_net.addSwitch('FW9{}'.format(gw_pods()[p]))
             else:
                 for z in range(1, Z+1):
                     zone_id = ((p-1) * (W * Z)) + ((w-1) * Z) + z
                     temp = m_net.addHost(
                         'zone{}'.format(zone_id),
-                        ip='10.{0}.{1}.{2}/16'.format(p, w, z),
+                        ip='10.{0}.{1}.{2}'.format(p, w, z),
                         mac='00:04:00:{0:02x}:{1:02x}:{2:02x}'.format(p, w, z)
                     )
                     zones[(p, w, z)] = temp
@@ -158,10 +160,10 @@ def link_tors(m_net, pods, tors):
 def link_zones(m_net, tors, zones, fws):
     for p in pod_nos():
         for w in range(1, 1+W):
-            if p in gw_pods and w == W:
+            if False:  # p in gw_pods() and w == W:
                 m_net.addLink(
                     tors[(p, w)],
-                    fws[gw_pods[p]],
+                    fws[gw_pods()[p]],
                     I+1,
                     1
                 )
@@ -193,8 +195,8 @@ def build_net(m_net, intfs):
     link_tors(m_net, pods, tors)
     link_zones(m_net, tors, zones, fws)
     info("*** Binding access nodes ***\n")
-    bind_fws(fws, intfs)
-    return fws, zones
+    # bind_fws(fws, intfs)
+    return fws
 
 
 def configure_zones(zones):
@@ -208,9 +210,9 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Mininet for NIDO.')
     parser.add_argument('-C', '--controller', metavar='ADDRESS', type=str,
                         help='IP of the Oceania Controller for this net')
-    parser.add_argument('-I', '--interfaces', metavar='INTERFACES', type=str,
-                        help='Comma separated list of up to 3 interfaces to connect'
-                             'with the emulated DCN')
+    # parser.add_argument('-I', '--interfaces', metavar='INTERFACES', type=str,
+    #                     help='Comma separated list of up to 3 interfaces to connect'
+    #                          'with the emulated DCN')
     parser.add_argument('-P', '--pod', metavar='POD', type=int, default=10,
                         help='Number of first pod of the DCN')
     args = parser.parse_args()
@@ -222,10 +224,10 @@ if __name__ == "__main__":
         else '127.0.0.1'
     if args.controller is None:
         info('***Warning: Falling back to localhost controller.\n')
-    interfaces = args.interfaces.split()
-    if len(interfaces) > 3:
-        error('Too many interfaces provided. Expected up to 3.\n')
-        exit(1)
+    # interfaces = args.interfaces.split()
+    # if len(interfaces) > 3:
+    #     error('Too many interfaces provided. Expected up to 3.\n')
+    #     exit(1)
     info('Controller IP is {}\n'.format(controller_ip))
     # use Linux Traffic Control emulated links
     net = SlowStartingNet(link=TCLink)
@@ -235,14 +237,14 @@ if __name__ == "__main__":
     net.addController(c)
 
     # start
-    accesses, zs = build_net(net, interfaces)
+    accesses = build_net(net, None)
     net.build()
     net.start()
-    info("*** Take care to configure the access nodes {}. ***\n"
-         .format(" ".join((a_n.name for a_n in accesses.values()))))
+    # info("*** Take care to configure the access nodes {}. ***\n"
+    #      .format(" ".join((a_n.name for a_n in accesses.values()))))
 
     # configure routes and fake ARP entries
-    configure_zones(zs)
+    # configure_zones(zs)
 
     # cli
     CLI(net)
