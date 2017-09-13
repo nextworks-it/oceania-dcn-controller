@@ -1,6 +1,5 @@
 package it.nextworks.nephele.OFAAService;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
@@ -14,10 +13,10 @@ import static org.junit.Assert.*;
  * @author Marco Capitani <m.capitani AT nextworks.it>
  */
 public class ConnectionTest {
-/*
+
     @Test
     public void testConstruction() {
-        Connection connection = new Connection();
+        NephConnection connection = new NephConnection();
 
         ConnectionSource source = new ConnectionSource();
         source.pod = 10;
@@ -44,7 +43,7 @@ public class ConnectionTest {
             String s = mapper.writeValueAsString(connection);
             System.out.println(s);
 
-            Connection rebuilt = mapper.readValue(s, Connection.class);
+            NephConnection rebuilt = mapper.readValue(s, NephConnection.class);
 
             System.out.println(mapper.writeValueAsString(rebuilt));
             assertTrue(connection.profile.equals(rebuilt.profile));
@@ -60,7 +59,7 @@ public class ConnectionTest {
 
     @Test
     public void testConstructionWithDestIp() {
-        Connection connection = new Connection();
+        NephConnection connection = new NephConnection();
 
         ConnectionSource source = new ConnectionSource();
         source.pod = 10;
@@ -89,7 +88,7 @@ public class ConnectionTest {
             String s = mapper.writeValueAsString(connection);
             System.out.println(s);
 
-            Connection rebuilt = mapper.readValue(s, Connection.class);
+            NephConnection rebuilt = mapper.readValue(s, NephConnection.class);
 
             System.out.println(mapper.writeValueAsString(rebuilt));
             assertTrue(connection.profile.equals(rebuilt.profile));
@@ -102,5 +101,5 @@ public class ConnectionTest {
             System.out.println(exc.toString());
         }
     }
-*/
+
 }
