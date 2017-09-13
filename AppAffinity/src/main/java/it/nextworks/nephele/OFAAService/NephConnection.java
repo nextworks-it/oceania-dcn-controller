@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.nextworks.nephele.TrafficMatrixEngine.Tunnel;
 
 
-public class Connection {
+public class NephConnection {
 
 	@JsonProperty("Connection_type")
 	private ConnectionType connType;
@@ -65,7 +65,7 @@ public class Connection {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		Connection that = (Connection) o;
+		NephConnection that = (NephConnection) o;
 
 		if (connType != that.connType) return false;
 		if (!source.equals(that.source)) return false;
@@ -84,5 +84,31 @@ public class Connection {
 		result = 31 * result + (destIp != null ? destIp.hashCode() : 0);
 		result = 31 * result + recovery.hashCode();
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return String.format(
+				"\n\tType: %s\n" +
+				"\tBandwidth %s\n" +
+				"\tRecovery: %s\n" +
+				"\tDestination IP: %s\n" +
+				"\tSrc_pod %s\n" +
+				"\tSrc_tor: %s\n" +
+				"\tSrc_srv: %s\n" +
+				"\tDst_pod: %s\n" +
+				"\tDst_tor: %s\n" +
+				"\tDst_srv: %s\n",
+				connType,
+				profile.bandwidth,
+				recovery,
+				destIp,
+				source.pod,
+				source.tor,
+				source.server,
+				dest.pod,
+				dest.tor,
+				dest.server
+		);
 	}
 }

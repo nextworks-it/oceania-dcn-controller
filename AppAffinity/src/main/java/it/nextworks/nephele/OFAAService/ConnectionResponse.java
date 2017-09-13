@@ -8,14 +8,14 @@ public class ConnectionResponse {
 	
 	@JsonProperty("Connection_ID")
 	@ApiModelProperty(notes="The ID of the service")
-	public String connID;
+	public String serviceID;
 	
 	@ApiModelProperty(notes="The status of the service")
 	public String status;
 	
 	public ConnectionResponse(String inId, String inStatus){
-		connID=inId;
-		status=inStatus;
+		serviceID = inId;
+		status = inStatus;
 	}
 
 }

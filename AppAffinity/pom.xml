@@ -56,6 +56,12 @@
 			<version>2.5.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>LATEST</version>
+		</dependency>
+
 		<!-- Test dependency-->
 		<dependency>
 			<groupId>junit</groupId>
