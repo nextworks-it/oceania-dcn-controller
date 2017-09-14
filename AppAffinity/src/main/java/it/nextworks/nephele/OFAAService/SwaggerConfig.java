@@ -15,8 +15,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
-   @Bean
-    public Docket api(){
+    @Bean
+    public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
             .select()
             .apis(RequestHandlerSelectors.any())
@@ -25,15 +25,15 @@ public class SwaggerConfig {
             .apiInfo(apiInfo());
     }
 
-   private ApiInfo apiInfo() {
-       return  new ApiInfo(
-           "Application Affinity Service API",
-           "The API of the Nephele Application Affinity Service.",
-           "1.0",
-           null,
-           new Contact("Marco Capitani", "http://www.nextworks.it", "m.capitani@nextworks.it"),
-           null,
-           null
-       );
-   }
+    private ApiInfo apiInfo() {
+        return new ApiInfo(
+            "Application Affinity Service API",
+            "The API of the Nephele Application Affinity Service.",
+            "1.0",
+            null,
+            new Contact("Marco Capitani", "http://www.nextworks.it", "m.capitani@nextworks.it"),
+            null,
+            null
+        );
+    }
 }

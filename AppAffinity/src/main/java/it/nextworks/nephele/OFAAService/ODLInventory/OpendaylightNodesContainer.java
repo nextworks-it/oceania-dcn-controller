@@ -7,17 +7,17 @@ import it.nextworks.nephele.OFTranslator.Inventory;
 import it.nextworks.nephele.OFTranslator.Node;
 
 public class OpendaylightNodesContainer {
-	
-	@ApiModelProperty(notes="List of all the nodes")
-	private ArrayList<OpendaylightNode> node = new ArrayList<>();
 
-	public ArrayList<OpendaylightNode> getNode() {
-		return node;
-	}
-	
-	public OpendaylightNodesContainer(Inventory input){
-		for (Node inNode : input.getNodes().values()){
-			node.add(new OpendaylightNode(inNode));
-		}
-	}
+    @ApiModelProperty(notes = "List of all the nodes")
+    private ArrayList<OpendaylightNode> node = new ArrayList<>();
+
+    public ArrayList<OpendaylightNode> getNode() {
+        return node;
+    }
+
+    public OpendaylightNodesContainer(Inventory input) {
+        for (Node inNode : input.getNodes().values()) {
+            node.add(new OpendaylightNode(inNode));
+        }
+    }
 }

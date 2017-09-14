@@ -20,17 +20,17 @@ public class Processor {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Value("${OpendaylightURL}")
-	private String ODLURL;
+    private String ODLURL;
 
-	@Value("${OfflineEngineURL}")
-	private String OEURL;
+    @Value("${OfflineEngineURL}")
+    private String OEURL;
 
     @Value("${server.port}")
     private String serverPort;
 
     private ProcessingTasksTemplates templates;
-	
-	private BlockingQueue<Runnable> tasks = new LinkedBlockingQueue<>();
+
+    private BlockingQueue<Runnable> tasks = new LinkedBlockingQueue<>();
 
     private final Set<Service> scheduled = new HashSet<>();
 
@@ -39,28 +39,27 @@ public class Processor {
     private final Set<Service> terminating = new HashSet<>();
 
     private ExecutorService executor;
+
     {
-	    executor = new ThreadPoolExecutor(2, 2, 1, TimeUnit.SECONDS, tasks);
+        executor = new ThreadPoolExecutor(2, 2, 1, TimeUnit.SECONDS, tasks);
         ((ThreadPoolExecutor) executor).prestartAllCoreThreads();
     }
 
     @PostConstruct
-    public void templatesInit(){
+    public void templatesInit() {
         templates = new ProcessingTasksTemplates(serverPort);
     }
 
     @PreDestroy
-    public void cleanup(){
-            executor.shutdown();
-        try{
+    public void cleanup() {
+        executor.shutdown();
+        try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException exc){
-            try{
+        } catch (InterruptedException exc) {
+            try {
                 executor.shutdownNow();
                 executor.awaitTermination(10, TimeUnit.SECONDS);
-            }
-            catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 log.error("Couldn't shutdown executor, got interrupted by exception ", e);
             }
         }
@@ -69,71 +68,69 @@ public class Processor {
     private volatile boolean waitingForOfflineEngine = false;
 
     private volatile boolean isUpdateQueued = false;
-	
-	public Processor(){
-	}
 
-	void addTerminating(Service service){
-	    terminating.add(service);
+    public Processor() {
     }
-	
-	void startRefreshing(Service serv) {
-	    tasks.add(new TrafficMatGetter());
+
+    void addTerminating(Service service) {
+        terminating.add(service);
+    }
+
+    void startRefreshing(Service serv) {
+        tasks.add(new TrafficMatGetter());
         scheduled.add(serv);
-	}
+    }
 
     void startRefreshing() {
         tasks.add(new TrafficMatGetter());
     }
 
-	private void callbackScheduled(){
-        for (Service service : scheduled){
+    private void callbackScheduled() {
+        for (Service service : scheduled) {
             service.status = ServiceStatus.ESTABLISHING;
             establishing.add(service);
         }
     }
 
-    private void callbackEstablished(){
-        for (Service service : establishing){
+    private void callbackEstablished() {
+        for (Service service : establishing) {
             service.status = ServiceStatus.ACTIVE;
         }
     }
 
-    private void callbackTerminated(){
-        for (Service service : terminating){
+    private void callbackTerminated() {
+        for (Service service : terminating) {
             service.status = ServiceStatus.DELETED;
         }
     }
 
-	private class TrafficMatGetter extends FutureTask<int[][]>{
-	    private TrafficMatGetter(){
-	        super(templates.new TrafficMatGetter());
+    private class TrafficMatGetter extends FutureTask<int[][]> {
+        private TrafficMatGetter() {
+            super(templates.new TrafficMatGetter());
         }
 
         @Override
-        protected void done(){
+        protected void done() {
             super.done();
             try {
                 int[][] matrix = this.get();
                 tasks.add(new NetAllocIdGetter(matrix));
                 log.debug("Posting traffic matrix.");
-            }
-            catch (InterruptedException | CancellationException intExc){
+            } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
-            }
-            catch (ExecutionException execExc){
+            } catch (ExecutionException execExc) {
                 log.error("Error while GETting the traffic matrix:\n", execExc);
             }
         }
     }
 
-    private class NetAllocIdGetter extends FutureTask<String>{
-        private NetAllocIdGetter(int[][] matrix){
-                super(templates.new NetAllocGetter(matrix, OEURL));
+    private class NetAllocIdGetter extends FutureTask<String> {
+        private NetAllocIdGetter(int[][] matrix) {
+            super(templates.new NetAllocGetter(matrix, OEURL));
         }
 
         @Override
-        protected void done(){
+        protected void done() {
             super.done();
             try {
                 String netAllocId = this.get();
@@ -142,103 +139,93 @@ public class Processor {
                     //So that there is only one GET to the offline engine on the queue
                     tasks.add(new AllocationMatrixGetter(netAllocId));
                     log.debug("Getting network allocation with ID : " + netAllocId);
-                }
-                else isUpdateQueued = true;
-            }
-            catch (InterruptedException | CancellationException intExc){
+                } else isUpdateQueued = true;
+            } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
-            }
-            catch (ExecutionException execExc){
+            } catch (ExecutionException execExc) {
                 log.error("Error while GETting the net alloc ID:\n", execExc);
             }
         }
     }
 
-    private class InventoryGetter extends FutureTask<Inventory>{
-        private InventoryGetter(int[][] matrix){
+    private class InventoryGetter extends FutureTask<Inventory> {
+        private InventoryGetter(int[][] matrix) {
             super(templates.new InventoryGetter(matrix));
         }
 
         @Override
-        protected void done(){
+        protected void done() {
             super.done();
             try {
                 Inventory inventory = this.get();
                 tasks.add(new InventoryPutter(inventory, ODLURL));
                 log.debug("Sending inventory.");
-            }
-            catch (InterruptedException | CancellationException intExc){
+            } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
-            }
-            catch (ExecutionException execExc){
+            } catch (ExecutionException execExc) {
                 log.error("Error while translating the inventory:\n", execExc);
             }
         }
     }
 
-    private class AllocationMatrixGetter extends FutureTask<NetSolOutput>{
+    private class AllocationMatrixGetter extends FutureTask<NetSolOutput> {
 
         String netAllocId;
 
         Instant start = Instant.now();
 
-        private AllocationMatrixGetter(String netAllocId){
+        private AllocationMatrixGetter(String netAllocId) {
             super(templates.new NetAllocationMatrixGetter(netAllocId, OEURL));
             this.netAllocId = netAllocId;
         }
 
         @Override
-        protected void done(){
+        protected void done() {
             super.done();
             try {
                 NetSolOutput netSol = this.get();
-                if (netSol != null){ //Calculation completed
+                if (netSol != null) { //Calculation completed
                     callbackScheduled();
                     int[][] matrix = netSol.matrix;
                     tasks.add(new InventoryGetter(matrix));
                     waitingForOfflineEngine = false;
-                    if (isUpdateQueued){
+                    if (isUpdateQueued) {
                         tasks.add(new TrafficMatGetter());
                         isUpdateQueued = false;
                     }
-                }
-                else { //request solution again
+                } else { //request solution again
                     long timeFromStart = Instant.now().toEpochMilli() - start.toEpochMilli();
-                    if (timeFromStart < 900){
+                    if (timeFromStart < 900) {
                         //guarantees at least 0.9 seconds between retries, probably 1 sec.
                         Thread.sleep(1000 - timeFromStart);
                     }
                     tasks.add(new AllocationMatrixGetter(netAllocId));
                     log.debug("Translating inventory.");
                 }
-            }
-            catch (InterruptedException | CancellationException intExc){
+            } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
-            }
-            catch (ExecutionException execExc){
+            } catch (ExecutionException execExc) {
                 log.error("Error while GETting the net alloc matrix:\n", execExc);
             }
         }
     }
 
-    private class InventoryPutter extends FutureTask<Boolean>{
+    private class InventoryPutter extends FutureTask<Boolean> {
 
-        private InventoryPutter(Inventory inventory, String ODLURL){
+        private InventoryPutter(Inventory inventory, String ODLURL) {
             super(templates.new InventoryPutter(inventory, ODLURL), true);
         }
 
         @Override
-        protected void done(){
+        protected void done() {
             super.done();
             callbackEstablished();
             callbackTerminated();
             if (this.isDone()) {
                 try {
                     log.debug("Inventory sent, status " + this.get().toString());
-                }
-                catch (InterruptedException e) {// can't happen
-                    }
-                catch (ExecutionException exc) {
+                } catch (InterruptedException e) {// can't happen
+                } catch (ExecutionException exc) {
                     log.debug("Sending inventory got exception: ", exc);
                 }
             }

@@ -60,9 +60,9 @@ public class OFComprehensiveMatch {
     public String getAddress() {
         if (IP == null) return null;
         else return IP[0].toString() + "." +
-                IP[1].toString() + "." +
-                IP[2].toString() + "." +
-                IP[3].toString();
+            IP[1].toString() + "." +
+            IP[2].toString() + "." +
+            IP[3].toString();
     }
 
     public Integer[] getIP() {

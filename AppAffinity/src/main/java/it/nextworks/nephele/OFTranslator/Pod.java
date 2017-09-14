@@ -50,7 +50,7 @@ class Pod extends Node {
                 optFlowTable.add(new FlowEntry(match2, out2));
             } catch (IllegalArgumentException exc) {
                 log.error("Pod: " + nodeId + " while processing wavelength " + lam.toString() +
-                        " got exception ", exc);
+                    " got exception ", exc);
                 throw exc;
             }
         }
@@ -68,10 +68,10 @@ class Pod extends Node {
 
         short totalFlows = (short) flowTable.size();
         optFlowTable.forEach(
-                (f) -> {
-                    f.getMatch().setFlowCounter(totalFlows);
-                    f.getOutput().setFlowCounter(totalFlows);
-                }
+            (f) -> {
+                f.getMatch().setFlowCounter(totalFlows);
+                f.getOutput().setFlowCounter(totalFlows);
+            }
         );
     }
 

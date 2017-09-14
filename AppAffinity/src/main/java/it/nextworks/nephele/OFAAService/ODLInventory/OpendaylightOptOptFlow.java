@@ -6,7 +6,7 @@ package it.nextworks.nephele.OFAAService.ODLInventory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.nextworks.nephele.OFTranslator.FlowEntry;
 
-public class OpendaylightOptOptFlow implements OpendaylightOpticalFlow{
+public class OpendaylightOptOptFlow implements OpendaylightOpticalFlow {
 
     //private Logger log = LoggerFactory.getLogger("Flow");
 

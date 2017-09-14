@@ -14,8 +14,8 @@ public class OpendaylightTable {
     static OpendaylightTable makeEmulationTable0(String nodeId) {
         OpendaylightTable table = new OpendaylightTable();
         table.flow = Arrays.asList(
-                OpendaylightFlow.makePoppingFlow(nodeId),
-                OpendaylightFlow.makeForwardingFlow(nodeId)
+            OpendaylightFlow.makePoppingFlow(nodeId),
+            OpendaylightFlow.makeForwardingFlow(nodeId)
         );
         table.id = 0;
         return table;

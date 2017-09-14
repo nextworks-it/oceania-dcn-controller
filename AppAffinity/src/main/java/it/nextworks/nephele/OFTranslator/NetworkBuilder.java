@@ -1,11 +1,15 @@
 package it.nextworks.nephele.OFTranslator;
 
 import it.nextworks.nephele.OFAAService.ODLInventory.Const;
+import it.nextworks.nephele.appaffdb.DbManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
 class NetworkBuilder {
+
+
+    private DbManager db;
 
     private static short scheduleCounter = 0;
 
@@ -19,6 +23,10 @@ class NetworkBuilder {
 
     private ToR[] tors;
     private Pod[] pods;
+
+    NetworkBuilder(DbManager db) {
+        this.db = db;
+    }
 
     Inventory build() {
 
@@ -39,7 +47,7 @@ class NetworkBuilder {
                 }
                 Map<Integer, Integer[]> torAddresses = new HashMap<>(torAddressesMap);
                 torAddresses.remove(p * W + w);
-                tors[W * p + w] = new ToR(podNo, w, torRack, torPods, torAddresses);
+                tors[W * p + w] = new ToR(podNo, w, torRack, torPods, torAddresses, db);
             }
         }
 
@@ -57,8 +65,8 @@ class NetworkBuilder {
                 for (Integer i = 0; i < W; i++) {
                     Integer ringUsed = 1 + (i % R); // in case R < W
                     podRings.get(pID).put(
-                            i, new String[]{String.valueOf(2 * ringUsed - 1), String.valueOf(2 * ringUsed)}
-                            );
+                        i, new String[]{String.valueOf(2 * ringUsed - 1), String.valueOf(2 * ringUsed)}
+                    );
                 }
                 podTors.put(pID, new HashMap<>());
                 for (Integer i = 0; i < W; i++) {

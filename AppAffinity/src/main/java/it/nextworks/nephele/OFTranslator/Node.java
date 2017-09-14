@@ -7,7 +7,7 @@ public class Node {
 
     protected String nodeId;
     protected Set<FlowEntry> flowTable;
-	protected Set<FlowEntry> optFlowTable;
+    protected Set<FlowEntry> optFlowTable;
 
     public String getNodeId() {
         return nodeId;

@@ -6,9 +6,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages =
-        {"it.nextworks.nephele.OFAAService",
-                "it.nextworks.nephele.OFTranslator",
-                "it.nextworks.nephele.TrafficMatrixEngine"})
+    {"it.nextworks.nephele.OFAAService",
+        "it.nextworks.nephele.OFTranslator",
+        "it.nextworks.nephele.TrafficMatrixEngine",
+        "it.nextworks.nephele.appaffdb"})
 public class AppAffinityApplication {
 
 

@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.IntStream;
+import java.util.List;
 
 /**
  * Created by Marco Capitani on 12/09/17.
@@ -66,21 +66,21 @@ public class DbManager implements AutoCloseable {
             }
             setup.executeUpdate("create table if not exists service (id string primary key, status string)");
             setup.executeUpdate("create table if not exists connection (" +
-                    "id integer, " +
-                    "service_id string, " +
-                    "type integer, " +
-                    "src_pod integer, " +
-                    "src_tor integer, " +
-                    "src_zone integer, " +
-                    "dst_pod integer, " +
-                    "dst_tor integer, " +
-                    "dst_zone integer, " +
-                    "bandwidth integer, " +
-                    "recovery integer, " +
-                    "dest_ip integer, " +
-                    "primary key (id, service_id), " +
-                    "foreign key (service_id) references service(id)" +
-                    ")");
+                "id integer, " +
+                "service_id string, " +
+                "type integer, " +
+                "src_pod integer, " +
+                "src_tor integer, " +
+                "src_zone integer, " +
+                "dst_pod integer, " +
+                "dst_tor integer, " +
+                "dst_zone integer, " +
+                "bandwidth integer, " +
+                "recovery integer, " +
+                "dest_ip integer, " +
+                "primary key (id, service_id), " +
+                "foreign key (service_id) references service(id)" +
+                ")");
         } catch (SQLException exc) {
             log.error("Failed to setup database. Cause: {}.", exc.getMessage());
             throw new RuntimeException(exc);
@@ -96,15 +96,15 @@ public class DbManager implements AutoCloseable {
 
     public void saveService(String serviceId, Service service) {
         try (Statement save = getStatement();
-            PreparedStatement connSave = getPrepared(
-                    "insert into connection values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-            )
+             PreparedStatement connSave = getPrepared(
+                 "insert into connection values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+             )
         ) {
             log.debug("Storing in database service:\nServiceId: {}\n{}", serviceId, service);
             String query = String.format(
-                    "insert into service values('%s', %s)",
-                    serviceId,
-                    service.status.value
+                "insert into service values('%s', %s)",
+                serviceId,
+                service.status.value
             );
             log.debug("Executing update query: '{}'.", query);
             save.executeUpdate(query);
@@ -126,11 +126,11 @@ public class DbManager implements AutoCloseable {
                 connSave.addBatch();
                 log.debug("Adding to batch query: 'insert into connection values( " +
                         "{}, '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {} )",
-                        index, serviceId, s_connection.getConnType().value,
-                        s_connection.source.pod, s_connection.source.tor, s_connection.source.server,
-                        s_connection.dest.pod, s_connection.dest.tor, s_connection.dest.server,
-                        s_connection.profile.bandwidth, s_connection.getRecovery().value,
-                        encodeIP(s_connection.destIp));
+                    index, serviceId, s_connection.getConnType().value,
+                    s_connection.source.pod, s_connection.source.tor, s_connection.source.server,
+                    s_connection.dest.pod, s_connection.dest.tor, s_connection.dest.server,
+                    s_connection.profile.bandwidth, s_connection.getRecovery().value,
+                    encodeIP(s_connection.destIp));
             }
             int[] results = connSave.executeBatch();
             boolean successful = Arrays.stream(results).noneMatch((i) -> i == Statement.EXECUTE_FAILED);
@@ -171,7 +171,7 @@ public class DbManager implements AutoCloseable {
                 if (255 < number || 0 > number) {
                     throw new IllegalArgumentException("octet out of bounds: " + splitted[i]);
                 }
-                result = result + (number << 8*(3-i));
+                result = result + (number << 8 * (3 - i));
             }
             return result;
         } catch (IllegalArgumentException exc) {
@@ -196,13 +196,13 @@ public class DbManager implements AutoCloseable {
     public Service queryServiceWithId(String id) {
         try (Statement query = connection.createStatement()) {
             String s = "select s.id, s.status, " +
-                    "c.type, " +
-                    "c.src_pod, c.src_tor, c.src_zone, " +
-                    "c.dst_pod, c.dst_tor, c.dst_zone, " +
-                    "c.bandwidth, c.recovery, " +
-                    "c.dest_ip " +
-                    "from service as s join connection as c on s.id = c.service_id " +
-                    "order by c.id ASC";
+                "c.type, " +
+                "c.src_pod, c.src_tor, c.src_zone, " +
+                "c.dst_pod, c.dst_tor, c.dst_zone, " +
+                "c.bandwidth, c.recovery, " +
+                "c.dest_ip " +
+                "from service as s join connection as c on s.id = c.service_id " +
+                "order by c.id ASC";
             log.debug("Executing query: '{}'.", s);
             ResultSet results = query.executeQuery(s);
             Service output = null;
@@ -236,6 +236,30 @@ public class DbManager implements AutoCloseable {
             }
             if (null == output) {
                 throw new SQLException("no service with ID " + id + " found");
+            }
+            return output;
+        } catch (SQLException exc) {
+            log.error("Query failed. Cause: {}.", exc.getMessage());
+            return null;
+        }
+    }
+
+    public List<ExtConnection> queryExtConnOutOfTor(int srcPod, int srcTor) {
+        try (Statement query = connection.createStatement()) {
+            String s = String.format("select c.src_zone, c.dst_pod, c.dst_tor, c.bandwidth, c.dest_ip " +
+                "from connection as c where c.src_pod == %s and c.src_tor == %s",
+                srcPod, srcTor);
+            log.debug("Executing query: '{}'.", s);
+            ResultSet results = query.executeQuery(s);
+            List<ExtConnection> output = new ArrayList<>();
+            while (results.next()) {
+                output.add(new ExtConnection(
+                    results.getInt("src_zone"),
+                    results.getInt("dst_pod"),
+                    results.getInt("dst_tor"),
+                    results.getInt("bandwidth"),
+                    results.getString("dest_ip")
+                ));
             }
             return output;
         } catch (SQLException exc) {

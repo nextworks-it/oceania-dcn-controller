@@ -31,13 +31,13 @@ class ProcessingTasksTemplates {
             RestTemplate restTemplate = new RestTemplate();
 
             UriComponentsBuilder urlbuilder =
-                    UriComponentsBuilder.fromHttpUrl(
-                            "http://127.0.0.1:" + serverPort + "/trafficmatrix/matrix");
+                UriComponentsBuilder.fromHttpUrl(
+                    "http://127.0.0.1:" + serverPort + "/trafficmatrix/matrix");
             UriComponents uri = urlbuilder.build();
             log.debug("Getting url " + uri);
 
             ResponseEntity<int[][]> responseEntity =
-                    restTemplate.getForEntity(uri.toUri(), int[][].class);
+                restTemplate.getForEntity(uri.toUri(), int[][].class);
 
             return responseEntity.getBody();
         }
@@ -48,8 +48,7 @@ class ProcessingTasksTemplates {
         int[][] matrix;
         String OEURL;
 
-        NetAllocGetter(int[][] matrix, String OfflineEngineUrl)
-        {
+        NetAllocGetter(int[][] matrix, String OfflineEngineUrl) {
             this.matrix = matrix;
             this.OEURL = OfflineEngineUrl;
         }
@@ -59,13 +58,13 @@ class ProcessingTasksTemplates {
             RestTemplate restTemplate = new RestTemplate();
 
             UriComponentsBuilder urlbuilder =
-                    UriComponentsBuilder.fromHttpUrl(
-                            OEURL);
+                UriComponentsBuilder.fromHttpUrl(
+                    OEURL);
 
             HttpEntity<int[][]> entity = new HttpEntity<>(matrix);
             ResponseEntity<String> response =
-                    restTemplate.exchange(urlbuilder.toUriString(),
-                            HttpMethod.POST, entity, String.class);
+                restTemplate.exchange(urlbuilder.toUriString(),
+                    HttpMethod.POST, entity, String.class);
 
             return response.getBody();
         }
@@ -75,7 +74,7 @@ class ProcessingTasksTemplates {
 
         int[][] netAlloc;
 
-        InventoryGetter(int[][] nalloc){
+        InventoryGetter(int[][] nalloc) {
             this.netAlloc = nalloc;
         }
 
@@ -84,12 +83,12 @@ class ProcessingTasksTemplates {
             RestTemplate restTemplate = new RestTemplate();
 
             UriComponentsBuilder urlbuilder =
-                    UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:" + serverPort + "/translate");
+                UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:" + serverPort + "/translate");
 
             HttpEntity<int[][]> entity = new HttpEntity<>(netAlloc);
             ResponseEntity<Inventory> response =
-                    restTemplate.exchange(urlbuilder.toUriString(),
-                            HttpMethod.POST, entity, Inventory.class);
+                restTemplate.exchange(urlbuilder.toUriString(),
+                    HttpMethod.POST, entity, Inventory.class);
 
             return response.getBody();
         }
@@ -100,7 +99,7 @@ class ProcessingTasksTemplates {
         String nallocId;
         String OEURL;
 
-        NetAllocationMatrixGetter(String nallocId, String OEURL){
+        NetAllocationMatrixGetter(String nallocId, String OEURL) {
             this.nallocId = nallocId;
             this.OEURL = OEURL;
         }
@@ -110,17 +109,17 @@ class ProcessingTasksTemplates {
             RestTemplate restTemplate = new RestTemplate();
             MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
             converter.setSupportedMediaTypes(Arrays.asList(
-                    MediaType.APPLICATION_OCTET_STREAM,
-                    MediaType.APPLICATION_JSON));
+                MediaType.APPLICATION_OCTET_STREAM,
+                MediaType.APPLICATION_JSON));
             restTemplate.getMessageConverters().add(converter);
 
             UriComponentsBuilder geturlbuilder =
-                    UriComponentsBuilder.fromHttpUrl(
-                            OEURL + "/" + nallocId);
+                UriComponentsBuilder.fromHttpUrl(
+                    OEURL + "/" + nallocId);
             UriComponents uri = geturlbuilder.build();
 
             ResponseEntity<NetSolOutput> responseEntity =
-                    restTemplate.getForEntity(uri.toUri(), NetSolOutput.class);
+                restTemplate.getForEntity(uri.toUri(), NetSolOutput.class);
 
             if (responseEntity.getBody().status == CompStatus.COMPUTED) {
                 return responseEntity.getBody();
@@ -135,7 +134,7 @@ class ProcessingTasksTemplates {
         String ODLURL;
         Inventory inventory;
 
-        InventoryPutter(Inventory inventory, String ODLURL){
+        InventoryPutter(Inventory inventory, String ODLURL) {
             this.inventory = inventory;
             this.ODLURL = ODLURL;
         }
@@ -147,26 +146,26 @@ class ProcessingTasksTemplates {
             OpendaylightInventory odlInv = new OpendaylightInventory(inventory);
 
             UriComponentsBuilder urlbuilder =
-                    UriComponentsBuilder.fromHttpUrl(
-                            ODLURL);
+                UriComponentsBuilder.fromHttpUrl(
+                    ODLURL);
 
             HttpHeaders header = new HttpHeaders();
             header.add("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
             header.add("Content-Type", "application/json");
 
             HttpEntity<?> deleteEntity =
-                    new HttpEntity<>(header);
+                new HttpEntity<>(header);
 
             ResponseEntity<String> response1 =
-                    restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.DELETE, deleteEntity, String.class);
+                restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.DELETE, deleteEntity, String.class);
             if (response1.getBody() == null) log.debug(response1.getStatusCode().toString());
             else log.debug(response1.getBody());
 
             HttpEntity<OpendaylightInventory> outgoingEntity =
-                    new HttpEntity<>(odlInv, header);
+                new HttpEntity<>(odlInv, header);
 
             ResponseEntity<String> response2 =
-                    restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.PUT, outgoingEntity, String.class);
+                restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.PUT, outgoingEntity, String.class);
             if (response2.getBody() == null) log.debug(response2.getStatusCode().toString());
             else log.debug(response2.getBody());
         }

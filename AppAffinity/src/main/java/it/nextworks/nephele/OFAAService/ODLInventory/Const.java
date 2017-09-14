@@ -7,13 +7,13 @@ import javax.annotation.PostConstruct;
 
 @Component
 public class Const {
-	
-	public static Integer P;
-	public static Integer I;
-	public static Integer W;
-	public static Integer T;
+
+    public static Integer P;
+    public static Integer I;
+    public static Integer W;
+    public static Integer T;
     public static Integer R;
-	public static Integer Z; //servers under each ToR
+    public static Integer Z; //servers under each ToR
     public static Integer firstPod;
     public static boolean EMULATED;
 
@@ -35,7 +35,7 @@ public class Const {
     private boolean emulated;
 
     @PostConstruct
-	public void initialize(){
+    public void initialize() {
         P = auxP;
         I = auxI;
         W = auxW;
@@ -45,15 +45,15 @@ public class Const {
         firstPod = auxFirstPod;
         EMULATED = emulated;
     }
-	
-	public static Integer[][] matrix;
 
-	public static void init(int[][] inMat) {
+    public static Integer[][] matrix;
+
+    public static void init(int[][] inMat) {
         matrix = new Integer[I * T][P * W * Z];
-		for (int i = 0; i< (I * T); i++){
-			for (int j = 0; j< (P * W * Z); j++){
-				matrix[i][j] = inMat[i][j];
-			}
-		}
-	}
+        for (int i = 0; i < (I * T); i++) {
+            for (int j = 0; j < (P * W * Z); j++) {
+                matrix[i][j] = inMat[i][j];
+            }
+        }
+    }
 }

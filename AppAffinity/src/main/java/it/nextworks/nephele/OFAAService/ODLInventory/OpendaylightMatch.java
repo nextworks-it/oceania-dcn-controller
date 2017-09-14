@@ -6,14 +6,14 @@ import it.nextworks.nephele.OFTranslator.OFComprehensiveMatch;
 
 public class OpendaylightMatch {
 
-	protected OpendaylightMatch() {
+    protected OpendaylightMatch() {
 
-	}
+    }
 
-	protected String inPort;
-	
-	public OpendaylightMatch(OFComprehensiveMatch inMatch){
-		inPort = inMatch.getInputPort();
-	}
+    protected String inPort;
+
+    public OpendaylightMatch(OFComprehensiveMatch inMatch) {
+        inPort = inMatch.getInputPort();
+    }
 
 }
