@@ -137,7 +137,7 @@ class ToR extends Node {
         rackPorts = rack;
         podPorts = inPodPorts;
         torAddresses = tors;
-        nodeId = String.format("openflow:1%1$02d0%2$02d", p, w + 1);
+        nodeId = String.format("openflow:1%1$02d%2$02d", p, w + 1);
 
         // TODO add source server, change below to a map port -> connection
 

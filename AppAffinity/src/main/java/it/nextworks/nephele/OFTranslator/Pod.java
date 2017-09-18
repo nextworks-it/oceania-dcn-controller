@@ -63,7 +63,7 @@ class Pod extends Node {
         podID = ID;
         ringPorts = inrPorts;
         torPorts = intPorts;
-        nodeId = String.format("openflow:2%1$02d0%2$02d", plane + 1, podID);
+        nodeId = String.format("openflow:2%1$02d%2$02d", plane + 1, podID);
         BuildFlowChart();
 
         short totalFlows = (short) flowTable.size();
