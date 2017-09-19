@@ -3,6 +3,7 @@ package it.nextworks.nephele.OFAAService;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.*;
 
 import it.nextworks.nephele.OFTranslator.Inventory;
@@ -41,7 +42,7 @@ public class Processor {
     private ExecutorService executor;
 
     {
-        executor = new ThreadPoolExecutor(2, 2, 1, TimeUnit.SECONDS, tasks);
+        executor = new ThreadPoolExecutor(8, 8, 1, TimeUnit.SECONDS, tasks);
         ((ThreadPoolExecutor) executor).prestartAllCoreThreads();
     }
 
@@ -78,11 +79,13 @@ public class Processor {
 
     void startRefreshing(Service serv) {
         tasks.add(new TrafficMatGetter());
-        scheduled.add(serv);
+        startRefreshing();
     }
 
     void startRefreshing() {
-        tasks.add(new TrafficMatGetter());
+        TrafficMatGetter task = new TrafficMatGetter();
+        tasks.add(task);
+        log.debug("Starting Traffic matrix computation {}.", task.id);
     }
 
     private void callbackScheduled() {
@@ -90,32 +93,42 @@ public class Processor {
             service.status = ServiceStatus.ESTABLISHING;
             establishing.add(service);
         }
+        scheduled.clear();
     }
 
     private void callbackEstablished() {
         for (Service service : establishing) {
             service.status = ServiceStatus.ACTIVE;
         }
+        log.debug("Established services: {}.", establishing);
+        establishing.clear();
     }
 
     private void callbackTerminated() {
         for (Service service : terminating) {
             service.status = ServiceStatus.DELETED;
         }
+        log.debug("Terminated services: {}.", terminating);
+        terminating.clear();
     }
 
     private class TrafficMatGetter extends FutureTask<int[][]> {
+        private UUID id;
+
         private TrafficMatGetter() {
             super(templates.new TrafficMatGetter());
+            id = UUID.randomUUID(); 
         }
 
         @Override
         protected void done() {
             super.done();
+            log.debug("Got traffic matrix. OpId: {}.", this.id);
             try {
                 int[][] matrix = this.get();
-                tasks.add(new NetAllocIdGetter(matrix));
-                log.debug("Posting traffic matrix.");
+                NetAllocIdGetter task = new NetAllocIdGetter(matrix);
+                tasks.add(task);
+                log.debug("Posting traffic matrix. OpId: {}.", task.id);
             } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
             } catch (ExecutionException execExc) {
@@ -125,8 +138,11 @@ public class Processor {
     }
 
     private class NetAllocIdGetter extends FutureTask<String> {
+        private UUID id;
+
         private NetAllocIdGetter(int[][] matrix) {
             super(templates.new NetAllocGetter(matrix, OEURL));
+            id = UUID.randomUUID();
         }
 
         @Override
@@ -136,8 +152,9 @@ public class Processor {
                 String netAllocId = this.get();
                 if (!waitingForOfflineEngine) {
                     waitingForOfflineEngine = true;
+                    AllocationMatrixGetter task = new AllocationMatrixGetter(netAllocId, this.id);
                     //So that there is only one GET to the offline engine on the queue
-                    tasks.add(new AllocationMatrixGetter(netAllocId));
+                    tasks.add(task);
                     log.debug("Getting network allocation with ID : " + netAllocId);
                 } else isUpdateQueued = true;
             } catch (InterruptedException | CancellationException intExc) {
@@ -149,17 +166,22 @@ public class Processor {
     }
 
     private class InventoryGetter extends FutureTask<Inventory> {
+        private UUID id;
+
         private InventoryGetter(int[][] matrix) {
             super(templates.new InventoryGetter(matrix));
+            id = UUID.randomUUID();
         }
 
         @Override
         protected void done() {
             super.done();
+            log.debug("Got inventory. OpId: {}.", this.id);
             try {
                 Inventory inventory = this.get();
-                tasks.add(new InventoryPutter(inventory, ODLURL));
-                log.debug("Sending inventory.");
+                InventoryPutter task = new InventoryPutter(inventory, ODLURL);
+                tasks.add(task);
+                log.debug("Sending inventory. OpId: {}.", task.id);
             } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
             } catch (ExecutionException execExc) {
@@ -169,14 +191,17 @@ public class Processor {
     }
 
     private class AllocationMatrixGetter extends FutureTask<NetSolOutput> {
+        private UUID id;
+
 
         String netAllocId;
 
         Instant start = Instant.now();
 
-        private AllocationMatrixGetter(String netAllocId) {
+        private AllocationMatrixGetter(String netAllocId, UUID opId) {
             super(templates.new NetAllocationMatrixGetter(netAllocId, OEURL));
             this.netAllocId = netAllocId;
+            id = opId;
         }
 
         @Override
@@ -185,9 +210,12 @@ public class Processor {
             try {
                 NetSolOutput netSol = this.get();
                 if (netSol != null) { //Calculation completed
+                    log.debug("Got network allocation. OpId: {}.", this.id);
                     callbackScheduled();
                     int[][] matrix = netSol.matrix;
-                    tasks.add(new InventoryGetter(matrix));
+                    InventoryGetter task = new InventoryGetter(matrix);
+                    tasks.add(task);
+                    log.debug("Translating inventory. OpId: {}.", task.id);
                     waitingForOfflineEngine = false;
                     if (isUpdateQueued) {
                         tasks.add(new TrafficMatGetter());
@@ -199,8 +227,7 @@ public class Processor {
                         //guarantees at least 0.9 seconds between retries, probably 1 sec.
                         Thread.sleep(1000 - timeFromStart);
                     }
-                    tasks.add(new AllocationMatrixGetter(netAllocId));
-                    log.debug("Translating inventory.");
+                    tasks.add(new AllocationMatrixGetter(netAllocId, this.id));
                 }
             } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
@@ -211,14 +238,18 @@ public class Processor {
     }
 
     private class InventoryPutter extends FutureTask<Boolean> {
+        private UUID id;
+
 
         private InventoryPutter(Inventory inventory, String ODLURL) {
             super(templates.new InventoryPutter(inventory, ODLURL), true);
+            id = UUID.randomUUID();
         }
 
         @Override
         protected void done() {
             super.done();
+            log.debug("Inventory pushed. OpId: {}.", this.id);
             callbackEstablished();
             callbackTerminated();
             if (this.isDone()) {
