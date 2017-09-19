@@ -85,7 +85,7 @@ public class Processor {
     void startRefreshing() {
         TrafficMatGetter task = new TrafficMatGetter();
         tasks.add(task);
-        log.debug("Starting Traffic matrix computation {}.", task.id);
+        log.debug("Starting Traffic matrix computation: OpId {}.", task.id);
     }
 
     private void callbackScheduled() {

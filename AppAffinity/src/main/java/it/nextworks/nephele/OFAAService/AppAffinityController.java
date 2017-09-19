@@ -80,6 +80,8 @@ public class AppAffinityController {
 
             //return connection ID and status
 
+            log.debug("Service request received. ID: {}.", responseID);
+
             return new ConnectionResponse(
                 responseID, connList.get(responseID).status.toString());
 
