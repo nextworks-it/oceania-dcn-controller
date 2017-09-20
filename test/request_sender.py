@@ -78,7 +78,7 @@ class SendAction(object):
         )
         response = await http_client.fetch(request)
         print("Request sent for {}, status: {}.".format(str(self), response.code))
-        self.connection_id = json.loads(response.body)['Connection_ID']
+        self.connection_id = json.loads(response.body.decode())['Connection_ID']
         if Config.verbose or response.code != 204:
             print(response.body)
         return response.code

@@ -16,7 +16,7 @@ from request_sender import SendAction
 actions = []
 stop = False
 
-P = 20
+P = 12
 W = 80
 Z = 4
 
