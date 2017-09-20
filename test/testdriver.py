@@ -45,7 +45,7 @@ if __name__ == '__main__':
                    metavar='LOG', type=str,
                    default='/home/nextworks/oceania-dcn-controller/AppAffinity/affinity.log')
     p.add_argument('-C', '--controller', help='The IP address of the controller',
-                   metavar='CONTROLLER', type=str, default='127.0.0.1')
+                   metavar='CONTROLLER', type=str, default='127.0.0.1:8089')
     p.add_argument('duration', help='The duration of the test',
                    metavar='DURATION', type=int)
     p.add_argument('-I', '--iterations', help='The number of iterations of the test',

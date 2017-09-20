@@ -38,7 +38,7 @@ class SendAction(object):
         self.payload = None
         self.destination_ip = destination_ip
         self.controller = controller if controller is not None else '127.0.0.1'
-        self.uri = "http://{}:8181/affinity/connection".format(controller)
+        self.uri = "http://{}/affinity/connection".format(controller)
         self.make_res()
 
     def make_res(self):

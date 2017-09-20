@@ -39,7 +39,7 @@ def main(controller, rate, duration):
         async def periodic_check():
             while True:
                 await sleep(5)
-                print('*** {:04} Duration |                | Until the end {:04} ***'
+                print('*** {} Duration |                | Until the end {} ***'
                       .format(datetime.now() - start_time, end_time - datetime.now()))
                 if datetime.now() >= end_time:
                     break
