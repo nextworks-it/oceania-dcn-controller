@@ -14,6 +14,7 @@ from tornado.ioloop import IOLoop
 from request_sender import SendAction
 
 actions = []
+stop = False
 
 P = 20
 W = 80
@@ -23,18 +24,16 @@ FIRST_POD = 10
 
 
 async def send_flow(p1, t1, z1, p2, t2, z2, bw, http_client, d_ip=None, con=None):
-    action = SendAction(
-        p1, t1, z1,
-        p2, t2, z2,
-        bw,
-        d_ip,
-        con
-    )
-    actions.append(action)
     await action.send_conn(http_client)
 
 
+def kill():
+    global stop
+    stop = True
+
+
 def main(controller, rate, duration):
+    global stop
     exception = None
     start_time = datetime.now()
     end_time = start_time + timedelta(seconds=duration)
@@ -52,8 +51,9 @@ def main(controller, rate, duration):
             client = None
             try:
                 client = AsyncHTTPClient()
-                while datetime.now() >= end_time:
+                while datetime.now() >= end_time and not stop:
                     back_off = expovariate(1 / rate)
+                    conn_duration = expovariate(1 / (5 * rate))
                     await sleep(back_off)
 
                     p1 = randrange(0, P) + FIRST_POD
@@ -73,19 +73,29 @@ def main(controller, rate, duration):
 
                     bw = randrange(1, 4)
 
-                    send_cb = partial(
-                        send_flow,
+                    action = SendAction(
                         p1, t1, z1,
                         p2, t2, z2,
                         bw,
-                        http_client=client,
                         controller=controller
+                    )
+                    actions.append(action)
+
+                    send_cb = partial(
+                        action.send_conn,
+                        http_client=client
+                    )
+                    del_cb = partial(
+                        action.closing,
+                        http_client=client
                     )
 
                     IOLoop.current().spawn_callback(send_cb)
+                    IOLoop.current().call_later(conn_duration, del_cb)
             finally:
                 if client is not None:
                     client.close()
+                    IOLoop.current().stop()
 
         IOLoop.current().spawn_callback(schedule)
         IOLoop.current().spawn_callback(periodic_check)
@@ -100,29 +110,29 @@ def main(controller, rate, duration):
         print('*** Waiting 20 seconds to let the connections establish correctly.')
         time.sleep(20)
         IOLoop.current().stop()
-        print('*** Cleaning up.')
-        c = AsyncHTTPClient()
-
-        async def delete_cb():
-            counter = 0
-            for action in actions:  # type: SendAction
-                await action.closing(c)
-                counter += 1
-                await sleep(0.2)
-                if counter == 10:
-                    await sleep(1)
-                    counter = 0
-            print('*** All connections deleted, backing off.')
-            await sleep(20)
-            print('*** Pusher shutting down.')
-            c.close()
-            IOLoop.current().stop()
-
-        IOLoop.current().spawn_callback(delete_cb)
-        print('*** Starting IOLoop for cleanup.')
-        IOLoop.current().start()
-        if exception is not None:
-            print('Exited due to {}: {}.'.format(exception.__class__.__name__, str(exception)))
+        # print('*** Cleaning up.')
+        # c = AsyncHTTPClient()
+        #
+        # async def delete_cb():
+        #     counter = 0
+        #     for action in actions:  # type: SendAction
+        #         await action.closing(c)
+        #         counter += 1
+        #         await sleep(0.2)
+        #         if counter == 10:
+        #             await sleep(1)
+        #             counter = 0
+        #     print('*** All connections deleted, backing off.')
+        #     await sleep(20)
+        #     print('*** Pusher shutting down.')
+        #     c.close()
+        #     IOLoop.current().stop()
+        #
+        # IOLoop.current().spawn_callback(delete_cb)
+        # print('*** Starting IOLoop for cleanup.')
+        # IOLoop.current().start()
+    if exception is not None:
+        print('Exited due to {}: {}.'.format(exception.__class__.__name__, str(exception)))
 
 
 if __name__ == '__main__':
