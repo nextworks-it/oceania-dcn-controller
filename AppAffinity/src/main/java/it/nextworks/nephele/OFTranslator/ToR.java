@@ -141,7 +141,7 @@ class ToR extends Node {
 
         // TODO add source server, change below to a map port -> connection
 
-        List<ExtConnection> extConnections = db.queryExtConnOutOfTor(p, w);
+        List<ExtConnection> extConnections = db.queryExtConnOutOfTor(p, w + 1);
 
         Map<Integer, List<ExtConnection>> actualConns =
             extConnections.stream().collect(Collectors.groupingBy(ExtConnection::getSource));

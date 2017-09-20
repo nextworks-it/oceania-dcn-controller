@@ -3,6 +3,7 @@ package it.nextworks.nephele.OFAAService;
 
 import it.nextworks.nephele.OFAAService.ODLInventory.OpendaylightInventory;
 import it.nextworks.nephele.OFTranslator.Inventory;
+import it.nextworks.nephele.appaffdb.DbManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,9 @@ public class AppAffinityController {
     @Autowired
     private Processor processor;
 
+    @Autowired
+    private DbManager db;
+
     @SuppressWarnings("unused")
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -54,7 +58,6 @@ public class AppAffinityController {
             throw new IllegalArgumentException("Invalid service: " + //Safety net, should not be reached
                 "at least one connection with valid source and destination must be specified.");
         }
-
         //POST the provided service's connections to the traffic matrix engine,
         //return serviceID and status.
 
@@ -81,6 +84,8 @@ public class AppAffinityController {
             //return connection ID and status
 
             log.debug("Service request received. ID: {}.", responseID);
+            // SAVE request in db
+            db.saveService(responseID, service);
 
             return new ConnectionResponse(
                 responseID, connList.get(responseID).status.toString());
