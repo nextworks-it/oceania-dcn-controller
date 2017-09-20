@@ -85,7 +85,7 @@ public class AppAffinityController {
 
             log.debug("Service request received. ID: {}.", responseID);
             // SAVE request in db
-            db.saveService(responseID, service);
+            db.saveService(responseID, serviceWithId);
 
             return new ConnectionResponse(
                 responseID, connList.get(responseID).status.toString());
