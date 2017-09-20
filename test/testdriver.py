@@ -43,13 +43,13 @@ if __name__ == '__main__':
                    metavar='OUT', type=str, default='out.csv')
     p.add_argument('-L', '--log-file', help='The log file to parse',
                    metavar='LOG', type=str,
-                   default='/home/nextworks/beryllium-SR2/distribution-karaf-0.4.2-Beryllium-SR2/data/log/karaf.log')
+                   default='/home/nextworks/oceania-dcn-controller/AppAffinity/affinity.log')
     p.add_argument('-C', '--controller', help='The IP address of the controller',
                    metavar='CONTROLLER', type=str, default='127.0.0.1')
-    p.add_argument('-F', '--flow-file', help='The file containing flow details',
-                   metavar='FLOW', type=str, default='antennas.csv')
+    p.add_argument('duration', help='The duration of the test',
+                   metavar='DURATION', type=int)
     p.add_argument('-I', '--iterations', help='The number of iterations of the test',
                    metavar='ITERATIONS', type=int, default=1)
     p.add_argument('rate', help='The inter-request time, in seconds', metavar='RATE', type=float)
     args = p.parse_args()
-    main(args.controller, args.rate, args.out_file, args.log_file, args.flow_file, args.iterations)
+    main(args.controller, args.duration, args.rate, args.log_file, args.out_file, args.iterations)

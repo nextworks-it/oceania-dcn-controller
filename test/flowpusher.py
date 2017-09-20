@@ -23,10 +23,6 @@ Z = 4
 FIRST_POD = 10
 
 
-async def send_flow(p1, t1, z1, p2, t2, z2, bw, http_client, d_ip=None, con=None):
-    await action.send_conn(http_client)
-
-
 def kill():
     global stop
     stop = True

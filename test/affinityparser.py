@@ -17,7 +17,7 @@ from genericlogparser import (
 
 class PathStates(Enum):
     PLACEHOLDER = 1
-    CREATED = 2
+    PROCESSING = 2
     DONE = 7
 
 
