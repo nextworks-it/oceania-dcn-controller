@@ -228,6 +228,7 @@ def kill():
     global stop_condition  # type: Condition
     stop_condition.acquire()
     stop_condition.notify_all()
+    print('Stopping parser')
     stop_condition.release()
 
 

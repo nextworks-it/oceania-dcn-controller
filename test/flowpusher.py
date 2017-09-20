@@ -26,6 +26,7 @@ FIRST_POD = 10
 def kill():
     global stop
     stop = True
+    print('Stopping pusher.')
 
 
 def main(controller, rate, duration):
@@ -104,6 +105,7 @@ def main(controller, rate, duration):
         print('Interrupted. Terminating.')
         # We don't want its info.
     except BaseException as e:
+        print('Error: {}.', str(e))
         exception = e
     finally:  # make sure the loop is stopped in case of exceptions (i.e. keyboard interrupt)
         print('*** Waiting 20 seconds to let the connections establish correctly.')
