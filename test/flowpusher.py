@@ -45,6 +45,7 @@ def main(controller, rate, duration):
 
         async def schedule():
             client = None
+            nonlocal exception
             try:
                 client = AsyncHTTPClient()
                 while datetime.now() >= end_time and not stop:
@@ -88,6 +89,8 @@ def main(controller, rate, duration):
 
                     IOLoop.current().spawn_callback(send_cb)
                     IOLoop.current().call_later(conn_duration, del_cb)
+            except BaseException as e:
+                exception = e
             finally:
                 if client is not None:
                     client.close()
