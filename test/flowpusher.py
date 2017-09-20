@@ -49,7 +49,7 @@ def main(controller, rate, duration):
             nonlocal exception
             try:
                 client = AsyncHTTPClient()
-                while datetime.now() >= end_time and not stop:
+                while datetime.now() <= end_time and not stop:
                     back_off = expovariate(1 / rate)
                     conn_duration = expovariate(1 / (5 * rate))
                     await sleep(back_off)
