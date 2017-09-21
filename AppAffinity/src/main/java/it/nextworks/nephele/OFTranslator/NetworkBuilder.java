@@ -35,6 +35,12 @@ class NetworkBuilder {
 
         Map<Integer, Integer[]> torAddressesMap = buildTorAddress();
 
+
+        List<ExtConnection> extConnections = db.queryExtConn();
+        if (null == extConnections) {
+            extConnections = Collections.emptyList();
+        }
+        
         for (Integer p = 0; p < P; p++) {
             Integer podNo = p + startP;
             for (Integer w = 0; w < W; w++) {
@@ -48,10 +54,6 @@ class NetworkBuilder {
                 }
                 Map<Integer, Integer[]> torAddresses = new HashMap<>(torAddressesMap);
                 torAddresses.remove(p * W + w);
-                List<ExtConnection> extConnections = db.queryExtConn();
-                if (null == extConnections) {
-                    extConnections = Collections.emptyList();
-                }
                 Map<List<Integer>, List<ExtConnection>> extConnMap
                         = extConnections.stream().collect(Collectors.groupingBy(ExtConnection::getTor));
                 ArrayList<Integer> key = new ArrayList<>();

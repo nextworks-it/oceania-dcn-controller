@@ -281,6 +281,7 @@ public class DbManager implements AutoCloseable {
                     ServiceStatus.ESTABLISHING.value, ServiceStatus.ACTIVE.value);
             log.trace("Executing query: '{}'.", s);
             ResultSet results = query.executeQuery(s);
+            log.trace("Query '{}' done.", s);
             List<ExtConnection> output = new ArrayList<>();
             while (results.next()) {
                 output.add(new ExtConnection(
