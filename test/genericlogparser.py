@@ -403,5 +403,5 @@ class EMMAParser(LogParser):
 class SpringBaseParser(LogParser):
     def __init__(self):
         super(SpringBaseParser, self).__init__(
-            r'(?P<time>[0-9]{4}-[0-9]{2}-[0-9]{2} \d{2}:\d{2}:\d{2}.\d{3})\s+[A-Z]+ \d{4} --- \[.*\] [a-zA-Z\.]+ : '
+            r'(?P<time>[0-9]{4}-[0-9]{2}-[0-9]{2} \d{2}:\d{2}:\d{2}.\d{3})\s+[A-Z]+ \d+ --- \[.*\] [a-zA-Z\.]+\s+: '
         )

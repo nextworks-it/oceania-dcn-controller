@@ -34,7 +34,6 @@ class ProcessingTasksTemplates {
                 UriComponentsBuilder.fromHttpUrl(
                     "http://127.0.0.1:" + serverPort + "/trafficmatrix/matrix");
             UriComponents uri = urlbuilder.build();
-            log.debug("Getting url " + uri);
 
             ResponseEntity<int[][]> responseEntity =
                 restTemplate.getForEntity(uri.toUri(), int[][].class);
@@ -158,16 +157,14 @@ class ProcessingTasksTemplates {
 
             ResponseEntity<String> response1 =
                 restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.DELETE, deleteEntity, String.class);
-            if (response1.getBody() == null) log.debug(response1.getStatusCode().toString());
-            else log.debug(response1.getBody());
+            log.debug("Inventory wipe got status {}.", response1.getStatusCode().toString());
 
             HttpEntity<OpendaylightInventory> outgoingEntity =
                 new HttpEntity<>(odlInv, header);
 
             ResponseEntity<String> response2 =
                 restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.PUT, outgoingEntity, String.class);
-            if (response2.getBody() == null) log.debug(response2.getStatusCode().toString());
-            else log.debug(response2.getBody());
+            log.debug("Inventory put got status {}.", response1.getStatusCode().toString());
         }
     }
 }

@@ -10,8 +10,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import it.nextworks.nephele.OFTranslator.Inventory;
+import it.nextworks.nephele.appaffdb.DbManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -35,9 +37,11 @@ public class Processor {
     @Value("${concurrentRequests}")
     private int concurrency;
 
-    private Semaphore computeSemaphore = new Semaphore(concurrency);
+    @Autowired
+    private DbManager db;
 
-    private Semaphore invLock = new Semaphore(1);
+    private Semaphore computeSemaphore;
+    private Semaphore invLock;
 
     private AtomicBoolean waiting = new AtomicBoolean(false);
 
@@ -60,7 +64,11 @@ public class Processor {
 
     @PostConstruct
     public void templatesInit() {
+        computeSemaphore = new Semaphore(concurrency);
+        invLock = new Semaphore(1);
+
         templates = new ProcessingTasksTemplates(serverPort);
+        log.debug("Processor concurrency level: {}.", computeSemaphore.availablePermits());
     }
 
     @PreDestroy
@@ -87,6 +95,7 @@ public class Processor {
 
     void addTerminating(Service service) {
         terminating.add(service);
+        db.updateStatus(service, ServiceStatus.TERMINATING);
     }
 
     void startRefreshing(Service serv) {
@@ -96,6 +105,7 @@ public class Processor {
 
     void startRefreshing() {
         if (!computeSemaphore.tryAcquire()) {
+            log.debug("Hit concurrency cap.");
             scheduleRefresh();
         } else {
             TrafficMatGetter task = new TrafficMatGetter();
@@ -115,6 +125,7 @@ public class Processor {
         for (Service service : scheduled) {
             service.status = ServiceStatus.ESTABLISHING;
             establishing.add(service);
+            db.updateStatus(service, ServiceStatus.ESTABLISHING);
         }
         scheduled.clear();
     }
@@ -123,6 +134,7 @@ public class Processor {
         for (Service service : establishing) {
             service.status = ServiceStatus.ACTIVE;
             log.debug("Established service: {}.", service.getId());
+            db.updateStatus(service, ServiceStatus.ACTIVE);
         }
 
         establishing.clear();
@@ -132,6 +144,7 @@ public class Processor {
         for (Service service : terminating) {
             service.status = ServiceStatus.DELETED;
             log.debug("Terminated service: {}.", service.getId());
+            db.updateStatus(service, ServiceStatus.DELETED);
         }
         terminating.clear();
     }

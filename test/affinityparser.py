@@ -165,56 +165,56 @@ def make_parser(path_factory: LifeCycleObjFactory,
 
     # Paths handlers
     odl_parser.add_handler(path_factory.make_handler(
-        "Service request received. ID: (?P</id/>[a-zA-Z\d:_-]+).",
+        "Service request received. ID: (?P</id/>[a-zA-Z\d:_-]+)\.",
         PathEvents.GOT_REQUEST
     ))
 
     odl_parser.add_handler(path_factory.make_handler(
-        "Established services: (?P</id/>[a-zA-Z\d:_-]+).",
+        "Established services: (?P</id/>[a-zA-Z\d:_-]+)\.",
         PathEvents.DONE
     ))
 
     # Traffic handlers
     odl_parser.add_handler(traffic_factory.make_handler(
-        'Starting Traffic matrix computation: OpId (?P</id/>[a-zA-Z\d:_-]+).',
+        'Starting Traffic matrix computation: OpId (?P</id/>[a-zA-Z\d:_-]+)\.',
         TrafficEvents.GOT_REQUEST
     ))
 
     odl_parser.add_handler(traffic_factory.make_handler(
-        "Got traffic matrix. OpId: (?P</id/>[a-zA-Z\d:_-]+).",
+        "Got traffic matrix. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         TrafficEvents.DONE
     ))
 
     # Compute handlers
     odl_parser.add_handler(compute_factory.make_handler(
-        "Posting traffic matrix. OpId: (?P</id/>[a-zA-Z\d:_-]+).",
+        "Posting traffic matrix. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         ComputingEvents.GOT_REQUEST
     ))
 
     odl_parser.add_handler(compute_factory.make_handler(
-        "Got network allocation. OpId: (?P</id/>[a-zA-Z\d:_-]+).",
+        "Got network allocation. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         ComputingEvents.DONE
     ))
 
     # Translate handlers
     odl_parser.add_handler(translate_factory.make_handler(
-        "Translating inventory. OpId: (?P</id/>[a-zA-Z\d:_-]+).",
+        "Translating inventory. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         TranslatingEvents.GOT_REQUEST
     ))
 
     odl_parser.add_handler(translate_factory.make_handler(
-        "Got inventory. OpId: (?P</id/>[a-zA-Z\d:_-]+).",
+        "Got inventory. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         TranslatingEvents.DONE
     ))
 
     # Push handlers
     odl_parser.add_handler(push_factory.make_handler(
-        "Sending inventory. OpId: (?P</id/>[a-zA-Z\d:_-]+).",
+        "Sending inventory. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         PushEvents.GOT_REQUEST
     ))
 
     odl_parser.add_handler(push_factory.make_handler(
-        "Inventory pushed. OpId: (?P</id/>[a-zA-Z\d:_-]+).",
+        "Inventory pushed. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         PushEvents.DONE
     ))
 
