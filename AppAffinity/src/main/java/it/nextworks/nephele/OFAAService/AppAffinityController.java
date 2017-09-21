@@ -76,6 +76,7 @@ public class AppAffinityController {
             //add to internal list
             String responseID = respEntity.getBody();
             Service serviceWithId = new Service(service, ServiceStatus.SCHEDULED);
+            serviceWithId.registerId(responseID);
 
             connList.put(responseID, serviceWithId);
 

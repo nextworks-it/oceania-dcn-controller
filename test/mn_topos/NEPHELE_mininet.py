@@ -119,8 +119,8 @@ def link_rings(m_net, pods):
                 m_net.addLink(
                     pods[(i, p)],
                     pods[(i, next_pod)],
-                    (2*r)-1,
-                    2*r
+                    (2*r),
+                    (2*r) - 1
                 )
                 # ring links are port 2*r going forward, port 2*r-1 going back
                 # Hence ports from 1 to 2*R are as such:

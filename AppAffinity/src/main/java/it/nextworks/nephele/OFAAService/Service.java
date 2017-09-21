@@ -22,6 +22,16 @@ public class Service {
     @ApiModelProperty(notes = "The status of the service")
     public ServiceStatus status;
 
+    private String id;
+
+    public void registerId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
     public AppProfile makeAppProfile() {
         AppProfile appProfile = new AppProfile();
         appProfile.tunnelList = new ArrayList<>();

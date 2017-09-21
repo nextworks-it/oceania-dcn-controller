@@ -6,10 +6,7 @@ import it.nextworks.nephele.appaffdb.ExtConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -51,7 +48,7 @@ class ToR extends Node {
 
     private void BuildDynFlowChart(Map<Integer, List<ExtConnection>> extConnections) {
         for (Integer port : rackPorts.keySet()) {
-            buildFlows(port, extConnections.get(port));
+            buildFlows(port, extConnections.getOrDefault(port, Collections.emptyList()));
         }
     }
 
@@ -70,7 +67,7 @@ class ToR extends Node {
             if (dest.equals(torIdentifier)) {
                 continue;  // Skip intra-rack traffic, that has been taken care of in the static flows
             }
-            List<ExtConnection> extFlows = perDestConns.get(dest);
+            List<ExtConnection> extFlows = perDestConns.getOrDefault(dest, Collections.emptyList());
             Integer[] IP = torAddresses.get(dest);
             for (Integer i = 0; i < Const.I; i++) {
                 Bitmap bitmap = new Bitmap(tmpMat[dest][i]);
@@ -142,6 +139,9 @@ class ToR extends Node {
         // TODO add source server, change below to a map port -> connection
 
         List<ExtConnection> extConnections = db.queryExtConnOutOfTor(p, w + 1);
+        if (extConnections == null) {
+            extConnections = Collections.emptyList();
+        }
 
         Map<Integer, List<ExtConnection>> actualConns =
             extConnections.stream().collect(Collectors.groupingBy(ExtConnection::getSource));

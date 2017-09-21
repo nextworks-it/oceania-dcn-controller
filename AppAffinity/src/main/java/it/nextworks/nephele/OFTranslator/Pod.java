@@ -66,7 +66,7 @@ class Pod extends Node {
         nodeId = String.format("openflow:2%1$02d%2$02d", plane + 1, podID);
         BuildFlowChart();
 
-        short totalFlows = (short) flowTable.size();
+        short totalFlows = (short) optFlowTable.size();
         optFlowTable.forEach(
             (f) -> {
                 f.getMatch().setFlowCounter(totalFlows);

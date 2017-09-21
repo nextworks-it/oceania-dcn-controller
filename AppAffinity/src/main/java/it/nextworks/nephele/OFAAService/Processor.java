@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import it.nextworks.nephele.OFTranslator.Inventory;
 import org.slf4j.Logger;
@@ -28,6 +31,15 @@ public class Processor {
 
     @Value("${server.port}")
     private String serverPort;
+
+    @Value("${concurrentRequests}")
+    private int concurrency;
+
+    private Semaphore computeSemaphore = new Semaphore(concurrency);
+
+    private Semaphore invLock = new Semaphore(1);
+
+    private AtomicBoolean waiting = new AtomicBoolean(false);
 
     private ProcessingTasksTemplates templates;
 
@@ -78,14 +90,25 @@ public class Processor {
     }
 
     void startRefreshing(Service serv) {
-        tasks.add(new TrafficMatGetter());
+        scheduled.add(serv);
         startRefreshing();
     }
 
     void startRefreshing() {
-        TrafficMatGetter task = new TrafficMatGetter();
-        tasks.add(task);
-        log.debug("Starting Traffic matrix computation: OpId {}.", task.id);
+        if (!computeSemaphore.tryAcquire()) {
+            scheduleRefresh();
+        } else {
+            TrafficMatGetter task = new TrafficMatGetter();
+            tasks.add(task);
+            log.debug("Starting Traffic matrix computation: OpId {}.", task.id);
+        }
+    }
+
+    private void scheduleRefresh() {
+        if (waiting.compareAndSet(false, true)) {
+            tasks.add(new WaitForSchedule());
+        }
+        // else, there is already someone waiting, it will get our path installed.
     }
 
     private void callbackScheduled() {
@@ -99,21 +122,22 @@ public class Processor {
     private void callbackEstablished() {
         for (Service service : establishing) {
             service.status = ServiceStatus.ACTIVE;
+            log.debug("Established service: {}.", service.getId());
         }
-        log.debug("Established services: {}.", establishing);
+
         establishing.clear();
     }
 
     private void callbackTerminated() {
         for (Service service : terminating) {
             service.status = ServiceStatus.DELETED;
+            log.debug("Terminated service: {}.", service.getId());
         }
-        log.debug("Terminated services: {}.", terminating);
         terminating.clear();
     }
 
     private class TrafficMatGetter extends FutureTask<int[][]> {
-        private UUID id;
+        protected UUID id;
 
         private TrafficMatGetter() {
             super(templates.new TrafficMatGetter());
@@ -212,6 +236,8 @@ public class Processor {
                 if (netSol != null) { //Calculation completed
                     log.debug("Got network allocation. OpId: {}.", this.id);
                     callbackScheduled();
+                    invLock.acquire();
+                    computeSemaphore.release();
                     int[][] matrix = netSol.matrix;
                     InventoryGetter task = new InventoryGetter(matrix);
                     tasks.add(task);
@@ -255,11 +281,23 @@ public class Processor {
             if (this.isDone()) {
                 try {
                     log.debug("Inventory sent, status " + this.get().toString());
+                    invLock.release();
                 } catch (InterruptedException e) {// can't happen
                 } catch (ExecutionException exc) {
-                    log.debug("Sending inventory got exception: ", exc);
+                    log.warn("Sending inventory got exception: ", exc);
                 }
             }
+        }
+    }
+
+    private class WaitForSchedule extends TrafficMatGetter {
+
+        @Override
+        public void run() {
+            log.debug("Waiting for a concurrency slot to free up. OpId: {}.", this.id);
+            // Yeah, yeah, I know. But the only interruption is a shutdown, so...
+            computeSemaphore.acquireUninterruptibly();
+            super.run();
         }
     }
 }

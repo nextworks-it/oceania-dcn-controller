@@ -50,6 +50,9 @@ public class NephConnection {
     }
 
     public boolean validateAndInit() {
+        if (destIp == null) {
+            destIp = String.format("10.%s.%s.%s", dest.pod, dest.tor, dest.server);
+        }
         if (source.validateAndInit()
             && dest.validateAndInit()
             && profile.validate()
