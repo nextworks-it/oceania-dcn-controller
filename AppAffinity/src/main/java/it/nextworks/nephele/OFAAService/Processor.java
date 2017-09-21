@@ -125,6 +125,7 @@ public class Processor {
         for (Service service : scheduled) {
             service.status = ServiceStatus.ESTABLISHING;
             establishing.add(service);
+            log.debug("computed service: {}.", service.getId());
             db.updateStatus(service, ServiceStatus.ESTABLISHING);
         }
         scheduled.clear();

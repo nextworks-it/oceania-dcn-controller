@@ -106,7 +106,7 @@ public class DbManager implements AutoCloseable {
                 serviceId,
                 service.status.value
             );
-            log.debug("Executing update query: '{}'.", query);
+            log.trace("Executing update query: '{}'.", query);
             save.executeUpdate(query);
             int index = 0;
             for (NephConnection s_connection : service.connections) {
@@ -203,7 +203,7 @@ public class DbManager implements AutoCloseable {
                 "c.dest_ip " +
                 "from service as s join connection as c on s.id = c.service_id " +
                 "order by c.id ASC";
-            log.debug("Executing query: '{}'.", s);
+            log.trace("Executing query: '{}'.", s);
             ResultSet results = query.executeQuery(s);
             Service output = null;
             while (results.next()) {
@@ -251,7 +251,7 @@ public class DbManager implements AutoCloseable {
                             "from connection as c join service as s on s.id == c.service_id " +
                             "where c.src_pod == %s and c.src_tor == %s and (s.status == %s or s.status == %s)",
                 srcPod, srcTor, ServiceStatus.ESTABLISHING.value, ServiceStatus.ACTIVE.value);
-            log.debug("Executing query: '{}'.", s);
+            log.trace("Executing query: '{}'.", s);
             ResultSet results = query.executeQuery(s);
             List<ExtConnection> output = new ArrayList<>();
             while (results.next()) {
@@ -275,7 +275,7 @@ public class DbManager implements AutoCloseable {
             String s = String.format(
                     "update service set status = %s where id == '%s'",
                     status.value, service.getId());
-            log.debug("Executing query: '{}'.", s);
+            log.trace("Executing query: '{}'.", s);
             query.executeUpdate(s);
         } catch (SQLException exc) {
             log.error("Query failed. Cause: {}.", exc.getMessage());

@@ -94,8 +94,11 @@ def main(controller, rate, duration):
                 exception = e
             finally:
                 if client is not None:
-                    client.close()
                     IOLoop.current().stop()
+                    for action in actions:
+                        if action.active:
+                            IOLoop.current().run_sync(action.closing)
+                    client.close()
 
         IOLoop.current().spawn_callback(schedule)
         IOLoop.current().spawn_callback(periodic_check)

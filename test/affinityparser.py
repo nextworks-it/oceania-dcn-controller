@@ -1,10 +1,13 @@
 from argparse import ArgumentParser
+from datetime import timedelta
 from enum import Enum
 from statistics import mean, stdev
 from threading import Condition
 from time import sleep
 
 from os.path import isfile, exists
+
+from datetime import datetime
 
 from genericlogparser import (
     LifeCycle,
@@ -170,7 +173,7 @@ def make_parser(path_factory: LifeCycleObjFactory,
     ))
 
     odl_parser.add_handler(path_factory.make_handler(
-        "Established services: (?P</id/>[a-zA-Z\d:_-]+)\.",
+        "Established service: (?P</id/>[a-zA-Z\d:_-]+)\.",
         PathEvents.DONE
     ))
 
@@ -339,35 +342,35 @@ def main(output_file: str, log_file: str):
         if time is None:
             errors.append(x.id)
             continue
-        paths.append(time)
+        paths.append(time.total_seconds())
 
     for x in traffic_factory.repo.values():
         time = x.get_time()
         if time is None:
             errors.append(x.id)
             continue
-        paths.append(time)
+        traffic.append(time.total_seconds())
 
     for x in compute_factory.repo.values():
         time = x.get_time()
         if time is None:
             errors.append(x.id)
             continue
-        paths.append(time)
+        compute.append(time.total_seconds())
 
     for x in translate_factory.repo.values():
         time = x.get_time()
         if time is None:
             errors.append(x.id)
             continue
-        paths.append(time)
+        translate.append(time.total_seconds())
 
     for x in push_factory.repo.values():
         time = x.get_time()
         if time is None:
             errors.append(x.id)
             continue
-        paths.append(time)
+        push.append(time.total_seconds())
 
     if len(paths) == 0:
         path_no = 0

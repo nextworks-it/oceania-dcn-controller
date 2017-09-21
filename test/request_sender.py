@@ -40,6 +40,7 @@ class SendAction(object):
         self.controller = controller if controller is not None else '127.0.0.1'
         self.uri = "http://{}/affinity/connection".format(controller)
         self.make_res()
+        self.active = False
 
     def make_res(self):
         self.payload = \
@@ -81,6 +82,7 @@ class SendAction(object):
         self.connection_id = json.loads(response.body.decode())['Connection_ID']
         if Config.verbose or response.code != 204:
             print(response.body)
+        self.active = True
         return response.code
 
     async def closing(self, http_client):
@@ -95,6 +97,7 @@ class SendAction(object):
         print("Deletion request sent for {}, status: {}.".format(str(self), response.code))
         if Config.verbose or response.code != 204:
             print(response.body)
+        self.active = False
         return response.code
 
     def __str__(self):

@@ -366,7 +366,7 @@ class RemoteTask(Task):
     def __call__(self):
 
         self.process = subprocess.Popen(
-            ['ssh', self.coordinates, 'tail', '-F', self.file],
+            ['ssh', self.coordinates, 'tail', '-n', '0', '-F', self.file],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True)
