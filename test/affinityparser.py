@@ -79,32 +79,32 @@ path_life_cycle = LifeCycle('path_lc',
                             })
 
 traffic_life_cycle = LifeCycle('traffic_lc',
-                               states=PathStates,
-                               events=PathEvents,
+                               states=TrafficStates,
+                               events=TrafficEvents,
                                transitions={
                                    ('PLACEHOLDER', 'GOT_REQUEST'): 'PROCESSING',
                                    ('PROCESSING', 'DONE'): 'DONE'
                                })
 
 compute_life_cycle = LifeCycle('compute_lc',
-                               states=PathStates,
-                               events=PathEvents,
+                               states=ComputingStates,
+                               events=ComputingEvents,
                                transitions={
                                    ('PLACEHOLDER', 'GOT_REQUEST'): 'PROCESSING',
                                    ('PROCESSING', 'DONE'): 'DONE'
                                })
 
 translation_life_cycle = LifeCycle('translation_lc',
-                                   states=PathStates,
-                                   events=PathEvents,
+                                   states=TranslatingStates,
+                                   events=TranslatingEvents,
                                    transitions={
                                        ('PLACEHOLDER', 'GOT_REQUEST'): 'PROCESSING',
                                        ('PROCESSING', 'DONE'): 'DONE'
                                    })
 
 push_life_cycle = LifeCycle('push_lc',
-                            states=PathStates,
-                            events=PathEvents,
+                            states=PushStates,
+                            events=PushEvents,
                             transitions={
                                 ('PLACEHOLDER', 'GOT_REQUEST'): 'PROCESSING',
                                 ('PROCESSING', 'DONE'): 'DONE'
