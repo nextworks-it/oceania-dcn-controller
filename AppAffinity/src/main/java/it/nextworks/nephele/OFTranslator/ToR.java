@@ -126,7 +126,7 @@ class ToR extends Node {
     }
 
     ToR(Integer p, Integer w, Map<Integer, Integer[]> rack,
-        Map<Integer, String> inPodPorts, Map<Integer, Integer[]> tors, DbManager db) {
+        Map<Integer, String> inPodPorts, Map<Integer, Integer[]> tors, List<ExtConnection> extConnections) {
 
         this.p = p;
         this.w = w;
@@ -138,7 +138,6 @@ class ToR extends Node {
 
         // TODO add source server, change below to a map port -> connection
 
-        List<ExtConnection> extConnections = db.queryExtConnOutOfTor(p, w + 1);
         if (extConnections == null) {
             extConnections = Collections.emptyList();
         }

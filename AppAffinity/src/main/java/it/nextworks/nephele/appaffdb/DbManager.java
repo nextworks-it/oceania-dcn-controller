@@ -256,11 +256,41 @@ public class DbManager implements AutoCloseable {
             List<ExtConnection> output = new ArrayList<>();
             while (results.next()) {
                 output.add(new ExtConnection(
-                    results.getInt("src_zone"),
-                    results.getInt("dst_pod"),
-                    results.getInt("dst_tor"),
-                    results.getInt("bandwidth"),
-                    results.getString("dest_ip")
+                        0,
+                        0,
+                        results.getInt("src_zone"),
+                        results.getInt("dst_pod"),
+                        results.getInt("dst_tor"),
+                        results.getInt("bandwidth"),
+                        results.getString("dest_ip")
+                ));
+            }
+            return output;
+        } catch (SQLException exc) {
+            log.error("Query failed. Cause: {}.", exc.getMessage());
+            return null;
+        }
+    }
+
+    public List<ExtConnection> queryExtConn() {
+        try (Statement query = connection.createStatement()) {
+            String s = String.format(
+                    "select c.src_pod, c.src_tor, c.src_zone, c.dst_pod, c.dst_tor, c.bandwidth, c.dest_ip " +
+                            "from connection as c join service as s on s.id == c.service_id " +
+                            "where (s.status == %s or s.status == %s)",
+                    ServiceStatus.ESTABLISHING.value, ServiceStatus.ACTIVE.value);
+            log.trace("Executing query: '{}'.", s);
+            ResultSet results = query.executeQuery(s);
+            List<ExtConnection> output = new ArrayList<>();
+            while (results.next()) {
+                output.add(new ExtConnection(
+                        results.getInt("src_pod"),
+                        results.getInt("src_tor"),
+                        results.getInt("src_zone"),
+                        results.getInt("dst_pod"),
+                        results.getInt("dst_tor"),
+                        results.getInt("bandwidth"),
+                        results.getString("dest_ip")
                 ));
             }
             return output;

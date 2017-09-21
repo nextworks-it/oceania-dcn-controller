@@ -2,9 +2,10 @@ package it.nextworks.nephele.OFTranslator;
 
 import it.nextworks.nephele.OFAAService.ODLInventory.Const;
 import it.nextworks.nephele.appaffdb.DbManager;
+import it.nextworks.nephele.appaffdb.ExtConnection;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 class NetworkBuilder {
 
@@ -47,7 +48,16 @@ class NetworkBuilder {
                 }
                 Map<Integer, Integer[]> torAddresses = new HashMap<>(torAddressesMap);
                 torAddresses.remove(p * W + w);
-                tors[W * p + w] = new ToR(podNo, w, torRack, torPods, torAddresses, db);
+                List<ExtConnection> extConnections = db.queryExtConn();
+                if (null == extConnections) {
+                    extConnections = Collections.emptyList();
+                }
+                Map<List<Integer>, List<ExtConnection>> extConnMap
+                        = extConnections.stream().collect(Collectors.groupingBy(ExtConnection::getTor));
+                ArrayList<Integer> key = new ArrayList<>();
+                key.add(podNo);
+                key.add(w + 1);
+                tors[W * p + w] = new ToR(podNo, w, torRack, torPods, torAddresses, extConnMap.get(key));
             }
         }
 
