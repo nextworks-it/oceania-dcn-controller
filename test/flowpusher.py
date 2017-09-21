@@ -55,19 +55,19 @@ def main(controller, rate, duration):
                     await sleep(back_off)
 
                     p1 = randrange(0, P) + FIRST_POD
-                    t1 = randrange(0, W)
-                    z1 = randrange(0, Z)
+                    t1 = randrange(0, W) + 1
+                    z1 = randrange(0, Z) + 1
                     p2 = randrange(0, P) + FIRST_POD
-                    t2 = randrange(0, W)
-                    z2 = randrange(0, Z)
+                    t2 = randrange(0, W) + 1
+                    z2 = randrange(0, Z) + 1
 
                     while (p1, t1, z1) == (p2, t2, z2):
                         p1 = randrange(0, P) + FIRST_POD
-                        t1 = randrange(0, W)
-                        z1 = randrange(0, Z)
+                        t1 = randrange(0, W) + 1
+                        z1 = randrange(0, Z) + 1
                         p2 = randrange(0, P) + FIRST_POD
-                        t2 = randrange(0, W)
-                        z2 = randrange(0, Z)
+                        t2 = randrange(0, W) + 1
+                        z2 = randrange(0, Z) + 1
 
                     bw = randrange(1, 4)
 
