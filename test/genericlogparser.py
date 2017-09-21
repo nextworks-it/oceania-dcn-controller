@@ -345,7 +345,7 @@ class Task(object):
     def __call__(self):
 
         self.process = subprocess.Popen(
-            ['tail', '-F', self.file],
+            ['tail', '-n', '0', '-F', self.file],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True)
