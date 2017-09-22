@@ -289,13 +289,13 @@ public class Processor {
         protected void done() {
             super.done();
             log.debug("Inventory pushed. OpId: {}.", this.id);
+            invLock.release();
             callbackEstablished();
             callbackTerminated();
             if (this.isDone()) {
                 try {
                     log.debug("Inventory sent, status " + this.get().toString());
                     log.trace("Releasing inventory lock.");
-                    invLock.release();
                 } catch (InterruptedException e) {// can't happen
                 } catch (ExecutionException exc) {
                     log.warn("Sending inventory got exception: ", exc);
