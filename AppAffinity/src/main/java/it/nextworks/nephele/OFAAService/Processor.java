@@ -103,7 +103,7 @@ public class Processor {
 
     void startRefreshing() {
         if (!computeSemaphore.tryAcquire()) {
-            log.debug("Hit concurrency cap.");
+            log.trace("Hit concurrency cap. Delaying execution.");
             scheduleRefresh();
         } else {
             TrafficMatGetter task = new TrafficMatGetter();
@@ -249,6 +249,7 @@ public class Processor {
                     log.debug("Got network allocation. OpId: {}.", this.id);
                     callbackScheduled();
                     invLock.acquire();
+                    log.debug("Releasing computation permit.");
                     computeSemaphore.release();
                     int[][] matrix = netSol.matrix;
                     InventoryGetter task = new InventoryGetter(matrix);
@@ -293,6 +294,7 @@ public class Processor {
             if (this.isDone()) {
                 try {
                     log.debug("Inventory sent, status " + this.get().toString());
+                    log.trace("Releasing inventory lock.");
                     invLock.release();
                 } catch (InterruptedException e) {// can't happen
                 } catch (ExecutionException exc) {
@@ -309,6 +311,8 @@ public class Processor {
             log.debug("Waiting for a concurrency slot to free up. OpId: {}.", this.id);
             // Yeah, yeah, I know. But the only interruption is a shutdown, so...
             computeSemaphore.acquireUninterruptibly();
+            waiting.set(false);
+            log.trace("A slot freed up, resuming.");
             super.run();
         }
     }

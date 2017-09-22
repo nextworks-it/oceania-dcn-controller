@@ -40,7 +40,7 @@ class NetworkBuilder {
         if (null == extConnections) {
             extConnections = Collections.emptyList();
         }
-        
+
         for (Integer p = 0; p < P; p++) {
             Integer podNo = p + startP;
             for (Integer w = 0; w < W; w++) {
