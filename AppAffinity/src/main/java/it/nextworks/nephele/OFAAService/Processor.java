@@ -313,6 +313,7 @@ public class Processor {
             computeSemaphore.acquireUninterruptibly();
             waiting.set(false);
             log.trace("A slot freed up, resuming.");
+            log.debug("Starting Traffic matrix computation: OpId {}.", this.id);
             super.run();
         }
     }

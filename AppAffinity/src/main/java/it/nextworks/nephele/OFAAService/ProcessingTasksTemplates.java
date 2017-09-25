@@ -152,19 +152,12 @@ class ProcessingTasksTemplates {
             header.add("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
             header.add("Content-Type", "application/json");
 
-            HttpEntity<?> deleteEntity =
-                new HttpEntity<>(header);
-
-            ResponseEntity<String> response1 =
-                restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.DELETE, deleteEntity, String.class);
-            log.debug("Inventory wipe got status {}.", response1.getStatusCode().toString());
-
             HttpEntity<OpendaylightInventory> outgoingEntity =
                 new HttpEntity<>(odlInv, header);
 
             ResponseEntity<String> response2 =
                 restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.PUT, outgoingEntity, String.class);
-            log.debug("Inventory put got status {}.", response1.getStatusCode().toString());
+            log.debug("Inventory put got status {}.", response2.getStatusCode().toString());
         }
     }
 }
