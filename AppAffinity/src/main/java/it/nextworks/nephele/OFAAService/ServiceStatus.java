@@ -8,7 +8,8 @@ public enum ServiceStatus {
     TERMINATING(3),
     DELETED(4),
     REQUESTED(5),
-    FAILED(6);
+    FAILED(6),
+    TERMINATION_REQUESTED(7);
 
 
     public final int value;

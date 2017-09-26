@@ -86,7 +86,7 @@ public class Processor {
     }
 
     synchronized void addTerminating(Service service) {
-        db.updateStatus(service, ServiceStatus.TERMINATING);
+        db.updateStatus(service, ServiceStatus.TERMINATION_REQUESTED);
     }
 
     synchronized void startRefreshing() {
@@ -135,10 +135,24 @@ public class Processor {
         }
     }
 
+    private void callbackTerminating(Collection<String> terminating) {
+        for (String service : terminating) {
+            log.debug("Terminated service: {}.", service);
+            db.updateStatus(service, ServiceStatus.TERMINATING);
+        }
+    }
+
     private void fail(Collection<String> failed) {
         for (String service : failed) {
             log.warn("Service {} failed.", service);
             db.updateStatus(service, ServiceStatus.FAILED);
+        }
+    }
+
+    private void terminateFail(Collection<String> failed) {
+        for (String service : failed) {
+            log.warn("Service {} failed.", service);
+            db.updateStatus(service, ServiceStatus.TERMINATION_REQUESTED);
         }
     }
 
@@ -153,7 +167,9 @@ public class Processor {
         @Override
         public void run() {
             List<String> requested = db.queryWithStatus(ServiceStatus.REQUESTED);
+            List<String> toBeTerminated = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
             callbackSheduling(requested);
+            callbackTerminating(toBeTerminated);
             super.run();
         }
 
@@ -171,6 +187,8 @@ public class Processor {
             } catch (ExecutionException execExc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
                 fail(scheduled);
+                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                terminateFail(terminating);
                 computeSemaphore.release();
                 log.error("Error while GETting the traffic matrix:\n", execExc);
             }
@@ -202,6 +220,8 @@ public class Processor {
             } catch (ExecutionException execExc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
                 fail(scheduled);
+                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                terminateFail(terminating);
                 computeSemaphore.release();
                 log.error("Error while GETting the net alloc ID:\n", execExc);
             }
@@ -230,6 +250,8 @@ public class Processor {
             } catch (ExecutionException execExc) {
                 List<String> establishing = db.queryWithStatus(ServiceStatus.ESTABLISHING);
                 fail(establishing);
+                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                terminateFail(terminating);
                 invLock.release();
                 log.error("Error while translating the inventory:\n", execExc);
             }
@@ -283,6 +305,8 @@ public class Processor {
                 log.error("Computation interrupted:\n", intExc);
             } catch (ExecutionException execExc) {
                 fail(scheduled);
+                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                terminateFail(terminating);
                 computeSemaphore.release();
                 log.error("Error while GETting the net alloc matrix:\n", execExc);
             }
@@ -315,6 +339,7 @@ public class Processor {
                 } catch (ExecutionException exc) {
                     log.warn("Sending inventory got exception: ", exc);
                     fail(establishing);
+                    terminateFail(terminating);
                     // Do not fail terminating, it will be terminated by the next successful pass-through
                 }
             }
