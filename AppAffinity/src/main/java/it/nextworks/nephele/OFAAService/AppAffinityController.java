@@ -75,12 +75,12 @@ public class AppAffinityController {
 
             //add to internal list
             String responseID = respEntity.getBody();
-            Service serviceWithId = new Service(service, ServiceStatus.SCHEDULED);
+            Service serviceWithId = new Service(service, ServiceStatus.REQUESTED);
             serviceWithId.registerId(responseID);
 
             connList.put(responseID, serviceWithId);
 
-            processor.startRefreshing(serviceWithId);
+            processor.startRefreshing();
 
             //return connection ID and status
 

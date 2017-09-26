@@ -24,7 +24,7 @@ public class ExtConnection {
 
     public String dstIp;
 
-    public int getSource() {
+    public int getSourceServer() {
         return srcSrv;
     }
 

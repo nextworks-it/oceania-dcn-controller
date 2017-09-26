@@ -1,7 +1,6 @@
 package it.nextworks.nephele.OFTranslator;
 
 import it.nextworks.nephele.OFAAService.ODLInventory.Const;
-import it.nextworks.nephele.appaffdb.DbManager;
 import it.nextworks.nephele.appaffdb.ExtConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +142,7 @@ class ToR extends Node {
         }
 
         Map<Integer, List<ExtConnection>> actualConns =
-            extConnections.stream().collect(Collectors.groupingBy(ExtConnection::getSource));
+            extConnections.stream().collect(Collectors.groupingBy(ExtConnection::getSourceServer));
 
         flowTable = new HashSet<>();
         optFlowTable = new HashSet<>();
@@ -163,6 +162,5 @@ class ToR extends Node {
                 f.getOutput().setFlowCounter(totalFlows);
             }
         );
-
     }
 }

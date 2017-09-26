@@ -6,7 +6,10 @@ public enum ServiceStatus {
     ESTABLISHING(1),
     ACTIVE(2),
     TERMINATING(3),
-    DELETED(4);
+    DELETED(4),
+    REQUESTED(5),
+    FAILED(6);
+
 
     public final int value;
 
