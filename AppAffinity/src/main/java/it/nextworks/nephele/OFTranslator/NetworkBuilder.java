@@ -101,6 +101,9 @@ class NetworkBuilder {
             inventory.addNode(node.getNodeId(), node);
         }
         scheduleCounter = (short) (scheduleCounter + 1);
+        if (scheduleCounter > 255) {
+            scheduleCounter = 0;
+        }
         return inventory;
     }
 

@@ -1,8 +1,8 @@
 package it.nextworks.nephele.OFAAService;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,12 +47,6 @@ public class Processor {
 
     private BlockingQueue<Runnable> tasks = new LinkedBlockingQueue<>();
 
-    private final Set<Service> scheduled = new HashSet<>();
-
-    private final Set<Service> establishing = new HashSet<>();
-
-    private final Set<Service> terminating = new HashSet<>();
-
     private ExecutorService executor;
 
     {
@@ -91,17 +85,11 @@ public class Processor {
     public Processor() {
     }
 
-    void addTerminating(Service service) {
-        terminating.add(service);
+    synchronized void addTerminating(Service service) {
         db.updateStatus(service, ServiceStatus.TERMINATING);
     }
 
-    void startRefreshing(Service serv) {
-        scheduled.add(serv);
-        startRefreshing();
-    }
-
-    void startRefreshing() {
+    synchronized void startRefreshing() {
         if (!computeSemaphore.tryAcquire()) {
             log.trace("Hit concurrency cap. Delaying execution.");
             scheduleRefresh();
@@ -119,33 +107,39 @@ public class Processor {
         // else, there is already someone waiting, it will get our path installed.
     }
 
-    private void callbackScheduled() {
-        for (Service service : scheduled) {
-            service.status = ServiceStatus.ESTABLISHING;
-            establishing.add(service);
-            log.debug("computed service: {}.", service.getId());
+    private void callbackSheduling(Collection<String> requested) {
+        for (String service : requested) {
+            log.debug("Scheduling service: {}.", service);
+            db.updateStatus(service, ServiceStatus.SCHEDULED);
+        }
+    }
+
+    private void callbackSchedulingDone(Collection<String> scheduled) {
+        for (String service : scheduled) {
+            log.debug("Establishing service: {}.", service);
             db.updateStatus(service, ServiceStatus.ESTABLISHING);
         }
-        scheduled.clear();
     }
 
-    private void callbackEstablished() {
-        for (Service service : establishing) {
-            service.status = ServiceStatus.ACTIVE;
-            log.debug("Established service: {}.", service.getId());
+    private void callbackEstablished(Collection<String> establishing) {
+        for (String service : establishing) {
+            log.debug("Established service: {}.", service);
             db.updateStatus(service, ServiceStatus.ACTIVE);
         }
-
-        establishing.clear();
     }
 
-    private void callbackTerminated() {
-        for (Service service : terminating) {
-            service.status = ServiceStatus.DELETED;
-            log.debug("Terminated service: {}.", service.getId());
+    private void callbackTerminated(Collection<String> terminating) {
+        for (String service : terminating) {
+            log.debug("Terminated service: {}.", service);
             db.updateStatus(service, ServiceStatus.DELETED);
         }
-        terminating.clear();
+    }
+
+    private void fail(Collection<String> failed) {
+        for (String service : failed) {
+            log.warn("Service {} failed.", service);
+            db.updateStatus(service, ServiceStatus.FAILED);
+        }
     }
 
     private class TrafficMatGetter extends FutureTask<int[][]> {
@@ -154,6 +148,13 @@ public class Processor {
         private TrafficMatGetter() {
             super(templates.new TrafficMatGetter());
             id = UUID.randomUUID(); 
+        }
+
+        @Override
+        public void run() {
+            List<String> requested = db.queryWithStatus(ServiceStatus.REQUESTED);
+            callbackSheduling(requested);
+            super.run();
         }
 
         @Override
@@ -168,6 +169,9 @@ public class Processor {
             } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
             } catch (ExecutionException execExc) {
+                List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
+                fail(scheduled);
+                computeSemaphore.release();
                 log.error("Error while GETting the traffic matrix:\n", execExc);
             }
         }
@@ -196,6 +200,9 @@ public class Processor {
             } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
             } catch (ExecutionException execExc) {
+                List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
+                fail(scheduled);
+                computeSemaphore.release();
                 log.error("Error while GETting the net alloc ID:\n", execExc);
             }
         }
@@ -221,6 +228,9 @@ public class Processor {
             } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
             } catch (ExecutionException execExc) {
+                List<String> establishing = db.queryWithStatus(ServiceStatus.ESTABLISHING);
+                fail(establishing);
+                invLock.release();
                 log.error("Error while translating the inventory:\n", execExc);
             }
         }
@@ -243,14 +253,14 @@ public class Processor {
         @Override
         protected void done() {
             super.done();
+            List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
             try {
                 NetSolOutput netSol = this.get();
                 if (netSol != null) { //Calculation completed
                     log.debug("Got network allocation. OpId: {}.", this.id);
-                    callbackScheduled();
+                    callbackSchedulingDone(scheduled);
                     invLock.acquire();
                     log.debug("Releasing computation permit.");
-                    computeSemaphore.release();
                     int[][] matrix = netSol.matrix;
                     InventoryGetter task = new InventoryGetter(matrix);
                     tasks.add(task);
@@ -268,17 +278,20 @@ public class Processor {
                     }
                     tasks.add(new AllocationMatrixGetter(netAllocId, this.id));
                 }
+                computeSemaphore.release();
             } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
             } catch (ExecutionException execExc) {
+                fail(scheduled);
+                computeSemaphore.release();
                 log.error("Error while GETting the net alloc matrix:\n", execExc);
             }
         }
     }
 
     private class InventoryPutter extends FutureTask<Boolean> {
-        private UUID id;
 
+        private UUID id;
 
         private InventoryPutter(Inventory inventory, String ODLURL) {
             super(templates.new InventoryPutter(inventory, ODLURL), true);
@@ -288,17 +301,21 @@ public class Processor {
         @Override
         protected void done() {
             super.done();
-            log.debug("Inventory pushed. OpId: {}.", this.id);
             invLock.release();
-            callbackEstablished();
-            callbackTerminated();
+            List<String> establishing = db.queryWithStatus(ServiceStatus.ESTABLISHING);
+            List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATING);
             if (this.isDone()) {
                 try {
                     log.debug("Inventory sent, status " + this.get().toString());
                     log.trace("Releasing inventory lock.");
+                    log.debug("Inventory pushed. OpId: {}.", this.id);
+                    callbackEstablished(establishing);
+                    callbackTerminated(terminating);
                 } catch (InterruptedException e) {// can't happen
                 } catch (ExecutionException exc) {
                     log.warn("Sending inventory got exception: ", exc);
+                    fail(establishing);
+                    // Do not fail terminating, it will be terminated by the next successful pass-through
                 }
             }
         }
@@ -309,12 +326,15 @@ public class Processor {
         @Override
         public void run() {
             log.debug("Waiting for a concurrency slot to free up. OpId: {}.", this.id);
-            // Yeah, yeah, I know. But the only interruption is a shutdown, so...
-            computeSemaphore.acquireUninterruptibly();
-            waiting.set(false);
-            log.trace("A slot freed up, resuming.");
-            log.debug("Starting Traffic matrix computation: OpId {}.", this.id);
-            super.run();
+            try {
+                computeSemaphore.acquire();
+                waiting.set(false);
+                log.trace("A slot freed up, resuming.");
+                log.debug("Starting Traffic matrix computation: OpId {}.", this.id);
+                super.run();
+            } catch (InterruptedException exc) {
+                log.warn("Wait for schedule interrupted: ", exc);
+            }
         }
     }
 }

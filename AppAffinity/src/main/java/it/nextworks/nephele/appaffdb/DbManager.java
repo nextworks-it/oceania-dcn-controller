@@ -301,16 +301,40 @@ public class DbManager implements AutoCloseable {
         }
     }
 
+    public List<String> queryWithStatus(ServiceStatus status) {
+        try (Statement query = connection.createStatement()) {
+            String s = String.format(
+                    "select s.id " +
+                            "from service as s " +
+                            "where (s.status == %s)",
+                    status.value);
+            log.trace("Executing query: '{}'.", s);
+            ResultSet results = query.executeQuery(s);
+            log.trace("Query '{}' done.", s);
+            List<String> output = new ArrayList<>();
+            while (results.next()) {
+                output.add(results.getString("id"));
+            }
+            return output;
+        } catch (SQLException exc) {
+            log.error("Query failed. Cause: {}.", exc.getMessage());
+            return null;
+        }
+    }
+
     public void updateStatus(Service service, ServiceStatus status) {
+        updateStatus(service.getId(), status);
+    }
+
+    public void updateStatus(String serviceId, ServiceStatus status) {
         try (Statement query = connection.createStatement()) {
             String s = String.format(
                     "update service set status = %s where id == '%s'",
-                    status.value, service.getId());
+                    status.value, serviceId);
             log.trace("Executing query: '{}'.", s);
             query.executeUpdate(s);
         } catch (SQLException exc) {
             log.error("Query failed. Cause: {}.", exc.getMessage());
         }
-
     }
 }
