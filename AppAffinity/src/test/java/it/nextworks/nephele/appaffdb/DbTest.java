@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import java.util.List;
  * @author Marco Capitani <m.capitani AT nextworks.it>
  */
 
-
+@SpringBootTest
 public class DbTest {
 
     ReflectionTestUtils testUtils = new ReflectionTestUtils();

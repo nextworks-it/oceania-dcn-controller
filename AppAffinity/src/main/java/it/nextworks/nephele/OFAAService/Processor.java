@@ -55,12 +55,52 @@ public class Processor {
     }
 
     @PostConstruct
-    public void templatesInit() {
+    public void init() {
+        // Initialize locks
         computeSemaphore = new Semaphore(concurrency);
         invLock = new Semaphore(1);
-
-        templates = new ProcessingTasksTemplates(serverPort);
         log.debug("Processor concurrency level: {}.", computeSemaphore.availablePermits());
+
+        // Initialize templates
+        templates = new ProcessingTasksTemplates(serverPort);
+
+        //Recover services from DB
+        db.resetToStatus(ServiceStatus.REQUESTED, ServiceStatus.SCHEDULED);
+
+        int previouslyActive = db.resetToRequested(ServiceStatus.ACTIVE);
+        if (previouslyActive == -1) {
+            throw new IllegalStateException("Could not recover old connections from db.");
+        }
+
+        log.debug("Found {} previously active connections in db.", previouslyActive);
+
+        if (previouslyActive > 0) {
+            log.debug("Starting instantiation.");
+            startRefreshing();
+        }
+
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException exc) {
+            log.warn("Sleep in processor initialization interrupted.");
+        }
+
+        int previouslyScheduled = db.resetToRequested(ServiceStatus.SCHEDULED);
+        if (previouslyScheduled == -1) {
+            throw new IllegalStateException("Could not recover old connections from db.");
+        }
+
+        int previouslyEstablishing = db.resetToRequested(ServiceStatus.ESTABLISHING);
+        if (previouslyEstablishing == -1) {
+            throw new IllegalStateException("Could not recover old connections from db.");
+        }
+
+        log.debug("Found {} connections previously instantiating in db.", previouslyEstablishing + previouslyScheduled);
+
+        if (previouslyEstablishing + previouslyScheduled > 0) {
+            log.debug("Starting instantiation.");
+            startRefreshing();
+        }
     }
 
     @PreDestroy
