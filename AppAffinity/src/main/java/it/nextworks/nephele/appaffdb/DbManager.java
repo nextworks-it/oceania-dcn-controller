@@ -195,14 +195,15 @@ public class DbManager implements AutoCloseable {
 
     public Service queryServiceWithId(String id) {
         try (Statement query = connection.createStatement()) {
-            String s = "select s.id, s.status, " +
+            String s = String.format("select s.id, s.status, " +
                 "c.type, " +
                 "c.src_pod, c.src_tor, c.src_zone, " +
                 "c.dst_pod, c.dst_tor, c.dst_zone, " +
                 "c.bandwidth, c.recovery, " +
                 "c.dest_ip " +
                 "from service as s join connection as c on s.id = c.service_id " +
-                "order by c.id ASC";
+                "where s.id == %s," +
+                "order by c.id ASC", id);
             log.trace("Executing query: '{}'.", s);
             ResultSet results = query.executeQuery(s);
             Service output = null;
