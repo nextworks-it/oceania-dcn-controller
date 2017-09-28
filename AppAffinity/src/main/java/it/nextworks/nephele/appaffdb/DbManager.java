@@ -21,9 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Marco Capitani on 12/09/17.
@@ -34,7 +32,7 @@ import java.util.List;
 @Repository
 public class DbManager implements AutoCloseable {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Value("${databaseFile}")
     private String dbFile;
@@ -81,6 +79,24 @@ public class DbManager implements AutoCloseable {
                 "primary key (id, service_id), " +
                 "foreign key (service_id) references service(id)" +
                 ")");
+            /*
+            create table if not exists connection (
+                id integer,
+                service_id string,
+                type integer,
+                src_pod integer,
+                src_tor integer,
+                src_zone integer,
+                dst_pod integer,
+                dst_tor integer,
+                dst_zone integer,
+                bandwidth integer,
+                recovery integer,
+                dest_ip integer,
+                primary key (id, service_id),
+                foreign key (service_id) references service(id)
+                )
+             */
         } catch (SQLException exc) {
             log.error("Failed to setup database. Cause: {}.", exc.getMessage());
             throw new RuntimeException(exc);
@@ -124,7 +140,7 @@ public class DbManager implements AutoCloseable {
                 connSave.setInt(12, encodeIP(s_connection.destIp));
                 index++;
                 connSave.addBatch();
-                log.debug("Adding to batch query: 'insert into connection values( " +
+                log.trace("Adding to batch query: 'insert into connection values( " +
                         "{}, '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {} )",
                     index, serviceId, s_connection.getConnType().value,
                     s_connection.source.pod, s_connection.source.tor, s_connection.source.server,
@@ -193,23 +209,57 @@ public class DbManager implements AutoCloseable {
         return String.join(".", results);
     }
 
+    public Set<String> queryServicesId() {
+        try (Statement query = connection.createStatement()) {
+            String s = "select s.id from service as s";
+            log.trace("Executing query: '{}'.", s);
+            ResultSet results = query.executeQuery(s);
+            Set<String> output = new HashSet<>();
+            while (results.next()) {
+                output.add(results.getString("id"));
+            }
+            return output;
+        } catch (SQLException exc) {
+            log.error("Query failed. Cause: {}.", exc.getMessage());
+            return null;
+        }
+    }
+
+    public int resetToRequested(ServiceStatus status) {
+        return resetToStatus(status, ServiceStatus.REQUESTED);
+    }
+
+    public int resetToStatus(ServiceStatus fromStatus, ServiceStatus toStatus) {
+        try (Statement query = connection.createStatement()) {
+            String s = String.format("update service " +
+                    "set status = %s " +
+                    "where (status == %s)", fromStatus.value, toStatus.value);
+            log.trace("Executing query: '{}'.", s);
+            return query.executeUpdate(s);
+        } catch (SQLException exc) {
+            log.error("Query failed. Cause: {}.", exc.getMessage());
+            return -1;
+        }
+    }
+
     public Service queryServiceWithId(String id) {
         try (Statement query = connection.createStatement()) {
-            String s = String.format("select s.id, s.status, " +
+            String s = String.format("select s.status, " +
                 "c.type, " +
                 "c.src_pod, c.src_tor, c.src_zone, " +
                 "c.dst_pod, c.dst_tor, c.dst_zone, " +
                 "c.bandwidth, c.recovery, " +
                 "c.dest_ip " +
-                "from service as s join connection as c on s.id = c.service_id " +
-                "where s.id == %s," +
+                "from service as s join connection as c on s.id == c.service_id " +
+                "where s.id == '%s' " +
                 "order by c.id ASC", id);
-            log.trace("Executing query: '{}'.", s);
+            log.debug("Executing query: '{}'.", s);
             ResultSet results = query.executeQuery(s);
             Service output = null;
             while (results.next()) {
                 if (null == output) {
                     output = new Service();
+                    output.registerId(id);
                     output.status = ServiceStatus.getFromValue(results.getInt("status"));
                     output.connections = new ArrayList<>();
                 }

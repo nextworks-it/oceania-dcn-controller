@@ -34,8 +34,6 @@ import org.springframework.http.ResponseEntity;
 @RequestMapping(value = "/affinity")
 public class AppAffinityController {
 
-    private ConcurrentMap<String, Service> connList = new ConcurrentHashMap<>(); //service IDs dictionary
-
     @Autowired
     private Processor processor;
 
@@ -78,8 +76,6 @@ public class AppAffinityController {
             Service serviceWithId = new Service(service, ServiceStatus.REQUESTED);
             serviceWithId.registerId(responseID);
 
-            connList.put(responseID, serviceWithId);
-
             processor.startRefreshing();
 
             //return connection ID and status
@@ -89,7 +85,8 @@ public class AppAffinityController {
             db.saveService(responseID, serviceWithId);
 
             return new ConnectionResponse(
-                responseID, connList.get(responseID).status.toString());
+                responseID, db.queryServiceWithId(responseID).status.toString()
+            );
 
         } catch (Exception exc) {
             log.error("Could not POST the appProfile, nested exception is: \n", exc);
@@ -104,9 +101,7 @@ public class AppAffinityController {
     public Set<String> getConnections() {
 
         //GET list of all connection IDs
-        Set<String> output;
-        output = connList.keySet();
-        return output;
+        return db.queryServicesId();
     }
 
     @RequestMapping(value = "/connection/{connID}", method = RequestMethod.GET)
@@ -117,7 +112,6 @@ public class AppAffinityController {
 
         //GET a single connection's description by ID
         Service output = db.queryServiceWithId(connID);
-
 
         if (output == null) throw new NullPointerException("Nonexistent connection " + connID);
 
@@ -132,12 +126,11 @@ public class AppAffinityController {
 
         RestTemplate restTemplate = new RestTemplate();
 
-        Service requested = connList.get(connID);
+        Service requested = db.queryServiceWithId(connID);
 
         if (requested == null) throw new NullPointerException("Nonexistent connection " + connID);
 
         else {
-            requested.status = ServiceStatus.TERMINATING;
             processor.addTerminating(requested);
             UriComponentsBuilder urlbuilder =
                 UriComponentsBuilder.fromHttpUrl(
