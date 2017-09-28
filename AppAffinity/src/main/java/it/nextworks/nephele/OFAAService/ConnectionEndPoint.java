@@ -30,9 +30,9 @@ public class ConnectionEndPoint {
             tor, 1, Const.W);
         if (server == null) return "No server number specified.";
         if (server < 0) return String.format("Server number %s too low: accepted %s to %s",
-            pod, 1, Const.Z);
+            server, 1, Const.Z);
         if (server > Const.Z) return String.format("Server number %s too high: accepted %s to %s",
-            pod, 1, Const.Z);
+            server, 1, Const.Z);
         int realPod = pod - Const.firstPod;
         int realTor = tor - 1;
         int realServer = server - 1;
