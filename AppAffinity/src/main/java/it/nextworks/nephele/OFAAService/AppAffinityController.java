@@ -116,7 +116,7 @@ public class AppAffinityController {
     public Service getConnectionById(@PathVariable String connID) {
 
         //GET a single connection's description by ID
-        Service output = connList.get(connID);
+        Service output = db.queryServiceWithId(connID);
 
 
         if (output == null) throw new NullPointerException("Nonexistent connection " + connID);
