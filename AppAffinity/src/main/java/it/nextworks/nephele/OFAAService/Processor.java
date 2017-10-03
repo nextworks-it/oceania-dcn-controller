@@ -318,27 +318,38 @@ public class Processor {
             List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
             try {
                 NetSolOutput netSol = this.get();
-                if (netSol != null) { //Calculation completed
-                    log.debug("Got network allocation. OpId: {}.", this.id);
-                    callbackSchedulingDone(scheduled);
-                    invLock.acquire();
-                    log.debug("Releasing computation permit.");
-                    int[][] matrix = netSol.matrix;
-                    InventoryGetter task = new InventoryGetter(matrix);
-                    tasks.add(task);
-                    log.debug("Translating inventory. OpId: {}.", task.id);
-                    waitingForOfflineEngine = false;
-                    if (isUpdateQueued) {
-                        tasks.add(new TrafficMatGetter());
-                        isUpdateQueued = false;
-                    }
-                } else { //request solution again
-                    long timeFromStart = Instant.now().toEpochMilli() - start.toEpochMilli();
-                    if (timeFromStart < 900) {
-                        //guarantees at least 0.9 seconds between retries, probably 1 sec.
-                        Thread.sleep(1000 - timeFromStart);
-                    }
-                    tasks.add(new AllocationMatrixGetter(netAllocId, this.id));
+                switch (netSol.status) {
+                    case COMPUTED: //Calculation completed
+                        log.debug("Got network allocation. OpId: {}.", this.id);
+                        callbackSchedulingDone(scheduled);
+                        invLock.acquire();
+                        log.debug("Releasing computation permit.");
+                        int[][] matrix = netSol.matrix;
+                        InventoryGetter task = new InventoryGetter(matrix);
+                        tasks.add(task);
+                        log.debug("Translating inventory. OpId: {}.", task.id);
+                        waitingForOfflineEngine = false;
+                        if (isUpdateQueued) {
+                            tasks.add(new TrafficMatGetter());
+                            isUpdateQueued = false;
+                        }
+                        break;
+
+                    case COMPUTING: //request solution again
+                        long timeFromStart = Instant.now().toEpochMilli() - start.toEpochMilli();
+                        if (timeFromStart < 900) {
+                            //guarantees at least 0.9 seconds between retries, probably 1 sec.
+                            Thread.sleep(1000 - timeFromStart);
+                        }
+                        tasks.add(new AllocationMatrixGetter(netAllocId, this.id));
+                        break;
+
+                    case FAILED:
+                        throw new ExecutionException("Computation failed.", new IllegalStateException());
+                    default:
+                        String message = String.format("Unexpected status %s in response from offline", netSol.status);
+                        log.error(message);
+                        throw new ExecutionException(message, new IllegalStateException());
                 }
                 computeSemaphore.release();
             } catch (InterruptedException | CancellationException intExc) {
