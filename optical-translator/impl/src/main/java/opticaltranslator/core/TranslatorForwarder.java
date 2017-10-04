@@ -121,7 +121,6 @@ class TranslatorForwarder {
                         )
                 );
                 break;
-
             default: //Should not happen.
                 throw new IllegalArgumentException(
                         String.format("Unexpected modification type %s.",

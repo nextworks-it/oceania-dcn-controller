@@ -81,7 +81,6 @@ public class OpticalTranslatorProvider implements BindingAwareProvider, AutoClos
         LOG.info("OpticalTranslatorProvider Closed");
     }
 
-
     @Override
     public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<OpticalFlow>> collection) {
         collection.forEach(this::parseModification);

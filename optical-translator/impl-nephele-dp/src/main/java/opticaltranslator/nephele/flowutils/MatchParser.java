@@ -58,7 +58,7 @@ public class MatchParser {
             inPort = null;
         }
 
-        Metadata metadata = metadataMaker.buildMetadata(optMatch, optOutput, nepheleData, false);
+        Metadata metadata = metadataMaker.buildMetadata(optMatch, optOutput, nepheleData, nepheleData.isIntraBit());
 
         return wrapMatch(inPort, metadata);
     }

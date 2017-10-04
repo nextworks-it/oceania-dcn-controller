@@ -50,6 +50,9 @@ module optical-translator-nephele {
         leaf flow-counter {
             type uint8;
         }
+        leaf intra-bit {
+            type boolean;
+        }
     }
 
     augment "/inv:nodes/inv:node/optr:optical-flow-table/optr:optical-flow/optr:optical-flow-type/optr:opt-opt-flow/optr:opt-opt-case/optr:opt-match-type" {
