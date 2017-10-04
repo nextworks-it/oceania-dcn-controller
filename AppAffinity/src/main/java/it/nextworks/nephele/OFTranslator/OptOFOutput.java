@@ -80,4 +80,15 @@ public class OptOFOutput extends OFOutput {
     public void setFlowCounter(short flowCounter) {
         this.flowCounter = flowCounter;
     }
+
+    @Override
+    public String toString() {
+        return "OptOFOutput{" +
+                "lambda=" + lambda +
+                ", timeBitmap=" + timeBitmap.getBitmap() +
+                ", scheduleId=" + scheduleId +
+                ", flowCounter=" + flowCounter +
+                ", outputPort='" + outputPort + '\'' +
+                "}";
+    }
 }

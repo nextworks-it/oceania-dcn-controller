@@ -14,6 +14,8 @@ public class OpendaylightMatch_Opt extends OpendaylightMatch {
 
     private short flowCounter;
 
+    private boolean intra;
+
     public OpendaylightMatch_Opt(OFComprehensiveMatch inMatch) {
         super(inMatch);
 
@@ -25,12 +27,16 @@ public class OpendaylightMatch_Opt extends OpendaylightMatch {
 
         flowCounter = inMatch.getFlowCounter();
 
+        intra = inMatch.isIntra();
+
     }
 
     public String pad(String str) {
-        while (str.length() < 80) {
-            str = str + "0";
+        StringBuilder strBuilder = new StringBuilder(str);
+        while (strBuilder.length() < 80) {
+            strBuilder.append("0");
         }
+        str = strBuilder.toString();
         return str;
     }
 
@@ -56,5 +62,10 @@ public class OpendaylightMatch_Opt extends OpendaylightMatch {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getInPort() {
         return inPort;
+    }
+
+    @JsonProperty("intra-bit")
+    public boolean getIntra() {
+        return intra;
     }
 }

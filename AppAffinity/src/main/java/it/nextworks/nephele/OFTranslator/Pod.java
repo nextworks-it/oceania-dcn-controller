@@ -4,8 +4,10 @@ import it.nextworks.nephele.OFAAService.ODLInventory.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 class Pod extends Node {
 
@@ -15,39 +17,61 @@ class Pod extends Node {
 
     private Integer podID; //ID of this switch's pod
 
-    private HashMap<Integer, String[]> ringPorts = new HashMap<>();
+    private Map<Integer, String[]> ringPorts = new HashMap<>();
     //ring no (= wavelenght no) -> {in port, out port}
 
-    private HashMap<Integer, String> torPorts = new HashMap<>(); //wavelength->port
+    private Map<Integer, String> torPorts = new HashMap<>(); //wavelength->port
 
-    private void BuildFlowChart() {
+    private void buildFlowChart() {
         for (Integer lam = 0; lam < Const.W; lam++) {
-            StringBuilder bmpBuilder = new StringBuilder("");
+            StringBuilder intraBmpBuilder = new StringBuilder("");
+            StringBuilder interBmpBuilder = new StringBuilder("");
+            StringBuilder forwardBmpBuilder = new StringBuilder("");
             for (Integer t = 0; t < Const.T; t++) {
                 Integer i = 0;
                 while (i < (Const.P * Const.W * Const.Z)) { //Check if it should be forwarded
                     if (Const.matrix[t + (plane * Const.T)][i] == 0) {
                         i = i + 1;
                     } else if ((Const.matrix[t + (plane * Const.T)][i] - 1) == (podID - Const.firstPod) * Const.W + lam) {
-                        bmpBuilder.append('0'); //must be dropped, hence not forwarded.
+                        if (((i / (Const.W * Const.Z)) + Const.firstPod) == podID) {
+                            intraBmpBuilder.append('1'); //must be dropped, hence not forwarded.
+                            interBmpBuilder.append('0');
+                            forwardBmpBuilder.append('0');
+                        } else {
+                            interBmpBuilder.append('1');
+                            intraBmpBuilder.append('0');
+                            forwardBmpBuilder.append('0');
+                        }
                         break;
                     } else {
                         i = i + 1;
                     }
                 }
                 if (i == (Const.P * Const.W * Const.Z)) { //there was no need to drop the wavelength
-                    bmpBuilder.append('1');
+                    forwardBmpBuilder.append('1');
+                    intraBmpBuilder.append('0');
+                    interBmpBuilder.append('0');
                 }
             }
             try {
-                String tBmp = bmpBuilder.toString();
-                OptOFMatch match = new OptOFMatch(lam, tBmp);
-                OptOFOutput out = new OptOFOutput(lam, tBmp, ringPorts.get(lam)[1]);
+                String fBmp = forwardBmpBuilder.toString();
+                OptOFMatch match = new OptOFMatch(lam, fBmp);
+                OptOFOutput out = new OptOFOutput(lam, fBmp, ringPorts.get(lam)[1]);
                 optFlowTable.add(new FlowEntry(match, out));
-                Bitmap bmp2 = Bitmap.inverting(tBmp);
-                OptOFMatch match2 = new OptOFMatch(lam, bmp2);
-                OptOFOutput out2 = new OptOFOutput(lam, bmp2, torPorts.get(lam));
-                optFlowTable.add(new FlowEntry(match2, out2));
+
+                String inBmp = intraBmpBuilder.toString();
+                if (inBmp.contains("1")) {
+                    OptOFMatch match2 = new OptOFMatch(lam, inBmp);
+                    OptOFOutput out2 = new OptOFOutput(lam, inBmp, torPorts.get(lam));
+                    optFlowTable.add(new FlowEntry(match2, out2, true));
+                }
+                String exBmp = interBmpBuilder.toString();
+                if (exBmp.contains("1")) {
+                    OptOFMatch match3 = new OptOFMatch(lam, exBmp);
+                    OptOFOutput out3 = new OptOFOutput(lam, exBmp, torPorts.get(lam));
+                    optFlowTable.add(new FlowEntry(match3, out3, false));
+                }
+
             } catch (IllegalArgumentException exc) {
                 log.error("Pod: " + nodeId + " while processing wavelength " + lam.toString() +
                     " got exception ", exc);
@@ -56,7 +80,7 @@ class Pod extends Node {
         }
     }
 
-    Pod(Integer inpl, Integer ID, HashMap<Integer, String[]> inrPorts, HashMap<Integer, String> intPorts) {
+    Pod(Integer inpl, Integer ID, Map<Integer, String[]> inrPorts, Map<Integer, String> intPorts) {
         flowTable = new HashSet<>();
         optFlowTable = new HashSet<>();
         plane = inpl;
@@ -64,7 +88,7 @@ class Pod extends Node {
         ringPorts = inrPorts;
         torPorts = intPorts;
         nodeId = String.format("openflow:2%1$02d%2$02d", plane + 1, podID);
-        BuildFlowChart();
+        buildFlowChart();
 
         short totalFlows = (short) optFlowTable.size();
         optFlowTable.forEach(

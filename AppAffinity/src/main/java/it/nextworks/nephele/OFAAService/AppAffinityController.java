@@ -1,6 +1,5 @@
 package it.nextworks.nephele.OFAAService;
 
-
 import it.nextworks.nephele.OFAAService.ODLInventory.OpendaylightInventory;
 import it.nextworks.nephele.OFTranslator.Inventory;
 import it.nextworks.nephele.appaffdb.DbManager;
@@ -17,8 +16,6 @@ import io.swagger.annotations.ApiResponses;
 import it.nextworks.nephele.TrafficMatrixEngine.AppProfile;
 
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +24,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 
 @CrossOrigin
 @RestController

@@ -1,5 +1,7 @@
 package it.nextworks.nephele.OFTranslator;
 
+import java.util.Arrays;
+
 public class OFComprehensiveMatch {
 
     private Integer lambda;
@@ -7,6 +9,7 @@ public class OFComprehensiveMatch {
 
     private short scheduleId;
     private short flowCounter;
+    private boolean intra;
 
     private Integer[] IP;
     private short ipMask;
@@ -103,5 +106,28 @@ public class OFComprehensiveMatch {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public boolean isIntra() {
+        return intra;
+    }
+
+    public void setIntra(boolean intra) {
+        this.intra = intra;
+    }
+
+    @Override
+    public String toString() {
+        return "OFComprehensiveMatch{" +
+                "lambda=" + lambda +
+                ", timeBitmap=" + timeBitmap.getBitmap() +
+                ", scheduleId=" + scheduleId +
+                ", flowCounter=" + flowCounter +
+                ", intra=" + intra +
+                ", IP=" + Arrays.toString(IP) +
+                ", ipMask=" + ipMask +
+                ", priority=" + priority +
+                ", inputPort='" + inputPort + '\'' +
+                '}';
     }
 }
