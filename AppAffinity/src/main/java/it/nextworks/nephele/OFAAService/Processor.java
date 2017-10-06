@@ -318,10 +318,6 @@ public class Processor {
             List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
             try {
                 NetSolOutput netSol = this.get();
-                if (netSol == null) {
-                    log.debug("NetSolOutput: {}.", netSol);
-                    throw new ExecutionException("Null offline engine output.", new IllegalArgumentException());
-                }
                 switch (netSol.status) {
                     case COMPUTED: //Calculation completed
                         log.debug("Got network allocation. OpId: {}.", this.id);

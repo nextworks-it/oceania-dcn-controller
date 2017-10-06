@@ -120,11 +120,7 @@ class ProcessingTasksTemplates {
             ResponseEntity<NetSolOutput> responseEntity =
                 restTemplate.getForEntity(uri.toUri(), NetSolOutput.class);
 
-            if (responseEntity.getBody().status == CompStatus.COMPUTED) {
-                return responseEntity.getBody();
-            } else {
-                return null;
-            }
+            return responseEntity.getBody();
         }
     }
 
