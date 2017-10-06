@@ -72,13 +72,13 @@ public class AppAffinityController {
             Service serviceWithId = new Service(service, ServiceStatus.REQUESTED);
             serviceWithId.registerId(responseID);
 
-            processor.startRefreshing();
-
             //return connection ID and status
 
             log.debug("Service request received. ID: {}.", responseID);
             // SAVE request in db
             db.saveService(responseID, serviceWithId);
+
+            processor.startRefreshing();
 
             return new ConnectionResponse(
                 responseID, db.queryServiceWithId(responseID).status.toString()
