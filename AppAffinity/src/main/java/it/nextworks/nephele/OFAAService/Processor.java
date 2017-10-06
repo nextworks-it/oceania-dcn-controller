@@ -252,8 +252,8 @@ public class Processor {
                     waitingForOfflineEngine = true;
                     AllocationMatrixGetter task = new AllocationMatrixGetter(netAllocId, this.id);
                     //So that there is only one GET to the offline engine on the queue
-                    tasks.add(task);
                     log.debug("Getting network allocation with ID : " + netAllocId);
+                    tasks.add(task);
                 } else isUpdateQueued = true;
             } catch (InterruptedException | CancellationException intExc) {
                 log.error("Computation interrupted:\n", intExc);
@@ -318,6 +318,10 @@ public class Processor {
             List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
             try {
                 NetSolOutput netSol = this.get();
+                if (netSol == null) {
+                    log.debug("NetSolOutput: {}.", netSol);
+                    throw new ExecutionException("Null offline engine output.", new IllegalArgumentException());
+                }
                 switch (netSol.status) {
                     case COMPUTED: //Calculation completed
                         log.debug("Got network allocation. OpId: {}.", this.id);
