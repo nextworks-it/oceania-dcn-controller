@@ -1,6 +1,6 @@
-define(['app/topology/topology.module', 'vis'], function(topology, vis) {
+define(['app/appaffinity/appaffinity.module', 'vis'], function(appaff, vis) {
 
-  topology.register.directive('topologySimple', function() {
+  appaff.register.directive('flowsTopology', function() {
     // constants
     var width = 800,
       height = 800;

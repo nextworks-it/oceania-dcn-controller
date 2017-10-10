@@ -1,0 +1,60 @@
+<!--
+* Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 which accompanies this distribution,
+* and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+
+<form role="form" name="flowForm" style="width: 100%">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-2">
+            <h2>Path view</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="srcTor">Source ToR</label>
+                <select class="form-control input-sm control-label" id="srcTor" ui-select2
+                        ng-model="grData.srcTor" ng-required="true">
+                    <option ng-repeat="node in nodeFlows | orderBy: 'id' | filter:torFilter" value="{{node.id}}">
+                        {{node.id}}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="srcZone">Source Zone</label>
+                <select class="form-control input-sm control-label" id="srcZone" ui-select2
+                        ng-model="grData.srcZone" ng-required="true">
+                    <option ng-repeat="zone in zoneList" value="{{zone}}">Zone {{zone}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="destTor">Destination Tor</label>
+                <select class="form-control input-sm control-label" id="destTor" ui-select2
+                        ng-model="grData.destTor" ng-required="true">
+                    <option ng-repeat="node in nodeFlows | orderBy: 'id' | filter:torFilter" value="{{node.id}}">
+                        {{node.id}}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-hide="grFlow">
+        <div class="col md 3 col-md-offset-2">
+            <span style="color:white">No data found. Select a path and click load.</span>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                <h3>Controls</h3>
+                <button class="btn btn-primary" ng-click="refreshGraphics()">Reload</button>
+            </div>
+            <flows-topology class="col-md-10 col-lg-offset-1" topology-data="topologyData"></flows-topology>
+        </div>
+    </div>
+</form>
