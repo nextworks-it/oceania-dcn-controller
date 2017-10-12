@@ -80,7 +80,7 @@ class ToR extends Node {
                         encodeIP(extFlow.dstIp),
                         (short) 32,
                         inPort.toString(),
-                        (dest % Const.W),
+                        (dest % Const.W) + 1,
                         slice,
                         podPorts.get(i),
                         30000 + i
