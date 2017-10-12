@@ -55,4 +55,11 @@ public class TrafficMatrixController {
         log.info(ex.getMessage(), ex);
         return ex.getMessage();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleAppException(IllegalArgumentException ex) {
+        log.info(ex.getMessage(), ex);
+        return ex.getMessage();
+    }
 }

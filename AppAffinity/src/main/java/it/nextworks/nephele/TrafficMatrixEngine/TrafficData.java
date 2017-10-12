@@ -3,6 +3,7 @@ package it.nextworks.nephele.TrafficMatrixEngine;
 import it.nextworks.nephele.OFAAService.ODLInventory.Const;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -15,6 +16,12 @@ public class TrafficData {
 
     public synchronized String addProfile(AppProfile appProfile) {
         for (Tunnel conn : appProfile.tunnelList) {
+            if (Arrays.stream(matrix[conn.source]).sum() >= 80) {
+                throw new IllegalArgumentException(String.format(
+                        "Cannot allocate flow: row %s already has 80 slots assigned.",
+                        conn.source
+                ));
+            }
             matrix[conn.source][(conn.dest / Const.Z)] =
                 matrix[conn.source][(conn.dest / Const.Z)] + conn.bandwidth;
         }
