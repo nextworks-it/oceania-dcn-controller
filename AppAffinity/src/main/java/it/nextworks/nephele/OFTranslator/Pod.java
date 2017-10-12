@@ -55,20 +55,20 @@ class Pod extends Node {
             }
             try {
                 String fBmp = forwardBmpBuilder.toString();
-                OptOFMatch match = new OptOFMatch(lam, fBmp);
-                OptOFOutput out = new OptOFOutput(lam, fBmp, ringPorts.get(lam)[1]);
+                OptOFMatch match = new OptOFMatch(lam + 1, fBmp);
+                OptOFOutput out = new OptOFOutput(lam + 1, fBmp, ringPorts.get(lam)[1]);
                 optFlowTable.add(new FlowEntry(match, out));
 
                 String inBmp = intraBmpBuilder.toString();
                 if (inBmp.contains("1")) {
-                    OptOFMatch match2 = new OptOFMatch(lam, inBmp);
-                    OptOFOutput out2 = new OptOFOutput(lam, inBmp, torPorts.get(lam));
+                    OptOFMatch match2 = new OptOFMatch(lam + 1, inBmp);
+                    OptOFOutput out2 = new OptOFOutput(lam + 1, inBmp, torPorts.get(lam));
                     optFlowTable.add(new FlowEntry(match2, out2, true));
                 }
                 String exBmp = interBmpBuilder.toString();
                 if (exBmp.contains("1")) {
-                    OptOFMatch match3 = new OptOFMatch(lam, exBmp);
-                    OptOFOutput out3 = new OptOFOutput(lam, exBmp, torPorts.get(lam));
+                    OptOFMatch match3 = new OptOFMatch(lam + 1, exBmp);
+                    OptOFOutput out3 = new OptOFOutput(lam + 1, exBmp, torPorts.get(lam));
                     optFlowTable.add(new FlowEntry(match3, out3, false));
                 }
 

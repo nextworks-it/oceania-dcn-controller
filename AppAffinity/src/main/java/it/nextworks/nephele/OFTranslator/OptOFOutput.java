@@ -11,7 +11,7 @@ public class OptOFOutput extends OFOutput {
 
     OptOFOutput(Integer inLambda, Bitmap inBitmap, String inPort) throws IllegalArgumentException {
         super(inPort);
-        if ((inLambda < 0) || (inLambda > Const.W - 1)) {
+        if ((inLambda < 1) || (inLambda > Const.W)) {
             throw new IllegalArgumentException("Illegal lambda.");
         }
 
@@ -22,7 +22,7 @@ public class OptOFOutput extends OFOutput {
 
     OptOFOutput(Integer inLambda, String inBitmap, String inPort) throws IllegalArgumentException {
         super(inPort);
-        if ((inLambda < 0) || (inLambda > Const.W - 1)) {
+        if ((inLambda < 1) || (inLambda > Const.W)) {
             throw new IllegalArgumentException("Illegal lambda.");
         }
 

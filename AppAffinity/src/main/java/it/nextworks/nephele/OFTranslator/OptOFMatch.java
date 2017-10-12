@@ -9,7 +9,7 @@ public class OptOFMatch extends OFMatch {
 
     public OptOFMatch(Integer inLambda, Bitmap inBitmap, String inPort) {
         super(inPort);
-        if ((inLambda < 0) || (inLambda > (Const.W - 1))) {
+        if ((inLambda < 1) || (inLambda > (Const.W))) {
             throw new IllegalArgumentException("Illegal lambda.");
         }
         lambda = inLambda;
@@ -18,7 +18,7 @@ public class OptOFMatch extends OFMatch {
 
     public OptOFMatch(Integer inLambda, String inBitmap, String inPort) {
         super(inPort);
-        if ((inLambda < 0) || (inLambda > (Const.W - 1))) {
+        if ((inLambda < 1) || (inLambda > (Const.W))) {
             throw new IllegalArgumentException("Illegal lambda.");
         }
         lambda = inLambda;
@@ -27,7 +27,7 @@ public class OptOFMatch extends OFMatch {
 
     public OptOFMatch(Integer inLambda, String inBitmap) {
         super(null);
-        if ((inLambda < 0) || (inLambda > (Const.W - 1))) {
+        if ((inLambda < 1) || (inLambda > (Const.W))) {
             throw new IllegalArgumentException("Illegal lambda.");
         }
         lambda = inLambda;
@@ -36,7 +36,7 @@ public class OptOFMatch extends OFMatch {
 
     public OptOFMatch(Integer inLambda, Bitmap inBitmap) {
         super(null);
-        if ((inLambda < 0) || (inLambda > (Const.W - 1))) {
+        if ((inLambda < 1) || (inLambda > (Const.W))) {
             throw new IllegalArgumentException("Illegal lambda.");
         }
         lambda = inLambda;
