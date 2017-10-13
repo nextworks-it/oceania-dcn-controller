@@ -179,12 +179,12 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
         svc.graphics = function(nodes, sourceTor, sourceZone, destTor) {
             if (nodes === undefined) {return undefined;}
             var lambda = parseInt(destTor.match(/^openflow:1[0-9]{2}([0-9]{2})$/)[1]);
-            var destPod = parseInt(destTor.match(/^openflow:1([0-9]{2})[0-9]{2}$/)[1]) - svc.startPod;
-            var destIP = "10." + String(destPod + 1) + "." + String(lambda + 1) + ".";
+            var destPod = parseInt(destTor.match(/^openflow:1([0-9]{2})[0-9]{2}$/)[1]);
+            var destIP = "10." + String(destPod) + "." + String(lambda) + ".";
 
             var data = {};
             data.destPod = destPod;
-            data.srcPod = parseInt(sourceTor.match(/^openflow:1([0-9]{2})[0-9]{2}$/)[1]) - svc.startPod;
+            data.srcPod = parseInt(sourceTor.match(/^openflow:1([0-9]{2})[0-9]{2}$/)[1]);
             data.lambda = lambda;
             data.srcLambda = parseInt(sourceTor.match(/^openflow:1[0-9]{2}([0-9]{2})$/)[1]);
             var node;
@@ -201,7 +201,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                             data[node.id].forward = flow.timeslot;
                         }
                         // TODO This is configuration dependant.
-                        if (flow.wavelength == lambda && flow.outPort.toString().match(/^[34]$/)) {
+                        if (flow.wavelength == lambda && flow.outPort.toString().match(/^[3456]$/)) {
                             data[node.id].drop = flow.timeslot;
                         }
                     }
@@ -224,6 +224,94 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
             return data;
         };
 
+        svc.findNode = function(node, topData) {
+            var nodes = topData.nodes.filter(function(item, index) {
+                    return item.label === node;
+                }),
+                nodeId;
+
+            if(nodes && nodes[0]) {
+                nodeId = nodes[0].id;
+            } else {
+                return null;
+            }
+            return nodeId;
+        };
+
+        svc.findLink = function(nodeName1, nodeName2, topData) {
+            var node1 = svc.findNode(nodeName1, topData);
+            var node2 = svc.findNode(nodeName2, topData);
+            var link;
+            for (var linkIndex in topData.links) {
+                link = topData.links[linkIndex];
+                if (link.from === undefined || link.to === undefined) {
+                    continue;
+                }
+                if ((link.from === node1 || link.from === node2) && (link.to === node1 || link.to === node2)) {
+                    return link;
+                }
+            }
+            return null;
+        };
+
+        svc.meld = function(getTopDataAsync, getGrFlow, callback) {
+            getTopDataAsync("flow:1", function(topData) {
+                var grData = getGrFlow();
+                for (var key in grData) {
+                    if (key.indexOf("openflow:") < 0) {
+                        continue;
+                    }
+                    var node = grData[key];
+                    var pod;
+                    var link;
+                    var nextPodSw;
+                    var nextSw;
+                    for (var direction in node) {
+                        if (direction === "1" || direction === "2") { // TODO config dependant: 2 planes
+                            pod = key.match(/^openflow:1([0-9]{2})[0-9]{2}$/)[1];
+                            nextPodSw = "openflow:20" + direction + pod;
+                            link = svc.findLink(key, nextPodSw, topData);
+                            if (link === null) {
+                                console.log("Houston, problem with pod " + nextPodSw + " tor " + key + " link not found.");
+                            } else {
+                                link.highlight = '#2EFE2E';
+                                link.color = '#81F781';
+                            }
+                        }
+                        if (direction === "forward") {
+                            if (node[direction].indexOf("2") < 0) {
+                                continue;
+                            }
+                            nextPodSw = svc.incrementNext(key);
+                            link = svc.findLink(key, nextPodSw, topData);
+                            if (link === null) {
+                                console.log("Houston, problem with pod " + nextPodSw + " pod " + key + " link not found.");
+                            } else {
+                                link.highlight = '#2EFE2E';
+                                link.color = '#81F781';
+                            }
+                        }
+                        if (direction === "drop") {
+                            if (node[direction].indexOf("2") < 0) {
+                                continue;
+                            }
+                            var lambda = grData.lambda.toString().padStart(2, "0");
+                            pod = key.match(/^openflow:2[0-9]{2}([0-9]{2})$/)[1];
+                            nextSw = "openflow:1" + pod + lambda;
+                            link = svc.findLink(key, nextSw, topData);
+                            if (link === null) {
+                                console.log("Houston, problem with tor " + nextSw + " pod " + key + " link not found.");
+                            } else {
+                                link.highlight = '#2EFE2E';
+                                link.color = '#81F781';
+                            }
+                        }
+                    }
+                }
+                callback(topData);
+            });
+        };
+
         svc.getDetails = function(data, destPod) {
             var details = [];
             var time;
@@ -241,7 +329,7 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                 while (next !== null) {
                     flow = data[next];
                     path.push(next);
-                    if (destPod + 1 == next.match(/^openflow:20[1-9]([0-9]{2})$/)[1]) {
+                    if (destPod == next.match(/^openflow:20[1-9]([0-9]{2})$/)[1]) {
                         next = null;
                         time = svc.intersect(time, flow.drop);
                     }

@@ -93,7 +93,7 @@ class ToR extends Node {
                         IP,
                         (short) 24,
                         inPort.toString(),
-                        (dest % Const.W),
+                        (dest % Const.W) + 1,
                         other,
                         podPorts.get(i),
                         30000 + i

@@ -13,7 +13,7 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                   data.nodes.push({id: 1001, x: x, y: y + step, label: 'Switch', group: 'switch',value:20});
                   data.nodes.push({id: 1003, x: x, y: y + 3 * step, label: 'Host', group: 'host',value:20});*/
                   $scope.topologyData = data;
-              });
+                });
             };
 
             $scope.refreshTraffic = function() {
@@ -86,10 +86,18 @@ define(['app/appaffinity/appaffinity.module', 'app/appaffinity/appaffinity.servi
                     return;
                 }
 
-                $scope.grFlow = appaffinitySvc.graphics($scope.nodeFlows,
-                                        $scope.grData.srcTor,
-                                        $scope.grData.srcZone,
-                                        $scope.grData.destTor);
+                var getGrFlow = function() {
+                    return appaffinitySvc.graphics(
+                        $scope.nodeFlows,
+                        $scope.grData.srcTor,
+                        $scope.grData.srcZone,
+                        $scope.grData.destTor
+                    );
+                };
+
+                appaffinitySvc.meld(NetworkTopologySvc.getNode, getGrFlow, function(meldedData) {
+                    $scope.graphicsData = meldedData;
+                });
             };
 
             $scope.submitService = function() {

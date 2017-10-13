@@ -13,6 +13,10 @@ define(['app/topology/topology.module', 'vis'], function(topology, vis) {
       link: function($scope, iElm, iAttrs, controller) {
 
           $scope.$watch('topologyData', function (ntdata) {
+              var flowData;
+              if ($scope.grFlow) {
+                  flowData = $scope.grFlow;
+              }
               if(ntdata){
                   //   visinit(inNodes, inEdges, container, inOptions) {
                   var inNodes = $scope.topologyData.nodes;

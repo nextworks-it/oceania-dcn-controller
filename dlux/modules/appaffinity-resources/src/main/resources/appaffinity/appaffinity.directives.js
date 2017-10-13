@@ -8,15 +8,15 @@ define(['app/appaffinity/appaffinity.module', 'vis'], function(appaff, vis) {
     return {
       restrict: 'E',
       scope: {
-          topologyData: '='
+          graphicsData: '='
       },
       link: function($scope, iElm, iAttrs, controller) {
 
-          $scope.$watch('topologyData', function (ntdata) {
+          $scope.$watch('graphicsData', function (ntdata) {
               if(ntdata){
                   //   visinit(inNodes, inEdges, container, inOptions) {
-                  var inNodes = $scope.topologyData.nodes;
-                  var inEdges = $scope.topologyData.links;
+                  var inNodes = $scope.graphicsData.nodes;
+                  var inEdges = $scope.graphicsData.links;
                   var container = iElm[0];
 
                   // legend moved to topology controller
