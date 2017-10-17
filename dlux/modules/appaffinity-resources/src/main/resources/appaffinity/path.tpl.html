@@ -44,8 +44,33 @@
         </div>
     </div>
     <div class="row" ng-hide="graphicsData">
-        <div class="col md 3 col-md-offset-2">
+        <div class="col-md-3 col-md-offset-2">
             <span style="color:white">No data found. Select a path and click load.</span>
+        </div>
+    </div>
+    <div class="row" ng-if="graphicsData">
+        <div class="col-md-10">
+            <table class="footable table" >
+                <thead>
+                <tr>
+                    <th>Wavelength</th>
+                    <th>Timeslots</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{graphicsData.lambda}}</td>
+                    <td>{{graphicsData.time}}</td>
+                </tr>
+                </tbody>
+                <tfoot class="hide-if-no-paging">
+                <tr>
+                    <td colspan="4">
+                        <div class="pagination pagination-centered"></div>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
     <div class="container">

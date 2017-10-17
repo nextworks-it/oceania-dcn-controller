@@ -220,7 +220,9 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                     }
                 }
             }
-            svc.emphasize(data, svc.getDetails(data, destPod));
+            var details = svc.getDetails(data, destPod);
+            svc.emphasize(data, details);
+            data.time = details[0].time;
             return data;
         };
 
@@ -274,8 +276,8 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                             if (link === null) {
                                 console.log("Houston, problem with pod " + nextPodSw + " tor " + key + " link not found.");
                             } else {
-                                link.highlight = '#2EFE2E';
-                                link.color = '#81F781';
+                                link.highlight = '#FF0000';
+                                link.color = '#FF5050';
                             }
                         }
                         if (direction === "forward") {
@@ -287,8 +289,8 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                             if (link === null) {
                                 console.log("Houston, problem with pod " + nextPodSw + " pod " + key + " link not found.");
                             } else {
-                                link.highlight = '#2EFE2E';
-                                link.color = '#81F781';
+                                link.highlight = '#FF0000';
+                                link.color = '#FF5050';
                             }
                         }
                         if (direction === "drop") {
@@ -302,12 +304,14 @@ define(['app/appaffinity/appaffinity.module'], function(appaff) {
                             if (link === null) {
                                 console.log("Houston, problem with tor " + nextSw + " pod " + key + " link not found.");
                             } else {
-                                link.highlight = '#2EFE2E';
-                                link.color = '#81F781';
+                                link.highlight = '#FF0000';
+                                link.color = '#FF5050';
                             }
                         }
                     }
                 }
+                topData.lambda = grData.lambda;
+                topData.time = grData.time;
                 callback(topData);
             });
         };
