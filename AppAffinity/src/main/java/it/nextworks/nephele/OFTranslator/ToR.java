@@ -101,6 +101,15 @@ class ToR extends Node {
                 }
             }
         }
+        dynFlowChart.add(new FlowEntry(
+                encodeIP("127.0.0.1"),
+                (short) 32,
+                "1",
+                0,
+                Bitmap.NULL_BITMAP,
+                "2",
+                30000
+        ));
     }
 
     private Integer[] encodeIP(String ip) {
