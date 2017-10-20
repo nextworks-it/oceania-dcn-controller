@@ -65,7 +65,7 @@ define(['app/topology/topology.module'], function(topology) {
               var links = [];
               var linksMap = {};
 
-              if(ntData.topology && ntData.topology[0]){
+              /*if(ntData.topology && ntData.topology[0]){
                   //Loop over the nodes
                   angular.forEach(ntData.topology[0].node, function(nodeData) {
                     var groupType = "", nodeTitle = "", nodeLabel = "";
@@ -123,7 +123,7 @@ define(['app/topology/topology.module'], function(topology) {
                           linksMap[srcId+":"+dstId]=linkId;
                       }
                   });
-              }
+              }*/
 
               var nodeLabel;
 
