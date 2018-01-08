@@ -7,7 +7,10 @@ import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import it.nextworks.nephele.OFAAService.ODLInventory.Const;
 import it.nextworks.nephele.OFTranslator.Inventory;
+import it.nextworks.nephele.TrafficMatrixEngine.TrafficChanges;
+import it.nextworks.nephele.TrafficMatrixEngine.TrafficMatrix;
 import it.nextworks.nephele.appaffdb.DbManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,9 @@ public class Processor {
 
     @Value("${concurrentRequests}")
     private int concurrency;
+
+    @Value("${useIncremental}")
+    private boolean useIncremental;
 
     @Autowired
     private DbManager db;
@@ -196,7 +202,7 @@ public class Processor {
         }
     }
 
-    private class TrafficMatGetter extends FutureTask<int[][]> {
+    private class TrafficMatGetter extends FutureTask<TrafficMatrix> {
         protected UUID id;
 
         private TrafficMatGetter() {
@@ -218,8 +224,47 @@ public class Processor {
             super.done();
             log.debug("Got traffic matrix. OpId: {}.", this.id);
             try {
-                int[][] matrix = this.get();
+                TrafficMatrix matrix = this.get();
                 NetAllocIdGetter task = new NetAllocIdGetter(matrix);
+                tasks.add(task);
+                log.debug("Posting traffic matrix. OpId: {}.", task.id);
+            } catch (InterruptedException | CancellationException intExc) {
+                log.error("Computation interrupted:\n", intExc);
+            } catch (ExecutionException execExc) {
+                List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
+                fail(scheduled);
+                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                terminateFail(terminating);
+                computeSemaphore.release();
+                log.error("Error while GETting the traffic matrix:\n", execExc);
+            }
+        }
+    }
+
+    private class TrafficMatChangesGetter extends FutureTask<TrafficChanges> {
+        protected UUID id;
+
+        private TrafficMatChangesGetter() {
+            super(templates.new TrafficMatChangesGetter());
+            id = UUID.randomUUID();
+        }
+
+        @Override
+        public void run() {
+            List<String> requested = db.queryWithStatus(ServiceStatus.REQUESTED);
+            List<String> toBeTerminated = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+            callbackSheduling(requested);
+            callbackTerminating(toBeTerminated);
+            super.run();
+        }
+
+        @Override
+        protected void done() {
+            super.done();
+            log.debug("Got traffic matrix changes. OpId: {}.", this.id);
+            try {
+                TrafficChanges matrix = this.get();
+                NetAllocChangesIdGetter task = new NetAllocChangesIdGetter(matrix);
                 tasks.add(task);
                 log.debug("Posting traffic matrix. OpId: {}.", task.id);
             } catch (InterruptedException | CancellationException intExc) {
@@ -238,8 +283,8 @@ public class Processor {
     private class NetAllocIdGetter extends FutureTask<String> {
         private UUID id;
 
-        private NetAllocIdGetter(int[][] matrix) {
-            super(templates.new NetAllocGetter(matrix, OEURL));
+        private NetAllocIdGetter(TrafficMatrix matrix) {
+            super(templates.new NetAllocIdGetter(matrix, OEURL));
             id = UUID.randomUUID();
         }
 
@@ -250,7 +295,40 @@ public class Processor {
                 String netAllocId = this.get();
                 if (!waitingForOfflineEngine) {
                     waitingForOfflineEngine = true;
-                    AllocationMatrixGetter task = new AllocationMatrixGetter(netAllocId, this.id);
+                    AllocationGetter task = new AllocationGetter(netAllocId, this.id);
+                    //So that there is only one GET to the offline engine on the queue
+                    log.debug("Getting network allocation with ID : " + netAllocId);
+                    tasks.add(task);
+                } else isUpdateQueued = true;
+            } catch (InterruptedException | CancellationException intExc) {
+                log.error("Computation interrupted:\n", intExc);
+            } catch (ExecutionException execExc) {
+                List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
+                fail(scheduled);
+                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                terminateFail(terminating);
+                computeSemaphore.release();
+                log.error("Error while GETting the net alloc ID:\n", execExc);
+            }
+        }
+    }
+
+    private class NetAllocChangesIdGetter extends FutureTask<String> {
+        private UUID id;
+
+        private NetAllocChangesIdGetter(TrafficChanges matrix) {
+            super(templates.new NetAllocChangesIdGetter(matrix, OEURL));
+            id = UUID.randomUUID();
+        }
+
+        @Override
+        protected void done() {
+            super.done();
+            try {
+                String netAllocId = this.get();
+                if (!waitingForOfflineEngine) {
+                    waitingForOfflineEngine = true;
+                    AllocationGetter task = new AllocationGetter(netAllocId, this.id);
                     //So that there is only one GET to the offline engine on the queue
                     log.debug("Getting network allocation with ID : " + netAllocId);
                     tasks.add(task);
@@ -271,8 +349,8 @@ public class Processor {
     private class InventoryGetter extends FutureTask<Inventory> {
         private UUID id;
 
-        private InventoryGetter(int[][] matrix) {
-            super(templates.new InventoryGetter(matrix));
+        private InventoryGetter(NetSolBase netSol) {
+            super(templates.new InventoryGetter(netSol));
             id = UUID.randomUUID();
         }
 
@@ -285,9 +363,7 @@ public class Processor {
                 InventoryPutter task = new InventoryPutter(inventory, ODLURL);
                 tasks.add(task);
                 log.debug("Sending inventory. OpId: {}.", task.id);
-            } catch (InterruptedException | CancellationException intExc) {
-                log.error("Computation interrupted:\n", intExc);
-            } catch (ExecutionException execExc) {
+            } catch (ExecutionException | InterruptedException | CancellationException execExc) {
                 List<String> establishing = db.queryWithStatus(ServiceStatus.ESTABLISHING);
                 fail(establishing);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
@@ -298,7 +374,7 @@ public class Processor {
         }
     }
 
-    private class AllocationMatrixGetter extends FutureTask<NetSolOutput> {
+    private class AllocationGetter extends FutureTask<NetSolOutput> {
         private UUID id;
 
 
@@ -306,7 +382,7 @@ public class Processor {
 
         Instant start = Instant.now();
 
-        private AllocationMatrixGetter(String netAllocId, UUID opId) {
+        private AllocationGetter(String netAllocId, UUID opId) {
             super(templates.new NetAllocationMatrixGetter(netAllocId, OEURL));
             this.netAllocId = netAllocId;
             id = opId;
@@ -324,8 +400,7 @@ public class Processor {
                         callbackSchedulingDone(scheduled);
                         invLock.acquire();
                         log.debug("Releasing computation permit.");
-                        int[][] matrix = netSol.matrix;
-                        InventoryGetter task = new InventoryGetter(matrix);
+                        InventoryGetter task = new InventoryGetter(netSol);
                         tasks.add(task);
                         log.debug("Translating inventory. OpId: {}.", task.id);
                         waitingForOfflineEngine = false;
@@ -341,7 +416,7 @@ public class Processor {
                             //guarantees at least 0.9 seconds between retries, probably 1 sec.
                             Thread.sleep(1000 - timeFromStart);
                         }
-                        tasks.add(new AllocationMatrixGetter(netAllocId, this.id));
+                        tasks.add(new AllocationGetter(netAllocId, this.id));
                         break;
 
                     case FAILED:
@@ -352,9 +427,7 @@ public class Processor {
                         throw new ExecutionException(message, new IllegalStateException());
                 }
                 computeSemaphore.release();
-            } catch (InterruptedException | CancellationException intExc) {
-                log.error("Computation interrupted:\n", intExc);
-            } catch (ExecutionException execExc) {
+            } catch (ExecutionException | InterruptedException | CancellationException execExc) {
                 fail(scheduled);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
                 terminateFail(terminating);

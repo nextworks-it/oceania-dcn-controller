@@ -47,7 +47,7 @@ class ToR extends Node {
 
     private void BuildDynFlowChart(Map<Integer, List<ExtConnection>> extConnections) {
         for (Integer port : rackPorts.keySet()) {
-            buildFlows(port, extConnections.getOrDefault(port, Collections.emptyList()));
+            buildFlows(port, extConnections.getOrDefault(port - Const.I, Collections.emptyList()));
         }
     }
 
@@ -61,7 +61,8 @@ class ToR extends Node {
             }
         }
         Map<Integer, List<ExtConnection>> perDestConns =
-            extConn.stream().collect(Collectors.groupingBy((c) -> c.dstPod * Const.W + c.dstTor));
+            extConn.stream().collect(Collectors.groupingBy((c) -> (c.dstPod - Const.firstPod) * Const.W + c.dstTor - 1));
+
         for (Integer dest = 0; dest < (Const.P * Const.W); dest++) {
             if (dest.equals(torIdentifier)) {
                 continue;  // Skip intra-rack traffic, that has been taken care of in the static flows
@@ -88,7 +89,6 @@ class ToR extends Node {
                 }
                 Bitmap other = bitmap.remainingSlice();
                 if (!Bitmap.NULL_BITMAP.equals(other)) {
-                    log.warn("Warning! Hybrid GW/server Tor detected: pod {} lambda {}.", p, w);
                     dynFlowChart.add(new FlowEntry(
                         IP,
                         (short) 24,

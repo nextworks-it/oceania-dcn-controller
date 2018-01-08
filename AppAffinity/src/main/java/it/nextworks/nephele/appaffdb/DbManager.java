@@ -342,7 +342,7 @@ public class DbManager implements AutoCloseable {
                         results.getInt("dst_pod"),
                         results.getInt("dst_tor"),
                         results.getInt("bandwidth"),
-                        results.getString("dest_ip")
+                        decodeIp(results.getInt("dest_ip"))
                 ));
             }
             return output;

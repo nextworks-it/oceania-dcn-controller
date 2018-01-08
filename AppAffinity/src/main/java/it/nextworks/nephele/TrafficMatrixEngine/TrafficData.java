@@ -3,14 +3,15 @@ package it.nextworks.nephele.TrafficMatrixEngine;
 import it.nextworks.nephele.OFAAService.ODLInventory.Const;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class TrafficData {
 
     private int[][] matrix = new int[Const.P * Const.W * Const.Z][Const.P * Const.W];
+
+    private Map<int[], Integer> changes = new HashMap<>();
 
     private HashMap<String, AppProfile> profiles = new HashMap<>();
 
@@ -22,8 +23,9 @@ public class TrafficData {
                         conn.source
                 ));
             }
-            matrix[conn.source][(conn.dest / Const.Z)] =
-                matrix[conn.source][(conn.dest / Const.Z)] + conn.bandwidth;
+            int newValue = matrix[conn.source][(conn.dest / Const.Z)] + conn.bandwidth;
+            matrix[conn.source][(conn.dest / Const.Z)] = newValue;
+            addChange(conn.source, conn.dest / Const.Z, newValue);
         }
         String id = UUID.randomUUID().toString();
         appProfile.id = id;
@@ -34,12 +36,32 @@ public class TrafficData {
     public synchronized boolean deleteProfile(String inputId) {
         if (profiles.containsKey(inputId)) {
             for (Tunnel conn : profiles.get(inputId).tunnelList) {
-                matrix[conn.source][(conn.dest / Const.Z)] =
-                    matrix[conn.source][(conn.dest / Const.Z)] - conn.bandwidth;
+                int newValue = matrix[conn.source][(conn.dest / Const.Z)] - conn.bandwidth;
+                matrix[conn.source][(conn.dest / Const.Z)] = newValue;
+                addChange(conn.source, conn.dest / Const.Z, newValue);
             }
             profiles.remove(inputId);
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
+    }
+
+    private void addChange(int row, int column, int newValue) {
+        int[] coords = new int[] {row, column};
+        changes.put(coords, newValue);
+    }
+
+    public synchronized List<int[]> getChanges() {
+        return changes.entrySet().stream().map(
+                e -> new int[] {e.getKey()[0], e.getKey()[1], e.getValue()}
+        ).collect(Collectors.toList());
+    }
+
+    public synchronized List<int[]> getAndResetChanges() {
+        List<int[]> output = getChanges();
+        changes.clear();
+        return output;
     }
 
     public int[][] getMatrix() {

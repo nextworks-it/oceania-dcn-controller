@@ -1,5 +1,6 @@
 package it.nextworks.nephele.OFTranslator;
 
+import it.nextworks.nephele.OFAAService.NetSolBase;
 import it.nextworks.nephele.OFAAService.ODLInventory.Const;
 import it.nextworks.nephele.appaffdb.DbManager;
 import org.slf4j.Logger;
@@ -29,8 +30,20 @@ public class TranslatorController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = Inventory.class)})
     public Inventory makeinventory(
-        @RequestBody int[][] networkAllocationSolution) {
-        Const.init(networkAllocationSolution);
+        @RequestBody NetSolBase networkAllocationSolution) {
+        switch (networkAllocationSolution.method) {
+            case "INCREMENTAL":
+                Const.update(networkAllocationSolution.getResult());
+                break;
+            case "FULL":
+                Const.init(networkAllocationSolution.getResult());
+                break;
+            default:
+                throw new IllegalArgumentException(String.format(
+                        "Unexpected method %s",
+                        networkAllocationSolution.method
+                ));
+        }
         NetworkBuilder net = new NetworkBuilder(dbManager);
         return net.build();
     }

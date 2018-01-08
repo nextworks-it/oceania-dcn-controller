@@ -44,16 +44,23 @@ public class Const {
         Z = auxz;
         firstPod = auxFirstPod;
         EMULATED = emulated;
+        matrix = new int[I * T][P * W * Z];
     }
 
-    public static Integer[][] matrix;
+    public static int[][] matrix;
 
     public static void init(int[][] inMat) {
-        matrix = new Integer[I * T][P * W * Z];
+        matrix = new int[I * T][P * W * Z];
         for (int i = 0; i < (I * T); i++) {
             for (int j = 0; j < (P * W * Z); j++) {
                 matrix[i][j] = inMat[i][j];
             }
+        }
+    }
+
+    public static void update(int[][] changes) {
+        for (int[] change : changes) {
+            matrix[change[0]][change[1]] = change[2];
         }
     }
 }

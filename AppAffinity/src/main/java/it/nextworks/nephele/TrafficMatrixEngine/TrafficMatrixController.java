@@ -12,6 +12,8 @@ import io.swagger.annotations.ApiResponses;
 
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
+
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/trafficmatrix")
@@ -48,6 +50,21 @@ public class TrafficMatrixController {
         return data.getMatrix();
     }
 
+    @RequestMapping(value = "/changes", method = RequestMethod.GET)
+    @ApiOperation(value = "getChanges", nickname = "Get the Traffic Matrix")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = TrafficChanges.class)})
+    public TrafficChanges getChanges() {  // TODO change to traffic changes
+        return new TrafficChanges(data.getChanges());
+    }
+
+    @RequestMapping(value = "/computation", method = RequestMethod.POST)
+    @ApiOperation(value = "getMatrix", nickname = "Get the Traffic Matrix")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = TrafficChanges.class)})
+    public TrafficChanges startComputation() {
+        return new TrafficChanges(data.getAndResetChanges());
+    }
 
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

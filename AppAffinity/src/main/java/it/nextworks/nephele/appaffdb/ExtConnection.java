@@ -42,4 +42,17 @@ public class ExtConnection {
         this.bandwidth = bandwidth;
         this.dstIp = dstIp;
     }
+
+    @Override
+    public String toString() {
+        return "ExtConnection{" +
+                "srcPod=" + String.valueOf(srcPod) +
+                ", srcTor=" + String.valueOf(srcTor) +
+                ", srcSrv=" + String.valueOf(srcSrv) +
+                ", dstPod=" + String.valueOf(dstPod) +
+                ", dstTor=" + String.valueOf(dstTor) +
+                ", bandwidth=" + String.valueOf(bandwidth) +
+                ", dstIp='" + dstIp + '\'' +
+                '}';
+    }
 }

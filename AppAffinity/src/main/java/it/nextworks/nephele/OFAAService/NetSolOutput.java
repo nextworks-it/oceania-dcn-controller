@@ -4,15 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Arrays;
 
-public class NetSolOutput {
+public class NetSolOutput extends NetSolBase {
 
-    @JsonProperty("Network_Allocation_ID")
-    public String netAllocId;
-
-    @JsonProperty("Status")
-    public CompStatus status;
-
-    @JsonProperty("Network_Allocation_Solution")
+    @JsonProperty("Network_Allocation_Solution") // TODO change
     public int[][] matrix;
 
     public NetSolOutput() {
@@ -24,7 +18,12 @@ public class NetSolOutput {
         return "NetSolOutput{" +
                 "netAllocId='" + netAllocId + '\'' +
                 ", status=" + status.toString() +
-                ", matrix=" + Arrays.toString(matrix) +
+                ", matrix=" + Arrays.deepToString(matrix) +
                 '}';
+    }
+
+    @Override
+    public int[][] getResult() {
+        return matrix;
     }
 }
