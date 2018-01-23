@@ -61,7 +61,7 @@ class NetworkBuilder {
                 Map<Integer, Integer[]> torAddresses = new HashMap<>(torAddressesMap);
                 torAddresses.remove(p * W + w);
                 ArrayList<Integer> key = new ArrayList<>();
-                key.add(podNo - Const.firstPod);
+                key.add(podNo);
                 key.add(w);
                 tors[W * p + w] = new ToR(podNo, w, torRack, torPods, torAddresses, extConnMap.get(key));
             }

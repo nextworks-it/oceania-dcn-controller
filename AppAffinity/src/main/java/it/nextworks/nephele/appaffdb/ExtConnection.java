@@ -36,6 +36,8 @@ public class ExtConnection {
     }
 
     public ExtConnection(int srcPod, int srcTor, int srcSrv, int dstPod, int dstTor, int bandwidth, String dstIp) {
+        this.srcPod = srcPod;
+        this.srcTor = srcTor;
         this.srcSrv = srcSrv;
         this.dstPod = dstPod;
         this.dstTor = dstTor;

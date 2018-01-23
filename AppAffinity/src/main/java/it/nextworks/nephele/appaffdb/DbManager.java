@@ -295,34 +295,6 @@ public class DbManager implements AutoCloseable {
         }
     }
 
-    public List<ExtConnection> queryExtConnOutOfTor(int srcPod, int srcTor) {
-        try (Statement query = connection.createStatement()) {
-            String s = String.format(
-                    "select c.src_zone, c.dst_pod, c.dst_tor, c.bandwidth, c.dest_ip " +
-                            "from connection as c join service as s on s.id == c.service_id " +
-                            "where c.src_pod == %s and c.src_tor == %s and (s.status == %s or s.status == %s)",
-                srcPod, srcTor, ServiceStatus.ESTABLISHING.value, ServiceStatus.ACTIVE.value);
-            log.trace("Executing query: '{}'.", s);
-            ResultSet results = query.executeQuery(s);
-            List<ExtConnection> output = new ArrayList<>();
-            while (results.next()) {
-                output.add(new ExtConnection(
-                        0,
-                        0,
-                        results.getInt("src_zone"),
-                        results.getInt("dst_pod"),
-                        results.getInt("dst_tor"),
-                        results.getInt("bandwidth"),
-                        results.getString("dest_ip")
-                ));
-            }
-            return output;
-        } catch (SQLException exc) {
-            log.error("Query failed. Cause: {}.", exc.getMessage());
-            return null;
-        }
-    }
-
     public List<ExtConnection> queryExtConn() {
         try (Statement query = connection.createStatement()) {
             String s = String.format(
