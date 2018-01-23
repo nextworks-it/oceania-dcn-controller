@@ -49,10 +49,11 @@ class NetworkBuilder {
 
         for (Integer p = 0; p < P; p++) {
             Integer podNo = p + startP;
-            for (Integer w = 0; w < W; w++) {
+            for (int w = 0; w < W; w++) {
+                Integer torNo = w + 1;
                 Map<Integer, Integer[]> torRack = new HashMap<>();
                 for (Integer i = 0; i < Z; i++) {
-                    torRack.put(I + i + 1, new Integer[]{10, podNo, w + 1, i + 1});
+                    torRack.put(I + i + 1, new Integer[]{10, podNo, torNo, i + 1});
                 }
                 Map<Integer, String> torPods = new HashMap<>();
                 for (Integer i = 0; i < I; i++) {
@@ -62,8 +63,8 @@ class NetworkBuilder {
                 torAddresses.remove(p * W + w);
                 ArrayList<Integer> key = new ArrayList<>();
                 key.add(podNo);
-                key.add(w);
-                tors[W * p + w] = new ToR(podNo, w, torRack, torPods, torAddresses, extConnMap.get(key));
+                key.add(torNo);
+                tors[W * p + w] = new ToR(podNo, torNo, torRack, torPods, torAddresses, extConnMap.get(key));
             }
         }
 

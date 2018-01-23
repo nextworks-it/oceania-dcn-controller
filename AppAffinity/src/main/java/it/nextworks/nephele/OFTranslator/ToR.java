@@ -138,13 +138,11 @@ class ToR extends Node {
 
         this.p = p;
         this.w = w;
-        torIdentifier = Const.W * (p - Const.firstPod) + w;
+        torIdentifier = Const.W * (p - Const.firstPod) + (w - 1);
         rackPorts = rack;
         podPorts = inPodPorts;
         torAddresses = tors;
-        nodeId = String.format("openflow:1%1$02d%2$02d", p, w + 1);
-
-        // TODO add source server, change below to a map port -> connection
+        nodeId = String.format("openflow:1%1$02d%2$02d", p, w);
 
         if (extConnections == null) {
             extConnections = Collections.emptyList();
