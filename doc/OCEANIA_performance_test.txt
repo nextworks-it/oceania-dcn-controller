@@ -1,0 +1,52 @@
+The CSV files report the performance of the OCEANIA controller when operating over DCN topologies of different size, as reported in the following table:
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+| Scenario       | 2 pods | 3 pods | 4 pods | 5 pods | 6 pods |
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+| # POD switches |    2   |   3    |   4    |   5    |    6   |
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+| # planes       |    2   |   2    |   2    |   2    |    2   |
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+| # ToRs per POD |   80   |   80   |   80   |   80   |    80  |
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+| # DCN nodes    |  164   |  246   |  328   |  410   |   492  |
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Each test has been executed sending a request for a new DCN path every 7.5 seconds, for a total duration of 30 minutes (240 requests in total).
+
+List of CSV files:
+- 2P_1800_7_5.csv : OCEANIA performance data over a DCN with 2 pods
+- 3P_1800_7_5.csv : OCEANIA performance data over a DCN with 3 pods
+- 4P_1800_7_5.csv : OCEANIA performance data over a DCN with 4 pods
+- 5P_1800_7_5.csv : OCEANIA performance data over a DCN with 5 pods
+- 6P_1800_7_5.csv : OCEANIA performance data over a DCN with 6 pods
+
+Each file includes the following parameters:
+- total number of occurred errors
+- total number of established paths
+- average time for path provisioning (i.e. total DCN reconfiguration time when a new path is established)
+- maximum time for path provisioning (i.e. total DCN reconfiguration time when a new path is established)
+- minimum time for path provisioning (i.e. total DCN reconfiguration time when a new path is established)
+- standard deviation of time for path provisioning (i.e. total DCN reconfiguration time when a new path is established)
+- total number of computed traffic matrices
+- average time for traffic matrix computation (i.e. time required to build the new traffic matrix with the requested path)
+- maximum time for traffic matrix computation (i.e. time required to build the new traffic matrix with the requested path)
+- minimum time for traffic matrix computation (i.e. time required to build the new traffic matrix with the requested path)
+- standard deviation of time for traffic matrix computation (i.e. time required to build the new traffic matrix with the requested path)
+- total number of computed network allocation solutions
+- average time for computation of a DCN allocation solution
+- maximum time for computation of a DCN allocation solution
+- minimum time for computation of a DCN allocation solution
+- standard deviation of time for computation of a DCN allocation solution
+- total number of network allocation solution -> OF rules translations
+- average time to translate between a network allocation solution and the related OF rules
+- maximum time to translate between a network allocation solution and the related OF rules
+- minimum time to translate between a network allocation solution and the related OF rules
+- standard deviation of time to translate between a network allocation solution and the related OF rules
+- total number of DCN reconfigurations via OpenFlow messages
+- average time for DCN reconfiguration via OpenFlow messages (i.e. time required to forward the OF messages to the node agents)
+- maximum time for DCN reconfiguration via OpenFlow messages (i.e. time required to forward the OF messages to the node agents)
+- minimum time for DCN reconfiguration via OpenFlow messages (i.e. time required to forward the OF messages to the node agents)
+- standard deviation of time for DCN reconfiguration via OpenFlow messages (i.e. time required to forward the OF messages to the node agents)
+
+
