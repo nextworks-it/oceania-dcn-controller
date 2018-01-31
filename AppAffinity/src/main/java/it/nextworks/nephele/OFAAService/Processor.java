@@ -228,15 +228,13 @@ public class Processor {
                 NetAllocIdGetter task = new NetAllocIdGetter(matrix);
                 tasks.add(task);
                 log.debug("Posting traffic matrix. OpId: {}.", task.id);
-            } catch (InterruptedException | CancellationException intExc) {
-                log.error("Computation interrupted:\n", intExc);
-            } catch (ExecutionException execExc) {
+            } catch (Exception exc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
                 fail(scheduled);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
                 terminateFail(terminating);
                 computeSemaphore.release();
-                log.error("Error while GETting the traffic matrix:\n", execExc);
+                log.error("Error while GETting the traffic matrix:\n", exc);
             }
         }
     }
@@ -267,15 +265,13 @@ public class Processor {
                 NetAllocChangesIdGetter task = new NetAllocChangesIdGetter(matrix);
                 tasks.add(task);
                 log.debug("Posting traffic matrix. OpId: {}.", task.id);
-            } catch (InterruptedException | CancellationException intExc) {
-                log.error("Computation interrupted:\n", intExc);
-            } catch (ExecutionException execExc) {
+            } catch (Exception exc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
                 fail(scheduled);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
                 terminateFail(terminating);
                 computeSemaphore.release();
-                log.error("Error while GETting the traffic matrix:\n", execExc);
+                log.error("Error while GETting the traffic matrix:\n", exc);
             }
         }
     }
@@ -300,15 +296,13 @@ public class Processor {
                     log.debug("Getting network allocation with ID : " + netAllocId);
                     tasks.add(task);
                 } else isUpdateQueued = true;
-            } catch (InterruptedException | CancellationException intExc) {
-                log.error("Computation interrupted:\n", intExc);
-            } catch (ExecutionException execExc) {
+            } catch (Exception exc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
                 fail(scheduled);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
                 terminateFail(terminating);
                 computeSemaphore.release();
-                log.error("Error while GETting the net alloc ID:\n", execExc);
+                log.error("Error while GETting the net alloc ID:\n", exc);
             }
         }
     }
@@ -333,15 +327,13 @@ public class Processor {
                     log.debug("Getting network allocation with ID : " + netAllocId);
                     tasks.add(task);
                 } else isUpdateQueued = true;
-            } catch (InterruptedException | CancellationException intExc) {
-                log.error("Computation interrupted:\n", intExc);
-            } catch (ExecutionException execExc) {
+            } catch (Exception exc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
                 fail(scheduled);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
                 terminateFail(terminating);
                 computeSemaphore.release();
-                log.error("Error while GETting the net alloc ID:\n", execExc);
+                log.error("Error while GETting the net alloc ID:\n", exc);
             }
         }
     }
@@ -363,7 +355,7 @@ public class Processor {
                 InventoryPutter task = new InventoryPutter(inventory, ODLURL);
                 tasks.add(task);
                 log.debug("Sending inventory. OpId: {}.", task.id);
-            } catch (ExecutionException | InterruptedException | CancellationException execExc) {
+            } catch (Exception execExc) {
                 List<String> establishing = db.queryWithStatus(ServiceStatus.ESTABLISHING);
                 fail(establishing);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
@@ -376,7 +368,6 @@ public class Processor {
 
     private class AllocationGetter extends FutureTask<NetSolOutput> {
         private UUID id;
-
 
         String netAllocId;
 
@@ -420,14 +411,14 @@ public class Processor {
                         break;
 
                     case FAILED:
-                        throw new ExecutionException("Computation failed.", new IllegalStateException());
+                        throw new IllegalStateException("Computation failed.");
                     default:
                         String message = String.format("Unexpected status %s in response from offline", netSol.status);
                         log.error(message);
-                        throw new ExecutionException(message, new IllegalStateException());
+                        throw new IllegalStateException(message);
                 }
                 computeSemaphore.release();
-            } catch (ExecutionException | InterruptedException | CancellationException execExc) {
+            } catch (Exception execExc) {
                 fail(scheduled);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
                 terminateFail(terminating);
@@ -459,9 +450,8 @@ public class Processor {
                     log.debug("Inventory pushed. OpId: {}.", this.id);
                     callbackEstablished(establishing);
                     callbackTerminated(terminating);
-                } catch (InterruptedException e) {// can't happen
-                } catch (ExecutionException exc) {
-                    log.warn("Sending inventory got exception: ", exc);
+                } catch (Exception exc) {
+                    log.error("Sending inventory got exception: ", exc);
                     fail(establishing);
                     terminateFail(terminating);
                     // Do not fail terminating, it will be terminated by the next successful pass-through
