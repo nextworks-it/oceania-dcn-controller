@@ -1,7 +1,5 @@
 package it.nextworks.nephele.OFAAService;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.nextworks.nephele.OFTranslator.Inventory;
 import it.nextworks.nephele.TrafficMatrixEngine.TrafficChanges;
 import it.nextworks.nephele.TrafficMatrixEngine.TrafficMatrix;
@@ -83,7 +81,7 @@ class ProcessingTasksTemplates {
                 UriComponentsBuilder.fromHttpUrl(
                     OEURL);
 
-            HttpEntity<int[][]> entity = new HttpEntity<>(matrix.matrix);  // TODO might change
+            HttpEntity<TrafficMatrix> entity = new HttpEntity<>(matrix);  // TODO might change
             ResponseEntity<String> response =
                 restTemplate.exchange(urlbuilder.toUriString(),
                     HttpMethod.POST, entity, String.class);

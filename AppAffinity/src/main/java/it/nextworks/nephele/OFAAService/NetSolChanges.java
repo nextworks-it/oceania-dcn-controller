@@ -8,13 +8,13 @@ public class NetSolChanges extends NetSolBase {
 
     public String method;
 
-    @JsonProperty("network_allocation_id")
+    @JsonProperty("Network_Allocation_ID")
     public String netAllocId;
 
-    @JsonProperty("status")
+    @JsonProperty("Status")
     public CompStatus status;
 
-    @JsonProperty("network_allocation_changes")
+    @JsonProperty("Network_Allocation_Changes")
     public int[][] changes;
 
     public NetSolChanges() {

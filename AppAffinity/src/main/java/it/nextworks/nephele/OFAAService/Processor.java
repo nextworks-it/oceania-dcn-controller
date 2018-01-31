@@ -139,7 +139,7 @@ public class Processor {
         if (!computeSemaphore.tryAcquire()) {
             log.trace("Hit concurrency cap. Delaying execution.");
             scheduleRefresh();
-        } else {
+        } else {  // TODO: check useIncremental (not only here)
             TrafficMatGetter task = new TrafficMatGetter();
             tasks.add(task);
             log.debug("Starting Traffic matrix computation: OpId {}.", task.id);
