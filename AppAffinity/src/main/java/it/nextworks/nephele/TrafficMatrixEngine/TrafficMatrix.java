@@ -19,4 +19,8 @@ public class TrafficMatrix {
     public TrafficMatrix(int[][] matrix) {
         this.matrix = matrix;
     }
+
+    public TrafficMatrix() {
+
+    }
 }

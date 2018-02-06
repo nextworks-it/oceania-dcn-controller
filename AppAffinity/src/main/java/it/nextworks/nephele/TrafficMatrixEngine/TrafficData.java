@@ -11,7 +11,7 @@ public class TrafficData {
 
     private int[][] matrix = new int[Const.P * Const.W * Const.Z][Const.P * Const.W];
 
-    private Map<int[], Integer> changes = new HashMap<>();
+    private Map<int[], Integer> changes = new HashMap<>(); // TODO cannot use arrays!111!!!!
 
     private HashMap<String, AppProfile> profiles = new HashMap<>();
 

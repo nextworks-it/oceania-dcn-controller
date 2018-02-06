@@ -1,2 +1,2 @@
 cd target/
-java -jar AppAffinityService-0.9.0-SNAPSHOT.jar
+java -jar AppAffinityService-1.2.0-SNAPSHOT.jar

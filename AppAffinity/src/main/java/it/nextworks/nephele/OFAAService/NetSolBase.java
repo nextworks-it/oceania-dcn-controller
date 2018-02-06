@@ -1,5 +1,6 @@
 package it.nextworks.nephele.OFAAService;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -19,14 +20,16 @@ import java.io.IOException;
 @JsonDeserialize(using = NetSolBase.NetSolBaseDeserializer.class)
 public abstract class NetSolBase {
 
+    @JsonProperty("Method")
     public String method;
 
-    @JsonProperty("Network_Allocation_ID") // TODO change
+    @JsonProperty("Network_Allocation_ID")
     public String netAllocId;
 
-    @JsonProperty("Status")  // TODO change
+    @JsonProperty("Status")
     public CompStatus status;
 
+    @JsonIgnore
     public abstract int[][] getResult();
 
     public static class NetSolBaseDeserializer extends StdDeserializer<NetSolBase> {
@@ -46,13 +49,9 @@ public abstract class NetSolBase {
                 ObjectCodec mapper = jsonParser.getCodec();
                 JsonNode node = mapper.readTree(jsonParser);
                 String allocId = node.get("Network_Allocation_ID").asText();
-                CompStatus status = CompStatus.valueOf(node.get("Status").asText());
+                CompStatus status = mapper.treeToValue(node.get("Status"), CompStatus.class);
                 String method;
-                if (!node.has("method")) {
-                    method = "FULL";
-                } else {
-                    method = node.get("method").asText();
-                }
+                method = node.get("Method").asText();
                 switch (method) {
                     case "FULL":
                         NetSolOutput solution = new NetSolOutput();
@@ -62,7 +61,12 @@ public abstract class NetSolBase {
                         if ((status == CompStatus.COMPUTING) || (status == CompStatus.FAILED)) {
                             solution.matrix = null;
                         } else {
-                            solution.matrix = mapper.treeToValue(node.get("Network_Allocation_Solution"), int[][].class);
+                            try {
+                                solution.matrix = mapper.treeToValue(node.get("Network_Allocation_Solution"), int[][].class);
+                            } catch (NullPointerException exc) {
+                                // Ugly hack, should fix
+                                solution.matrix = mapper.treeToValue(node.get("Network_Allocation_Changes"), int[][].class);
+                            }
                         }
                         return solution;
                     case "INCREMENTAL":
@@ -73,7 +77,7 @@ public abstract class NetSolBase {
                         if ((status == CompStatus.COMPUTING) || (status == CompStatus.FAILED)) {
                             changes.changes = null;
                         } else {
-                            changes.changes = mapper.treeToValue(node.get("Network_Allocation_Solution"), int[][].class);
+                            changes.changes = mapper.treeToValue(node.get("Network_Allocation_Changes"), int[][].class);
                         }
                         return changes;
                     default:

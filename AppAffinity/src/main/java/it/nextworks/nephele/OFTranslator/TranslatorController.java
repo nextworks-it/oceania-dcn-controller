@@ -31,6 +31,7 @@ public class TranslatorController {
         @ApiResponse(code = 200, message = "Success", response = Inventory.class)})
     public Inventory makeinventory(
         @RequestBody NetSolBase networkAllocationSolution) {
+        log.trace("Got translation request.");
         switch (networkAllocationSolution.method) {
             case "INCREMENTAL":
                 Const.update(networkAllocationSolution.getResult());

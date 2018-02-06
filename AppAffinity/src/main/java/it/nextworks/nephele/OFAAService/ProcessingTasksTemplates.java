@@ -29,19 +29,19 @@ class ProcessingTasksTemplates {
     class TrafficMatGetter implements Callable<TrafficMatrix> {
 
         @Override
-        public TrafficMatrix call() { // TODO might change
+        public TrafficMatrix call() {
 
             RestTemplate restTemplate = new RestTemplate();
 
             UriComponentsBuilder urlbuilder =
-                UriComponentsBuilder.fromHttpUrl(
-                    "http://127.0.0.1:" + serverPort + "/trafficmatrix/matrix");
+                    UriComponentsBuilder.fromHttpUrl(
+                            "http://127.0.0.1:" + serverPort + "/trafficmatrix/matrix");
             UriComponents uri = urlbuilder.build();
 
-            ResponseEntity<int[][]> responseEntity = // TODO might change
-                restTemplate.getForEntity(uri.toUri(), int[][].class); // TODO might change
+            ResponseEntity<int[][]> responseEntity =
+                    restTemplate.getForEntity(uri.toUri(), int[][].class);
 
-            return new TrafficMatrix(responseEntity.getBody()); // TODO might change
+            return new TrafficMatrix(responseEntity.getBody());
         }
     }
 
@@ -75,16 +75,17 @@ class ProcessingTasksTemplates {
 
         public String call() {
 
+            log.trace("Posting traffic matrix.");
+
             RestTemplate restTemplate = new RestTemplate();
 
             UriComponentsBuilder urlbuilder =
-                UriComponentsBuilder.fromHttpUrl(
-                    OEURL);
+                    UriComponentsBuilder.fromHttpUrl(OEURL);
 
-            HttpEntity<TrafficMatrix> entity = new HttpEntity<>(matrix);  // TODO might change
+            HttpEntity<TrafficMatrix> entity = new HttpEntity<>(matrix);
             ResponseEntity<String> response =
-                restTemplate.exchange(urlbuilder.toUriString(),
-                    HttpMethod.POST, entity, String.class);
+                    restTemplate.exchange(urlbuilder.toUriString(),
+                            HttpMethod.POST, entity, String.class);
 
             return response.getBody();
         }
@@ -92,23 +93,24 @@ class ProcessingTasksTemplates {
 
     class NetAllocChangesIdGetter implements Callable<String> {
 
-        TrafficChanges matrix;
+        TrafficChanges changes;
         String OEURL;
 
-        NetAllocChangesIdGetter(TrafficChanges matrix, String OfflineEngineUrl) {
-            this.matrix = matrix;
+        NetAllocChangesIdGetter(TrafficChanges changes, String OfflineEngineUrl) {
+            this.changes = changes;
             this.OEURL = OfflineEngineUrl;
         }
 
         public String call() {
 
+            log.trace("Posting traffic changes.");
+
             RestTemplate restTemplate = new RestTemplate();
 
             UriComponentsBuilder urlbuilder =
-                    UriComponentsBuilder.fromHttpUrl(
-                            OEURL);
+                    UriComponentsBuilder.fromHttpUrl(OEURL);
 
-            HttpEntity<TrafficChanges> entity = new HttpEntity<>(matrix);
+            HttpEntity<TrafficChanges> entity = new HttpEntity<>(changes);
             ResponseEntity<String> response =
                     restTemplate.exchange(urlbuilder.toUriString(),
                             HttpMethod.POST, entity, String.class);
@@ -130,18 +132,18 @@ class ProcessingTasksTemplates {
             RestTemplate restTemplate = new RestTemplate();
 
             UriComponentsBuilder urlbuilder =
-                UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:" + serverPort + "/translate");
+                    UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:" + serverPort + "/translate");
 
             HttpEntity<NetSolBase> entity = new HttpEntity<>(netAlloc);
             ResponseEntity<Inventory> response =
-                restTemplate.exchange(urlbuilder.toUriString(),
-                    HttpMethod.POST, entity, Inventory.class);
+                    restTemplate.exchange(urlbuilder.toUriString(),
+                            HttpMethod.POST, entity, Inventory.class);
 
             return response.getBody();
         }
     }
 
-    class NetAllocationMatrixGetter implements Callable<NetSolOutput> {
+    class NetAllocationMatrixGetter implements Callable<NetSolBase> {
 
         String nallocId;
         String OEURL;
@@ -151,48 +153,7 @@ class ProcessingTasksTemplates {
             this.OEURL = OEURL;
         }
 
-        public NetSolOutput call() {
-
-            RestTemplate restTemplate = new RestTemplate();
-            MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-            converter.setSupportedMediaTypes(Arrays.asList(
-                MediaType.APPLICATION_OCTET_STREAM,
-                MediaType.APPLICATION_JSON));
-            restTemplate.getMessageConverters().add(converter);
-
-            UriComponentsBuilder geturlbuilder =
-                UriComponentsBuilder.fromHttpUrl(
-                    OEURL + "/" + nallocId);
-            UriComponents uri = geturlbuilder.build();
-
-            ResponseEntity<NetSolOutput> responseEntity =
-                restTemplate.getForEntity(uri.toUri(), NetSolOutput.class);
-
-            NetSolOutput response = responseEntity.getBody();
-            if (null == response.method) {
-                response.method = "FULL";
-                log.warn("{}", response.method);
-                log.warn("Offline engine returned null method. Assuming FULL");
-            if (!"FULL".equals(response.method)) {
-                    throw new IllegalArgumentException(String.format("Offline engine provided solution with wrong method." +
-                            "Expected: %s. Found: %s.", "FULL", response.method));
-                }
-            }
-            return response;
-        }
-    }
-
-    class NetAllocationChangesGetter implements Callable<NetSolChanges> {
-
-        String nallocId;
-        String OEURL;
-
-        NetAllocationChangesGetter(String nallocId, String OEURL) {
-            this.nallocId = nallocId;
-            this.OEURL = OEURL;
-        }
-
-        public NetSolChanges call() {
+        public NetSolBase call() {
 
             RestTemplate restTemplate = new RestTemplate();
             MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
@@ -206,15 +167,17 @@ class ProcessingTasksTemplates {
                             OEURL + "/" + nallocId);
             UriComponents uri = geturlbuilder.build();
 
-            ResponseEntity<NetSolChanges> responseEntity =
-                    restTemplate.getForEntity(uri.toUri(), NetSolChanges.class);
+            ResponseEntity<NetSolBase> responseEntity =
+                    restTemplate.getForEntity(uri.toUri(), NetSolBase.class);
 
-            if (!"INCREMENTAL".equals(responseEntity.getBody().method)) {
-                throw new IllegalArgumentException(String.format("Offline engine provided solution with wrong method." +
-                        "Expected: %s. Found: %s.", "INCREMENTAL", responseEntity.getBody().method));
+            NetSolBase response = responseEntity.getBody();
+            if (null == response.method) {
+                response.method = "FULL";
+                log.warn("Offline engine returned null method. Assuming FULL");
             }
+            log.trace("Got network allocation {}.", nallocId);
 
-            return responseEntity.getBody();
+            return response;
         }
     }
 
@@ -234,9 +197,7 @@ class ProcessingTasksTemplates {
 
             OpendaylightInventory odlInv = new OpendaylightInventory(inventory);
 
-            UriComponentsBuilder urlbuilder =
-                UriComponentsBuilder.fromHttpUrl(
-                    ODLURL);
+            UriComponentsBuilder urlbuilder = UriComponentsBuilder.fromHttpUrl(ODLURL);
 
             HttpHeaders header = new HttpHeaders();
             header.add("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
@@ -250,11 +211,12 @@ class ProcessingTasksTemplates {
             log.debug("Inventory wipe got status {}.", response1.getStatusCode().toString());
 
             HttpEntity<OpendaylightInventory> outgoingEntity =
-                new HttpEntity<>(odlInv, header);
+                    new HttpEntity<>(odlInv, header);
 
             ResponseEntity<String> response2 =
-                restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.PUT, outgoingEntity, String.class);
+                    restTemplate.exchange(urlbuilder.toUriString(), HttpMethod.PUT, outgoingEntity, String.class);
             log.debug("Inventory put got status {}.", response2.getStatusCode().toString());
         }
     }
+
 }

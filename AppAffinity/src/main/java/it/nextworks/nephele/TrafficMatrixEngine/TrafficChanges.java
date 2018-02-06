@@ -19,4 +19,8 @@ public class TrafficChanges {
     public TrafficChanges(List<int[]> changes) {
         this.changes = changes;
     }
+
+    public TrafficChanges() {
+
+    }
 }

@@ -6,14 +6,6 @@ import java.util.Arrays;
 
 public class NetSolChanges extends NetSolBase {
 
-    public String method;
-
-    @JsonProperty("Network_Allocation_ID")
-    public String netAllocId;
-
-    @JsonProperty("Status")
-    public CompStatus status;
-
     @JsonProperty("Network_Allocation_Changes")
     public int[][] changes;
 
