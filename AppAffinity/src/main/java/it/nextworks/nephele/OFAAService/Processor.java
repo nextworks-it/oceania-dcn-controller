@@ -44,6 +44,9 @@ public class Processor {
     @Autowired
     private DbManager db;
 
+    @Autowired
+    private Const constants;
+
     private Semaphore computeSemaphore;
     private Semaphore invLock;
 
@@ -51,14 +54,18 @@ public class Processor {
 
     private ProcessingTasksTemplates templates;
 
-    private BlockingQueue<Runnable> tasks = new LinkedBlockingQueue<>();
 
     private ExecutorService executor;
 
+    private volatile boolean computed = false;
+
     {
-        executor = new ThreadPoolExecutor(8, 8, 1, TimeUnit.SECONDS, tasks);
-        ((ThreadPoolExecutor) executor).prestartAllCoreThreads();
+        executor = Executors.newFixedThreadPool(8);
+//        executor = new ThreadPoolExecutor(8, 8, 1, TimeUnit.SECONDS, tasks);
+//        ((ThreadPoolExecutor) executor).prestartAllCoreThreads();
     }
+
+//    private BlockingQueue<Runnable> tasks = new LinkedBlockingQueue<>();
 
     @PostConstruct
     public void init() {
@@ -66,6 +73,7 @@ public class Processor {
         computeSemaphore = new Semaphore(concurrency);
         invLock = new Semaphore(1);
         log.debug("Processor concurrency level: {}.", computeSemaphore.availablePermits());
+        boolean computed = false;
 
         // Initialize templates
         templates = new ProcessingTasksTemplates(serverPort);
@@ -82,7 +90,8 @@ public class Processor {
 
         if (previouslyActive > 0) {
             log.debug("Starting instantiation.");
-            startRefreshing();
+            startRefreshing(false);
+            computed = true;
         }
 
         try {
@@ -105,8 +114,21 @@ public class Processor {
 
         if (previouslyEstablishing + previouslyScheduled > 0) {
             log.debug("Starting instantiation.");
-            startRefreshing();
+            if (computed) {
+                startRefreshing(); // only the very first computation needs to be non incremental
+            } else {
+                startRefreshing(false);
+            }
+            computed = true;
         }
+
+//        if (!computed) {
+//            constants.initialize();
+//            executor.submit(new NetAllocIdGetter(new TrafficMatrix(Const.matrix)));
+//        }
+
+        this.computed = computed;
+
     }
 
     @PreDestroy
@@ -136,19 +158,37 @@ public class Processor {
     }
 
     synchronized void startRefreshing() {
+        startRefreshing(useIncremental);
+    }
+
+    private synchronized void startRefreshing(boolean incremental) {
+        boolean current_computed = computed;
+        computed = true;
+        log.trace("This is {}the first scheduled computation.", current_computed ? "not " : "");
+        log.trace("Incremental is {}.", String.valueOf(incremental));
         if (!computeSemaphore.tryAcquire()) {
             log.trace("Hit concurrency cap. Delaying execution.");
-            scheduleRefresh();
+            scheduleRefresh(incremental && current_computed);
         } else {
-            TrafficMatGetter task = new TrafficMatGetter();
-            tasks.add(task);
-            log.debug("Starting Traffic matrix computation: OpId {}.", task.id);
+            if (incremental && current_computed) {
+                TrafficMatChangesGetter task = new TrafficMatChangesGetter();
+                executor.submit(task);
+                log.debug("Starting Traffic matrix changes computation: OpId {}.", task.id);
+            } else {
+                TrafficMatGetter task = new TrafficMatGetter();
+                executor.submit(task);
+                log.debug("Starting Traffic matrix computation: OpId {}.", task.id);
+            }
         }
     }
 
-    private void scheduleRefresh() {
+    private void scheduleRefresh(boolean incremental) {
         if (waiting.compareAndSet(false, true)) {
-            tasks.add(new WaitForSchedule());
+            if (incremental) {
+                executor.submit(new WaitForChanges());
+            } else {
+                executor.submit(new WaitForSchedule());
+            }
         }
         // else, there is already someone waiting, it will get our path installed.
     }
@@ -197,7 +237,7 @@ public class Processor {
 
     private void terminateFail(Collection<String> failed) {
         for (String service : failed) {
-            log.warn("Service {} failed.", service);
+            log.warn("Service {} termination failed.", service);
             db.updateStatus(service, ServiceStatus.TERMINATION_REQUESTED);
         }
     }
@@ -207,7 +247,7 @@ public class Processor {
 
         private TrafficMatGetter() {
             super(templates.new TrafficMatGetter());
-            id = UUID.randomUUID(); 
+            id = UUID.randomUUID();
         }
 
         @Override
@@ -226,7 +266,7 @@ public class Processor {
             try {
                 TrafficMatrix matrix = this.get();
                 NetAllocIdGetter task = new NetAllocIdGetter(matrix);
-                tasks.add(task);
+                executor.submit(task);
                 log.debug("Posting traffic matrix. OpId: {}.", task.id);
             } catch (Exception exc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
@@ -263,8 +303,8 @@ public class Processor {
             try {
                 TrafficChanges matrix = this.get();
                 NetAllocChangesIdGetter task = new NetAllocChangesIdGetter(matrix);
-                tasks.add(task);
-                log.debug("Posting traffic matrix. OpId: {}.", task.id);
+                executor.submit(task);
+                log.debug("Posting traffic changes. OpId: {}.", task.id);
             } catch (Exception exc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
                 fail(scheduled);
@@ -294,7 +334,7 @@ public class Processor {
                     AllocationGetter task = new AllocationGetter(netAllocId, this.id);
                     //So that there is only one GET to the offline engine on the queue
                     log.debug("Getting network allocation with ID : " + netAllocId);
-                    tasks.add(task);
+                    executor.submit(task);
                 } else isUpdateQueued = true;
             } catch (Exception exc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
@@ -302,6 +342,7 @@ public class Processor {
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
                 terminateFail(terminating);
                 computeSemaphore.release();
+                waitingForOfflineEngine = false;
                 log.error("Error while GETting the net alloc ID:\n", exc);
             }
         }
@@ -317,7 +358,6 @@ public class Processor {
 
         @Override
         protected void done() {
-            super.done();
             try {
                 String netAllocId = this.get();
                 if (!waitingForOfflineEngine) {
@@ -325,15 +365,16 @@ public class Processor {
                     AllocationGetter task = new AllocationGetter(netAllocId, this.id);
                     //So that there is only one GET to the offline engine on the queue
                     log.debug("Getting network allocation with ID : " + netAllocId);
-                    tasks.add(task);
+                    executor.submit(task);
                 } else isUpdateQueued = true;
             } catch (Exception exc) {
                 List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
                 fail(scheduled);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
                 terminateFail(terminating);
+                waitingForOfflineEngine = false;
                 computeSemaphore.release();
-                log.error("Error while GETting the net alloc ID:\n", exc);
+                log.error("Error while GETting the net changes ID:\n", exc);
             }
         }
     }
@@ -353,7 +394,7 @@ public class Processor {
             try {
                 Inventory inventory = this.get();
                 InventoryPutter task = new InventoryPutter(inventory, ODLURL);
-                tasks.add(task);
+                executor.submit(task);
                 log.debug("Sending inventory. OpId: {}.", task.id);
             } catch (Exception execExc) {
                 List<String> establishing = db.queryWithStatus(ServiceStatus.ESTABLISHING);
@@ -366,7 +407,7 @@ public class Processor {
         }
     }
 
-    private class AllocationGetter extends FutureTask<NetSolOutput> {
+    private class AllocationGetter extends FutureTask<NetSolBase> {
         private UUID id;
 
         String netAllocId;
@@ -384,19 +425,20 @@ public class Processor {
             super.done();
             List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
             try {
-                NetSolOutput netSol = this.get();
+                NetSolBase netSol = this.get();
                 switch (netSol.status) {
                     case COMPUTED: //Calculation completed
                         log.debug("Got network allocation. OpId: {}.", this.id);
                         callbackSchedulingDone(scheduled);
                         invLock.acquire();
                         log.debug("Releasing computation permit.");
+                        computeSemaphore.release();
                         InventoryGetter task = new InventoryGetter(netSol);
-                        tasks.add(task);
+                        executor.submit(task);
                         log.debug("Translating inventory. OpId: {}.", task.id);
                         waitingForOfflineEngine = false;
                         if (isUpdateQueued) {
-                            tasks.add(new TrafficMatGetter());
+                            executor.submit(new TrafficMatGetter());
                             isUpdateQueued = false;
                         }
                         break;
@@ -407,7 +449,7 @@ public class Processor {
                             //guarantees at least 0.9 seconds between retries, probably 1 sec.
                             Thread.sleep(1000 - timeFromStart);
                         }
-                        tasks.add(new AllocationGetter(netAllocId, this.id));
+                        executor.submit(new AllocationGetter(netAllocId, this.id));
                         break;
 
                     case FAILED:
@@ -417,11 +459,12 @@ public class Processor {
                         log.error(message);
                         throw new IllegalStateException(message);
                 }
-                computeSemaphore.release();
             } catch (Exception execExc) {
                 fail(scheduled);
                 List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
                 terminateFail(terminating);
+                log.debug("Releasing computation permit.");
+                waitingForOfflineEngine = false;
                 computeSemaphore.release();
                 log.error("Error while GETting the net alloc matrix:\n", execExc);
             }
@@ -456,6 +499,23 @@ public class Processor {
                     terminateFail(terminating);
                     // Do not fail terminating, it will be terminated by the next successful pass-through
                 }
+            }
+        }
+    }
+
+    private class WaitForChanges extends TrafficMatChangesGetter {
+
+        @Override
+        public void run() {
+            log.debug("Waiting for a concurrency slot to free up. OpId: {}.", this.id);
+            try {
+                computeSemaphore.acquire();
+                waiting.set(false);
+                log.trace("A slot freed up, resuming.");
+                log.debug("Starting Traffic changes computation: OpId {}.", this.id);
+                super.run();
+            } catch (InterruptedException exc) {
+                log.warn("Wait for incremental schedule interrupted: ", exc);
             }
         }
     }

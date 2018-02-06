@@ -143,7 +143,7 @@ class ProcessingTasksTemplates {
         }
     }
 
-    class NetAllocationMatrixGetter implements Callable<NetSolOutput> {
+    class NetAllocationMatrixGetter implements Callable<NetSolBase> {
 
         String nallocId;
         String OEURL;
