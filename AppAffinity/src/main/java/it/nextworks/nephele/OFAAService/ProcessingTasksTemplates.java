@@ -171,10 +171,6 @@ class ProcessingTasksTemplates {
                     restTemplate.getForEntity(uri.toUri(), NetSolBase.class);
 
             NetSolBase response = responseEntity.getBody();
-            if (null == response.method) {
-                response.method = "FULL";
-                log.warn("Offline engine returned null method. Assuming FULL");
-            }
             log.trace("Got network allocation {}.", nallocId);
 
             return response;
