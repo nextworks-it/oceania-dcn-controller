@@ -173,7 +173,7 @@ public class Processor {
             if (incremental && current_computed) {
                 TrafficMatChangesGetter task = new TrafficMatChangesGetter();
                 executor.submit(task);
-                log.debug("Starting Traffic matrix changes computation: OpId {}.", task.id);
+                log.debug("Starting Traffic changes computation: OpId {}.", task.id);
             } else {
                 TrafficMatGetter task = new TrafficMatGetter();
                 executor.submit(task);
