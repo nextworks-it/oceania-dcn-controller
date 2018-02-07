@@ -193,7 +193,7 @@ public class Processor {
         // else, there is already someone waiting, it will get our path installed.
     }
 
-    private void callbackSheduling(Collection<String> requested) {
+    private void callbackScheduling(Collection<String> requested) {
         for (String service : requested) {
             log.debug("Scheduling service: {}.", service);
             db.updateStatus(service, ServiceStatus.SCHEDULED);
@@ -223,7 +223,7 @@ public class Processor {
 
     private void callbackTerminating(Collection<String> terminating) {
         for (String service : terminating) {
-            log.debug("Terminated service: {}.", service);
+            log.debug("Terminating service: {}.", service);
             db.updateStatus(service, ServiceStatus.TERMINATING);
         }
     }
@@ -244,6 +244,8 @@ public class Processor {
 
     private class TrafficMatGetter extends FutureTask<TrafficMatrix> {
         protected UUID id;
+        private List<String> terminating;
+        private List<String> requested;
 
         private TrafficMatGetter() {
             super(templates.new TrafficMatGetter());
@@ -252,10 +254,10 @@ public class Processor {
 
         @Override
         public void run() {
-            List<String> requested = db.queryWithStatus(ServiceStatus.REQUESTED);
-            List<String> toBeTerminated = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
-            callbackSheduling(requested);
-            callbackTerminating(toBeTerminated);
+            requested = db.queryWithStatus(ServiceStatus.REQUESTED);
+            terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+            callbackScheduling(requested);
+            callbackTerminating(terminating);
             super.run();
         }
 
@@ -265,13 +267,11 @@ public class Processor {
             log.debug("Got traffic matrix. OpId: {}.", this.id);
             try {
                 TrafficMatrix matrix = this.get();
-                NetAllocIdGetter task = new NetAllocIdGetter(matrix);
+                NetAllocIdGetter task = new NetAllocIdGetter(matrix, requested, terminating);
                 executor.submit(task);
                 log.debug("Posting traffic matrix. OpId: {}.", task.id);
             } catch (Exception exc) {
-                List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
-                fail(scheduled);
-                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                fail(requested);
                 terminateFail(terminating);
                 computeSemaphore.release();
                 log.error("Error while GETting the traffic matrix:\n", exc);
@@ -281,6 +281,8 @@ public class Processor {
 
     private class TrafficMatChangesGetter extends FutureTask<TrafficChanges> {
         protected UUID id;
+        private List<String> toBeTerminated;
+        private List<String> requested;
 
         private TrafficMatChangesGetter() {
             super(templates.new TrafficMatChangesGetter());
@@ -289,9 +291,9 @@ public class Processor {
 
         @Override
         public void run() {
-            List<String> requested = db.queryWithStatus(ServiceStatus.REQUESTED);
-            List<String> toBeTerminated = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
-            callbackSheduling(requested);
+            requested = db.queryWithStatus(ServiceStatus.REQUESTED);
+            toBeTerminated = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+            callbackScheduling(requested);
             callbackTerminating(toBeTerminated);
             super.run();
         }
@@ -302,14 +304,12 @@ public class Processor {
             log.debug("Got traffic matrix changes. OpId: {}.", this.id);
             try {
                 TrafficChanges matrix = this.get();
-                NetAllocChangesIdGetter task = new NetAllocChangesIdGetter(matrix);
+                NetAllocChangesIdGetter task = new NetAllocChangesIdGetter(matrix, requested, toBeTerminated);
                 executor.submit(task);
                 log.debug("Posting traffic changes. OpId: {}.", task.id);
             } catch (Exception exc) {
-                List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
-                fail(scheduled);
-                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
-                terminateFail(terminating);
+                fail(requested);
+                terminateFail(toBeTerminated);
                 computeSemaphore.release();
                 log.error("Error while GETting the traffic matrix:\n", exc);
             }
@@ -318,10 +318,14 @@ public class Processor {
 
     private class NetAllocIdGetter extends FutureTask<String> {
         private UUID id;
+        private List<String> requested;
+        private List<String> terminating;
 
-        private NetAllocIdGetter(TrafficMatrix matrix) {
+        private NetAllocIdGetter(TrafficMatrix matrix, List<String> requested, List<String> terminating) {
             super(templates.new NetAllocIdGetter(matrix, OEURL));
             id = UUID.randomUUID();
+            this.requested = requested;
+            this.terminating = terminating;
         }
 
         @Override
@@ -331,15 +335,13 @@ public class Processor {
                 String netAllocId = this.get();
                 if (!waitingForOfflineEngine) {
                     waitingForOfflineEngine = true;
-                    AllocationGetter task = new AllocationGetter(netAllocId, this.id);
+                    AllocationGetter task = new AllocationGetter(netAllocId, this.id, requested, terminating);
                     //So that there is only one GET to the offline engine on the queue
                     log.debug("Getting network allocation with ID : " + netAllocId);
                     executor.submit(task);
                 } else isUpdateQueued = true;
             } catch (Exception exc) {
-                List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
-                fail(scheduled);
-                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                fail(requested);
                 terminateFail(terminating);
                 computeSemaphore.release();
                 waitingForOfflineEngine = false;
@@ -350,10 +352,14 @@ public class Processor {
 
     private class NetAllocChangesIdGetter extends FutureTask<String> {
         private UUID id;
+        private List<String> requested;
+        private List<String> terminating;
 
-        private NetAllocChangesIdGetter(TrafficChanges matrix) {
+        private NetAllocChangesIdGetter(TrafficChanges matrix, List<String> requested, List<String> terminating) {
             super(templates.new NetAllocChangesIdGetter(matrix, OEURL));
             id = UUID.randomUUID();
+            this.requested = requested;
+            this.terminating = terminating;
         }
 
         @Override
@@ -362,15 +368,13 @@ public class Processor {
                 String netAllocId = this.get();
                 if (!waitingForOfflineEngine) {
                     waitingForOfflineEngine = true;
-                    AllocationGetter task = new AllocationGetter(netAllocId, this.id);
+                    AllocationGetter task = new AllocationGetter(netAllocId, this.id, requested, terminating);
                     //So that there is only one GET to the offline engine on the queue
                     log.debug("Getting network allocation with ID : " + netAllocId);
                     executor.submit(task);
                 } else isUpdateQueued = true;
             } catch (Exception exc) {
-                List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
-                fail(scheduled);
-                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                fail(requested);
                 terminateFail(terminating);
                 waitingForOfflineEngine = false;
                 computeSemaphore.release();
@@ -381,10 +385,14 @@ public class Processor {
 
     private class InventoryGetter extends FutureTask<Inventory> {
         private UUID id;
+        private List<String> requested;
+        private List<String> terminating;
 
-        private InventoryGetter(NetSolBase netSol) {
+        private InventoryGetter(NetSolBase netSol, List<String> requested, List<String> terminating) {
             super(templates.new InventoryGetter(netSol));
             id = UUID.randomUUID();
+            this.requested = requested;
+            this.terminating = terminating;
         }
 
         @Override
@@ -393,13 +401,11 @@ public class Processor {
             log.debug("Got inventory. OpId: {}.", this.id);
             try {
                 Inventory inventory = this.get();
-                InventoryPutter task = new InventoryPutter(inventory, ODLURL);
+                InventoryPutter task = new InventoryPutter(inventory, ODLURL, requested, terminating);
                 executor.submit(task);
                 log.debug("Sending inventory. OpId: {}.", task.id);
             } catch (Exception execExc) {
-                List<String> establishing = db.queryWithStatus(ServiceStatus.ESTABLISHING);
-                fail(establishing);
-                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                fail(requested);
                 terminateFail(terminating);
                 invLock.release();
                 log.error("Error while translating the inventory:\n", execExc);
@@ -409,31 +415,34 @@ public class Processor {
 
     private class AllocationGetter extends FutureTask<NetSolBase> {
         private UUID id;
+        private List<String> requested;
+        private List<String> terminating;
 
         String netAllocId;
 
         Instant start = Instant.now();
 
-        private AllocationGetter(String netAllocId, UUID opId) {
+        private AllocationGetter(String netAllocId, UUID opId, List<String> requested, List<String> terminating) {
             super(templates.new NetAllocationMatrixGetter(netAllocId, OEURL));
             this.netAllocId = netAllocId;
             id = opId;
+            this.requested = requested;
+            this.terminating = terminating;
         }
 
         @Override
         protected void done() {
             super.done();
-            List<String> scheduled = db.queryWithStatus(ServiceStatus.SCHEDULED);
             try {
                 NetSolBase netSol = this.get();
                 switch (netSol.status) {
                     case COMPUTED: //Calculation completed
                         log.debug("Got network allocation. OpId: {}.", this.id);
-                        callbackSchedulingDone(scheduled);
+                        callbackSchedulingDone(requested);
                         invLock.acquire();
                         log.debug("Releasing computation permit.");
                         computeSemaphore.release();
-                        InventoryGetter task = new InventoryGetter(netSol);
+                        InventoryGetter task = new InventoryGetter(netSol, requested, terminating);
                         executor.submit(task);
                         log.debug("Translating inventory. OpId: {}.", task.id);
                         waitingForOfflineEngine = false;
@@ -449,7 +458,7 @@ public class Processor {
                             //guarantees at least 0.9 seconds between retries, probably 1 sec.
                             Thread.sleep(1000 - timeFromStart);
                         }
-                        executor.submit(new AllocationGetter(netAllocId, this.id));
+                        executor.submit(new AllocationGetter(netAllocId, this.id, requested, terminating));
                         break;
 
                     case FAILED:
@@ -461,8 +470,7 @@ public class Processor {
                         throw new IllegalStateException(message);
                 }
             } catch (Exception execExc) {
-                fail(scheduled);
-                List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATION_REQUESTED);
+                fail(requested);
                 terminateFail(terminating);
                 log.debug("Releasing computation permit.");
                 waitingForOfflineEngine = false;
@@ -475,28 +483,30 @@ public class Processor {
     private class InventoryPutter extends FutureTask<Boolean> {
 
         private UUID id;
+        private List<String> requested;
+        private List<String> terminating;
 
-        private InventoryPutter(Inventory inventory, String ODLURL) {
+        private InventoryPutter(Inventory inventory, String ODLURL, List<String> requested, List<String> terminating) {
             super(templates.new InventoryPutter(inventory, ODLURL), true);
             id = UUID.randomUUID();
+            this.requested = requested;
+            this.terminating = terminating;
         }
 
         @Override
         protected void done() {
             super.done();
             invLock.release();
-            List<String> establishing = db.queryWithStatus(ServiceStatus.ESTABLISHING);
-            List<String> terminating = db.queryWithStatus(ServiceStatus.TERMINATING);
             if (this.isDone()) {
                 try {
                     log.debug("Inventory sent, status " + this.get().toString());
                     log.trace("Releasing inventory lock.");
                     log.debug("Inventory pushed. OpId: {}.", this.id);
-                    callbackEstablished(establishing);
+                    callbackEstablished(requested);
                     callbackTerminated(terminating);
                 } catch (Exception exc) {
                     log.error("Sending inventory got exception: ", exc);
-                    fail(establishing);
+                    fail(requested);
                     terminateFail(terminating);
                     // Do not fail terminating, it will be terminated by the next successful pass-through
                 }
