@@ -453,6 +453,7 @@ public class Processor {
                         break;
 
                     case FAILED:
+                        log.error("Computation failed, not enough bandwidth available.");
                         throw new IllegalStateException("Computation failed.");
                     default:
                         String message = String.format("Unexpected status %s in response from offline", netSol.status);
