@@ -48,9 +48,9 @@ public abstract class NetSolBase {
             try {
                 ObjectCodec mapper = jsonParser.getCodec();
                 JsonNode node = mapper.readTree(jsonParser);
-                String allocId = node.get("Network_Allocation_ID").asText();
                 CompStatus status = mapper.treeToValue(node.get("Status"), CompStatus.class);
                 if (status.equals(CompStatus.COMPUTED)) {
+                String allocId = node.get("Network_Allocation_ID").asText();
                     String method;
                     method = node.get("Method").asText();
                     switch (method) {
