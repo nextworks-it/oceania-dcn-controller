@@ -60,6 +60,14 @@ public class Const {
 
     public static void update(int[][] changes) {
         for (int[] change : changes) {
+            if (change[0] < 0 || change[0] > I * T) {
+                String msg = String.format("Row index must be between 0 and %s. Got %s.", I * T, change[0]);
+                throw new IllegalArgumentException(msg);
+            }
+            if (change[1] < 0 || change[1] > P * W * Z) {
+                String msg = String.format("Col index must be between 0 and %s. Got %s.", P*W*T, change[1]);
+                throw new IllegalArgumentException(msg);
+            }
             matrix[change[0]][change[1]] = change[2];
         }
     }
