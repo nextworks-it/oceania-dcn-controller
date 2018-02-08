@@ -13,6 +13,8 @@ class ToR extends Node {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private final boolean incremental;
+
     private int p;
 
     private int w;
@@ -55,8 +57,14 @@ class ToR extends Node {
         // inPort is actually inZone.
         boolean[][][] tmpMat = new boolean[Const.P * Const.W][Const.I][Const.T];
         Map<Integer, Set<Integer>> activeDst = new HashMap<>();
+        int[][] matrix;
+        if (incremental) {
+            matrix = Const.diffMatrix;
+        } else {
+            matrix = Const.matrix;
+        }
         for (Integer i = 0; i < (Const.T * Const.I); i++) {
-            Integer dest = Const.matrix[i][torIdentifier * Const.Z + inPort - Const.I - 1] - 1; // 0 means no traffic
+            Integer dest = matrix[i][torIdentifier * Const.Z + inPort - Const.I - 1] - 1; // 0 means no traffic
             if (dest >= 1 && !dest.equals(torIdentifier)) {
                 tmpMat[dest][i / Const.T][i % Const.T] = true;
                 activeDst.putIfAbsent(dest, new HashSet<>());
@@ -143,7 +151,10 @@ class ToR extends Node {
     }
 
     ToR(Integer p, Integer w, Map<Integer, Integer[]> rack,
-        Map<Integer, String> inPodPorts, Map<Integer, Integer[]> tors, List<ExtConnection> extConnections) {
+        Map<Integer, String> inPodPorts, Map<Integer, Integer[]> tors, List<ExtConnection> extConnections,
+        boolean incremental) {
+
+        this.incremental = incremental;
 
         this.p = p;
         this.w = w;

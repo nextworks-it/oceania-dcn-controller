@@ -13,6 +13,8 @@ class Pod extends Node {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    private final boolean incremental;
+
     private Integer plane; //plane ID
 
     private Integer podID; //ID of this switch's pod
@@ -27,12 +29,18 @@ class Pod extends Node {
             StringBuilder intraBmpBuilder = new StringBuilder("");
             StringBuilder interBmpBuilder = new StringBuilder("");
             StringBuilder forwardBmpBuilder = new StringBuilder("");
+            int[][] matrix;
+            if (incremental) {
+                matrix = Const.diffMatrix;
+            } else {
+                matrix = Const.matrix;
+            }
             for (Integer t = 0; t < Const.T; t++) {
                 Integer i = 0;
                 while (i < (Const.P * Const.W * Const.Z)) { //Check if it should be forwarded
-                    if (Const.matrix[t + (plane * Const.T)][i] == 0) {
+                    if (matrix[t + (plane * Const.T)][i] == 0) {
                         i = i + 1;
-                    } else if ((Const.matrix[t + (plane * Const.T)][i] - 1) == (podID - Const.firstPod) * Const.W + lam) {
+                    } else if ((matrix[t + (plane * Const.T)][i] - 1) == (podID - Const.firstPod) * Const.W + lam) {
                         if (((i / (Const.W * Const.Z)) + Const.firstPod) == podID) {
                             intraBmpBuilder.append('1'); //must be dropped, hence not forwarded.
                             interBmpBuilder.append('0');
@@ -81,7 +89,10 @@ class Pod extends Node {
         }
     }
 
-    Pod(Integer inpl, Integer ID, Map<Integer, String[]> inrPorts, Map<Integer, String> intPorts) {
+    Pod(Integer inpl, Integer ID, Map<Integer, String[]> inrPorts, Map<Integer, String> intPorts, boolean incremental) {
+
+        this.incremental = incremental;
+
         flowTable = new HashSet<>();
         optFlowTable = new HashSet<>();
         plane = inpl;

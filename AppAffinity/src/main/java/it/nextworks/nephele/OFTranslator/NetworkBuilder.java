@@ -27,9 +27,11 @@ class NetworkBuilder {
 
     private ToR[] tors;
     private Pod[] pods;
+    private final boolean incremental;
 
-    NetworkBuilder(DbManager db) {
+    NetworkBuilder(DbManager db, boolean incremental) {
         this.db = db;
+        this.incremental = incremental;
     }
 
     Inventory build() {
@@ -64,7 +66,7 @@ class NetworkBuilder {
                 ArrayList<Integer> key = new ArrayList<>();
                 key.add(podNo);
                 key.add(torNo);
-                tors[W * p + w] = new ToR(podNo, torNo, torRack, torPods, torAddresses, extConnMap.get(key));
+                tors[W * p + w] = new ToR(podNo, torNo, torRack, torPods, torAddresses, extConnMap.get(key), incremental);
             }
         }
 
@@ -89,7 +91,7 @@ class NetworkBuilder {
                 for (Integer i = 0; i < W; i++) {
                     podTors.get(pID).put(i, String.valueOf(2 * R + i + 1));
                 }
-                pods[pl * P + id] = new Pod(pl, podNo, podRings.get(pID), podTors.get(pID));
+                pods[pl * P + id] = new Pod(pl, podNo, podRings.get(pID), podTors.get(pID), incremental);
             }
         }
         return makeInv();

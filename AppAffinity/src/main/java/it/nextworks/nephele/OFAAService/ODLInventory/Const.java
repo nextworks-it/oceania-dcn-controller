@@ -45,9 +45,11 @@ public class Const {
         firstPod = auxFirstPod;
         EMULATED = emulated;
         matrix = new int[I * T][P * W * Z];
+        diffMatrix = new int[I * T][P * W * Z];
     }
 
     public static int[][] matrix;
+    public static int[][] diffMatrix;
 
     public static void init(int[][] inMat) {
         matrix = new int[I * T][P * W * Z];
@@ -68,6 +70,11 @@ public class Const {
                 throw new IllegalArgumentException(msg);
             }
             matrix[change[1]-1][change[0]-1] = change[2];
+            diffMatrix[change[1]-1][change[0]-1] = change[2];
         }
+    }
+
+    public static void resetDiffs() {
+        diffMatrix = new int[I * T][P * W * Z];
     }
 }
