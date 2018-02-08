@@ -54,24 +54,33 @@ class ToR extends Node {
     private void buildFlows(Integer inPort, List<ExtConnection> extConn) {
         // inPort is actually inZone.
         boolean[][][] tmpMat = new boolean[Const.P * Const.W][Const.I][Const.T];
+        Map<Integer, Set<Integer>> activeDst = new HashMap<>();
         for (Integer i = 0; i < (Const.T * Const.I); i++) {
             Integer dest = Const.matrix[i][torIdentifier * Const.Z + inPort - Const.I - 1] - 1; // 0 means no traffic
-            for (Integer t = 0; t < (Const.P * Const.W); t++) {
-                tmpMat[t][i / Const.T][i % Const.T] = t.equals(dest);
+            if (dest >= 1 && !dest.equals(torIdentifier)) {
+                tmpMat[dest][i / Const.T][i % Const.T] = true;
+                activeDst.putIfAbsent(dest, new HashSet<>());
+                activeDst.get(dest).add(i / Const.T);
             }
+//            for (Integer t = 0; t < (Const.P * Const.W); t++) {
+//                tmpMat[t][i / Const.T][i % Const.T] = t.equals(dest);
+//            }
         }
         Map<Integer, List<ExtConnection>> perDestConns =
             extConn.stream().collect(Collectors.groupingBy((c) -> (c.dstPod - Const.firstPod) * Const.W + c.dstTor - 1));
 
-        for (Integer dest = 0; dest < (Const.P * Const.W); dest++) {
-            if (dest.equals(torIdentifier)) {
-                continue;  // Skip intra-rack traffic, that has been taken care of in the static flows
-            }
+        for (Map.Entry<Integer, Set<Integer>> entry : activeDst.entrySet()) {
+            Integer dest = entry.getKey();
+            Set<Integer> planes = entry.getValue();
+//            if (dest.equals(torIdentifier)) {
+//                continue;  // Skip intra-rack traffic, that has been taken care of in the static flows
+//            }
             List<ExtConnection> extFlows = perDestConns.getOrDefault(dest, Collections.emptyList());
             Integer[] IP = torAddresses.get(dest);
-            for (Integer i = 0; i < Const.I; i++) {
+            for (Integer i : planes) {
                 Bitmap bitmap = new Bitmap(tmpMat[dest][i]);
                 if (bitmap.equals(Bitmap.NULL_BITMAP)) {
+                    log.error("GOT NULL BMP! tor {}, dest {}, plane {}, bitmap: {}", torIdentifier, dest, i, bitmap.getBitmap());
                     continue;
                     // Skip null bitmap flows -> no actual traffic
                 }

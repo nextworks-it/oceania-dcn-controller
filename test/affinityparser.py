@@ -21,11 +21,13 @@ from genericlogparser import (
 class PathStates(Enum):
     PLACEHOLDER = 1
     PROCESSING = 2
+    FAILED = 3
     DONE = 7
 
 
 class PathEvents(Enum):
     GOT_REQUEST = 1
+    FAIL = 2
     DONE = 6
 
 
@@ -43,11 +45,14 @@ class TrafficEvents(Enum):
 class ComputingStates(Enum):
     PLACEHOLDER = 1
     PROCESSING = 2
+    FAILED = 3
     DONE = 7
 
 
 class ComputingEvents(Enum):
     GOT_REQUEST = 1
+    GOT_REQUEST_CH = 2
+    FAIL = 3
     DONE = 6
 
 
@@ -78,7 +83,8 @@ path_life_cycle = LifeCycle('path_lc',
                             events=PathEvents,
                             transitions={
                                 ('PLACEHOLDER', 'GOT_REQUEST'): 'PROCESSING',
-                                ('PROCESSING', 'DONE'): 'DONE'
+                                ('PROCESSING', 'DONE'): 'DONE',
+                                ('PROCESSING', 'FAIL'): 'FAILED'
                             })
 
 traffic_life_cycle = LifeCycle('traffic_lc',
@@ -94,6 +100,8 @@ compute_life_cycle = LifeCycle('compute_lc',
                                events=ComputingEvents,
                                transitions={
                                    ('PLACEHOLDER', 'GOT_REQUEST'): 'PROCESSING',
+                                   ('PLACEHOLDER', 'GOT_REQUEST_CH'): 'PROCESSING',
+                                   ('PROCESSING', 'FAIL'): 'FAILED',
                                    ('PROCESSING', 'DONE'): 'DONE'
                                })
 
@@ -137,8 +145,11 @@ class ComputeObject(LifeCycledObject):
         try:
             return self.get_delta(ComputingEvents.GOT_REQUEST, ComputingEvents.DONE)
         except ValueError as e:
-            print("Illegal object {}: {}.".format(self.id, e))
-            return None
+            try:
+                return self.get_delta(ComputingEvents.GOT_REQUEST_CH, ComputingEvents.DONE)
+            except ValueError as e:
+                print("Illegal object {}: {}.".format(self.id, e))
+                return None
 
 
 class TranslateObject(LifeCycledObject):
@@ -177,26 +188,51 @@ def make_parser(path_factory: LifeCycleObjFactory,
         PathEvents.DONE
     ))
 
+    odl_parser.add_handler(path_factory.make_handler(
+        "Service (?P</id/>[a-zA-Z\d:_-]+) failed\.",
+        PathEvents.FAIL
+    ))
+
     # Traffic handlers
+#    odl_parser.add_handler(traffic_factory.make_handler(
+#        'Starting Traffic matrix computation: OpId (?P</id/>[a-zA-Z\d:_-]+)\.',
+#        TrafficEvents.GOT_REQUEST
+#    ))
+#
+#    odl_parser.add_handler(traffic_factory.make_handler(
+#        "Got traffic matrix. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
+#        TrafficEvents.DONE
+#    ))
+#
     odl_parser.add_handler(traffic_factory.make_handler(
-        'Starting Traffic matrix computation: OpId (?P</id/>[a-zA-Z\d:_-]+)\.',
+        'Starting Traffic changes computation: OpId (?P</id/>[a-zA-Z\d:_-]+)\.',
         TrafficEvents.GOT_REQUEST
     ))
 
     odl_parser.add_handler(traffic_factory.make_handler(
-        "Got traffic matrix. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
+        "Got traffic matrix changes. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         TrafficEvents.DONE
     ))
 
     # Compute handlers
     odl_parser.add_handler(compute_factory.make_handler(
-        "Posting traffic matrix. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
+        "Posting traffic matrix\. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         ComputingEvents.GOT_REQUEST
     ))
 
     odl_parser.add_handler(compute_factory.make_handler(
-        "Got network allocation. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
+        "Posting traffic changes\. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
+        ComputingEvents.GOT_REQUEST_CH
+    ))
+
+    odl_parser.add_handler(compute_factory.make_handler(
+        "Got network allocation\. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
         ComputingEvents.DONE
+    ))
+
+    odl_parser.add_handler(compute_factory.make_handler(
+        "Computation failed, not enough bandwidth\. OpId: (?P</id/>[a-zA-Z\d:_-]+)\.",
+        ComputingEvents.FAIL
     ))
 
     # Translate handlers
@@ -246,6 +282,7 @@ def main(output_file: str, log_file: str):
     if not exists(output_file):
         with open(output_file, 'w') as f:
             f.write('errors,'
+                    'failed,'
                     'paths,'
                     'path_avg,'
                     'path_max,'
@@ -336,8 +373,12 @@ def main(output_file: str, log_file: str):
     translate = []
     push = []
     errors = []
+    failed = []
 
     for x in path_factory.repo.values():
+        print("Got path {}, status {}".format(x.id, x.status))
+        if x.status == PathStates.FAILED:
+            failed.append(x.id)
         time = x.get_time()
         if time is None:
             errors.append(x.id)
@@ -442,6 +483,7 @@ def main(output_file: str, log_file: str):
         f.write(','.join([
 
             str(len(errors)),
+            str(len(failed)),
 
             str(path_no),
             str(path_avg),

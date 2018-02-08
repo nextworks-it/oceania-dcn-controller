@@ -127,7 +127,8 @@ public class Processor {
 //            executor.submit(new NetAllocIdGetter(new TrafficMatrix(Const.matrix)));
 //        }
 
-        this.computed = computed;
+//        this.computed = computed;
+        this.computed = true; // Should be as above...
 
     }
 
@@ -173,7 +174,7 @@ public class Processor {
             if (incremental && current_computed) {
                 TrafficMatChangesGetter task = new TrafficMatChangesGetter();
                 executor.submit(task);
-                log.debug("Starting Traffic changes computation: OpId {}.", task.id);
+                log.info("Starting Traffic changes computation: OpId {}.", task.id);
             } else {
                 TrafficMatGetter task = new TrafficMatGetter();
                 executor.submit(task);
@@ -209,7 +210,7 @@ public class Processor {
 
     private void callbackEstablished(Collection<String> establishing) {
         for (String service : establishing) {
-            log.debug("Established service: {}.", service);
+            log.info("Established service: {}.", service);
             db.updateStatus(service, ServiceStatus.ACTIVE);
         }
     }
@@ -301,12 +302,12 @@ public class Processor {
         @Override
         protected void done() {
             super.done();
-            log.debug("Got traffic matrix changes. OpId: {}.", this.id);
+            log.info("Got traffic matrix changes. OpId: {}.", this.id);
             try {
                 TrafficChanges matrix = this.get();
                 NetAllocChangesIdGetter task = new NetAllocChangesIdGetter(matrix, requested, toBeTerminated);
                 executor.submit(task);
-                log.debug("Posting traffic changes. OpId: {}.", task.id);
+                log.info("Posting traffic changes. OpId: {}.", task.id);
             } catch (Exception exc) {
                 fail(requested);
                 terminateFail(toBeTerminated);
@@ -398,12 +399,12 @@ public class Processor {
         @Override
         protected void done() {
             super.done();
-            log.debug("Got inventory. OpId: {}.", this.id);
+            log.info("Got inventory. OpId: {}.", this.id);
             try {
                 Inventory inventory = this.get();
                 InventoryPutter task = new InventoryPutter(inventory, ODLURL, requested, terminating);
                 executor.submit(task);
-                log.debug("Sending inventory. OpId: {}.", task.id);
+                log.info("Sending inventory. OpId: {}.", task.id);
             } catch (Exception execExc) {
                 fail(requested);
                 terminateFail(terminating);
@@ -437,14 +438,14 @@ public class Processor {
                 NetSolBase netSol = this.get();
                 switch (netSol.status) {
                     case COMPUTED: //Calculation completed
-                        log.debug("Got network allocation. OpId: {}.", this.id);
+                        log.info("Got network allocation. OpId: {}.", this.id);
                         callbackSchedulingDone(requested);
                         invLock.acquire();
                         log.debug("Releasing computation permit.");
                         computeSemaphore.release();
                         InventoryGetter task = new InventoryGetter(netSol, requested, terminating);
                         executor.submit(task);
-                        log.debug("Translating inventory. OpId: {}.", task.id);
+                        log.info("Translating inventory. OpId: {}.", task.id);
                         waitingForOfflineEngine = false;
                         if (isUpdateQueued) {
                             executor.submit(new TrafficMatGetter());
@@ -462,7 +463,7 @@ public class Processor {
                         break;
 
                     case FAILED:
-                        log.error("Computation failed, not enough bandwidth. OpId: {}.", this.id);
+                        log.info("Computation failed, not enough bandwidth. OpId: {}.", this.id);
                         throw new IllegalStateException("Computation failed.");
                     default:
                         String message = String.format("Unexpected status %s in response from offline", netSol.status);
@@ -501,7 +502,7 @@ public class Processor {
                 try {
                     log.debug("Inventory sent, status " + this.get().toString());
                     log.trace("Releasing inventory lock.");
-                    log.debug("Inventory pushed. OpId: {}.", this.id);
+                    log.info("Inventory pushed. OpId: {}.", this.id);
                     callbackEstablished(requested);
                     callbackTerminated(terminating);
                 } catch (Exception exc) {
@@ -523,7 +524,7 @@ public class Processor {
                 computeSemaphore.acquire();
                 waiting.set(false);
                 log.trace("A slot freed up, resuming.");
-                log.debug("Starting Traffic changes computation: OpId {}.", this.id);
+                log.info("Starting Traffic changes computation: OpId {}.", this.id);
                 super.run();
             } catch (InterruptedException exc) {
                 log.warn("Wait for incremental schedule interrupted: ", exc);

@@ -121,7 +121,7 @@ public class Bitmap {
 
         Bitmap bitmap = (Bitmap) o;
 
-        return Arrays.equals(bmp, bitmap.bmp);
+        return this.nonZero.equals(bitmap.nonZero);
     }
 
     @Override

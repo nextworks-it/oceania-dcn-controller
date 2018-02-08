@@ -16,9 +16,9 @@ from request_sender import SendAction
 actions = []
 stop = False
 
-P = 12
+P = 6
 W = 80
-Z = 4
+Z = 2
 
 FIRST_POD = 10
 
@@ -51,7 +51,7 @@ def main(controller, rate, duration):
                 client = AsyncHTTPClient()
                 while datetime.now() <= end_time and not stop:
                     back_off = expovariate(1 / rate)
-                    conn_duration = expovariate(1 / (5 * rate))
+                    conn_duration = expovariate(1 / (5 * rate)) + 2
                     await sleep(back_off)
 
                     p1 = randrange(0, P) + FIRST_POD

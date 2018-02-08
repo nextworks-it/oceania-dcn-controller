@@ -52,23 +52,22 @@ public class Const {
     public static void init(int[][] inMat) {
         matrix = new int[I * T][P * W * Z];
         for (int i = 0; i < (I * T); i++) {
-            for (int j = 0; j < (P * W * Z); j++) {
-                matrix[i][j] = inMat[i][j];
-            }
+            System.arraycopy(inMat[i], 0, matrix[i], 0, P * W * Z);
         }
     }
 
     public static void update(int[][] changes) {
         for (int[] change : changes) {
-            if (change[0] < 0 || change[0] > I * T) {
-                String msg = String.format("Row index must be between 0 and %s. Got %s.", I * T, change[0]);
+            // Indices are swapped
+            if (change[1] <= 0 || change[1] > I * T) {
+                String msg = String.format("Row index must be between 1 and %s. Got %s.", I * T, change[1]);
                 throw new IllegalArgumentException(msg);
             }
-            if (change[1] < 0 || change[1] > P * W * Z) {
-                String msg = String.format("Col index must be between 0 and %s. Got %s.", P*W*T, change[1]);
+            if (change[0] <= 0 || change[0] > P * W * Z) {
+                String msg = String.format("Col index must be between 1 and %s. Got %s.", P*W*T, change[0]);
                 throw new IllegalArgumentException(msg);
             }
-            matrix[change[0]][change[1]] = change[2];
+            matrix[change[1]-1][change[0]-1] = change[2];
         }
     }
 }
