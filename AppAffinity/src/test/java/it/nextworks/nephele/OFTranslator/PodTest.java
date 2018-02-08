@@ -38,7 +38,7 @@ public class PodTest {
         torPorts.put(0, "5");
         torPorts.put(1, "6");
 
-        Pod pod = new Pod(0, 1, ringPorts, torPorts);
+        Pod pod = new Pod(0, 1, ringPorts, torPorts, false);
 
         String str = pod.optFlowTable.toString();
         str = str.replace("{match", "{\n\tmatch");
